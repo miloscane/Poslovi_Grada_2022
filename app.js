@@ -3363,8 +3363,6 @@ server.post('/izvestaj-sa-terena', upload.array("image",10), async (req, res)=> 
 	
 });
 
-console.log(hashString("m@r1j@.PosloviGrada"))
-
 server.post('/okaci-sliku', upload.array("image",10), async (req, res)=> {
 	if(req.session.user){
 		var izvestaji 	=	[];
