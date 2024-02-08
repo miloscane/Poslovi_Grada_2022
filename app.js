@@ -112,6 +112,7 @@ pdfParse(pdfFile).then(function(data) {
 	console.log(error);
 });*/
 
+console.log(process.env.mongourl)
 
 //PORT Listening
 http.listen(process.env.PORT, function(){
