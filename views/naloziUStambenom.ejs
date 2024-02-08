@@ -1,0 +1,232 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+	<div class="pageTitle">Svi Nalozi</div>
+	<script>
+		var nalozi = <%-JSON.stringify(nalozi)%>;
+		console.log(nalozi.length);
+		console.log(nalozi);
+		var opstine	=	[];
+		for(var i=0;i<nalozi.length;i++){
+			if(opstine.indexOf(nalozi[i].radnaJedinica.toLowerCase())<0){
+				opstine.push(nalozi[i].radnaJedinica.toLowerCase());
+			}
+		}
+	</script>
+	<div class="sviNalozi">
+		<div class="filters">
+			<div class="numberFilter broj">
+				<input type="text" id="number-filter" placeholder="Filter Broja" oninput="filter()">
+			</div>
+			<div class="opstinaFilter opstina">
+				<select id="opstina-filter" oninput="filter()"></select>
+				<script>
+					var option	=	document.createElement("OPTION");
+					option.setAttribute("value","SVE");
+					option.setAttribute("selected","selected");
+					option.innerHTML	=	"SVE OPSTINE";
+					document.getElementById("opstina-filter").appendChild(option);
+					for(var i=0;i<opstine.length;i++){
+						var option	=	document.createElement("OPTION");
+						option.setAttribute("value",opstine[i]);
+						option.innerHTML	=	opstine[i].toUpperCase();
+						document.getElementById("opstina-filter").appendChild(option);
+					}
+				</script>
+			</div>
+			<div class="numberFilter adresa">
+				<input type="text" id="adresa-filter" placeholder="Filter Adrese" oninput="filter()">
+			</div>
+			<div class="obracunatFilter obracunat">
+				<select id="obracunat" oninput="filter()">
+					<option selected="selected" value="SVI">SVI</option>
+					<option value="DA">DA</option>
+					<option value="NE">NE</option>
+				</select>
+			</div>
+			<div class="duplikatFilter duplikat">
+				<select id="duplikat" oninput="filter()">
+					<option selected="selected" value="SVI">SVI</option>
+					<option value="DA">DA</option>
+					<option value="NE">NE</option>
+				</select>
+			</div>
+
+		</div>
+		<div class="header">
+			<div class="inline broj">Broj:</div>
+			<div class="inline opstina">Opstina:</div>
+			<div class="inline adresa">Adresa:</div>
+			<div class="inline obracunat">Obracunat:</div>
+			<div class="inline duplikat">Dupli:</div>
+		</div>
+		<div id="svi-nalozi"></div>
+		<script>
+			function countInArray(array, value) {
+				return array.filter(item => item == value).length;
+			}
+
+			var ids 			=	[];
+			var duplicateIds	=	[];
+			for(var i=0;i<nalozi.length;i++){
+				
+				var nalogJson	=	JSON.parse(JSON.stringify(nalozi[i]));
+				ids.push(nalogJson.broj);
+				var row = document.createElement("DIV");
+				row.setAttribute("class","row");
+				if(i%2==0){
+					row.classList.add("rowHighlight");
+				}
+
+				row.setAttribute("data-nalogjson",JSON.stringify(nalogJson));
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","inline broj");
+					elem.innerHTML	=	nalogJson.broj;
+					row.appendChild(elem);
+
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","inline opstina");
+					elem.innerHTML	=	nalogJson.radnaJedinica;
+					row.appendChild(elem);
+
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","inline adresa");
+					elem.innerHTML	=	nalogJson.adresa.split(",")[0];
+					row.appendChild(elem);
+
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","inline obracunat");
+					if(parseFloat(nalogJson.ukupanIznos)>0){
+						elem.innerHTML	=	"DA";
+					}else{
+						elem.innerHTML	=	"NE"
+					}
+					row.appendChild(elem);
+
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","inline duplikat");
+					elem.innerHTML	=	"<div class=\"duplikatIconWrap\" style=\"display:none\">&check;</div>"
+					row.appendChild(elem);
+
+					/*var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","button skiniNalog");
+					elem.setAttribute("onclick","skiniPdf(this)");
+					elem.innerHTML = "Skini Nalog";
+					row.appendChild(elem);*/
+
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","button pogledajNalog");
+						var a = document.createElement("A");
+						a.setAttribute("href","/pdfView/"+nalogJson.uniqueId);
+						a.setAttribute("target","_blank");
+						a.innerHTML = "Pogledaj Nalog"
+						elem.appendChild(a);
+					row.appendChild(elem);
+
+					/*var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","button deleteButton");
+					elem.setAttribute("data-id",nalogJson.uniqueId);
+					elem.setAttribute("onclick","deleteNalog(this)");
+					elem.innerHTML	=	"Izbrisi Nalog";
+					row.appendChild(elem);*/
+
+				document.getElementById("svi-nalozi").appendChild(row);
+			}
+
+			for(var i=0;i<ids.length;i++){
+				if(countInArray(ids,ids[i])>1){
+					duplicateIds.push(ids[i]);
+				}
+			}
+
+			var rowElements	=	document.getElementById("svi-nalozi").getElementsByClassName("row");
+			for(var i=0;i<rowElements.length;i++){
+				var nalogJson	=	JSON.parse(rowElements[i].dataset.nalogjson);
+				if(duplicateIds.indexOf(nalogJson.broj)>=0){
+					rowElements[i].getElementsByClassName("duplikatIconWrap")[0].style.display="block";
+				}
+			}
+		</script>
+		<script>
+			function filter(){
+				var opstina = document.getElementById("opstina-filter").value;
+				var broj = document.getElementById("number-filter").value;
+				var obracunat = document.getElementById("obracunat").value;
+				var duplikat = document.getElementById("duplikat").value;
+				var adresa = document.getElementById("adresa-filter").value;
+				for(var i=0;i<rowElements.length;i++){
+					rowElements[i].classList.remove("rowHighlight");
+					rowElements[i].style.display="block";
+					var nalogJson	=	JSON.parse(rowElements[i].dataset.nalogjson);
+					if(opstina!="SVE"){
+						if(nalogJson.radnaJedinica.toLowerCase()!=opstina.toLowerCase()){
+							rowElements[i].style.display="none";
+						}
+					}
+
+					if(broj!=""){
+						if(!nalogJson.broj.toString().includes(broj.toString())){
+							rowElements[i].style.display="none";
+						}
+					}
+
+					if(adresa!=""){
+						if(!nalogJson.adresa.split(",")[0].toString().toLowerCase().includes(adresa.toString().toLowerCase())){
+							rowElements[i].style.display="none";
+						}
+					}
+
+					if(obracunat!="SVI"){
+						var ukupanIznos	=	parseFloat(nalogJson.ukupanIznos);
+						if((ukupanIznos==0 || isNaN(ukupanIznos)) && obracunat=="DA"){
+							rowElements[i].style.display="none";
+						}else if(ukupanIznos>0 && obracunat=="NE"){
+							rowElements[i].style.display="none";
+						}
+					}
+
+					if(duplikat!="SVI"){
+						if(duplikat=="DA" && duplicateIds.indexOf(nalogJson.broj)<0){
+							rowElements[i].style.display="none";
+						}else if(duplikat=="NE" && duplicateIds.indexOf(nalogJson.broj)>=0){
+							rowElements[i].style.display="none";
+						}
+					}
+				}
+
+				var highlight = true;
+				for(var i=0;i<rowElements.length;i++){
+					if(rowElements[i].style.display=="block" && highlight){
+						rowElements[i].classList.add("rowHighlight");
+						highlight = false;
+					}else if(rowElements[i].style.display=="block" && !highlight){
+						highlight = true;
+					}
+				}
+			}
+
+			function deleteNalog(elem){
+				document.getElementById("delete-nalog-id").value = elem.dataset.id;
+				loadGif();
+				document.getElementById("delete-nalog-form").submit();
+			}
+			
+		</script>
+	</div>
+
+	<div class="button" onclick="count()">Izbroj</div>
+	<script>
+		function count(){
+			var rowElements	=	document.getElementById("svi-nalozi").getElementsByClassName("row");
+			var total=0;
+			for(var i=0;i<rowElements.length;i++){
+				if(rowElements[i].style.display=="block"){
+					total++
+				}
+			}
+			console.log(total)
+		}
+	</script>
+	<form style="display:none" method="post" action="/deleteNalog" id="delete-nalog-form">
+		<input type="text" name="id" id="delete-nalog-id">
+	</form>
+<%- include ("partials/footer") -%>

@@ -1,0 +1,3485 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+html{
+    font-family: 'Montserrat', sans-serif;
+    -webkit-text-size-adjust:100%;
+    -ms-text-size-adjust:100%
+}
+html {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body{
+    margin:0;
+    font-family: 'Montserrat', sans-serif;
+    color: rgb(100,100,100);
+    font-size: 16px;
+}
+article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{
+    display:block
+}
+audio,canvas,progress,video{
+    display:inline-block;
+    vertical-align:baseline
+}
+audio:not([controls]){
+    display:none;
+    height:0
+}
+[hidden],template{
+    display:none
+}
+a{
+    background-color:transparent;
+    text-decoration: none;
+}
+a:active,a:hover{
+    outline:0
+}
+abbr[title]{
+    border-bottom:1px dotted
+}
+b,strong{
+    font-weight:700
+}
+dfn{
+    font-style:italic
+}
+h1{
+    margin:.67em 0;
+    font-size:2em
+}
+mark{
+    color:#000;
+    background:#ff0
+}
+small{
+    font-size:80%
+}
+sub,sup{
+    position:relative;
+    font-size:75%;
+    line-height:0;
+    vertical-align:baseline
+}
+sup{
+    top:-.5em
+}
+sub{
+    bottom:-.25em
+}
+img{
+    border:0;
+    max-width: 100%;
+}
+svg:not(:root){
+    overflow:hidden
+}
+figure{
+    margin:1em 40px
+}
+hr{
+    height:0;
+    -webkit-box-sizing:content-box;
+    -moz-box-sizing:content-box;
+    box-sizing:content-box
+}
+pre{
+    overflow:auto
+}
+code,kbd,pre,samp{
+    font-family:monospace,monospace;
+    font-size:1em
+}
+button,input,optgroup,select,textarea{
+    margin:0;
+    font:inherit;
+    color:inherit
+}
+button{
+    overflow:visible
+}
+button,select{
+    text-transform:none
+}
+button,html input[type=button],input[type=reset],input[type=submit]{
+    -webkit-appearance:button;
+    cursor:pointer
+}
+button[disabled],html input[disabled]{
+    cursor:default
+}
+button::-moz-focus-inner,input::-moz-focus-inner{
+    padding:0;
+    border:0
+}
+input{
+    line-height:normal;
+}
+input[type=checkbox],input[type=radio]{
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
+    padding:0
+}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{
+    height:auto
+}
+input[type=search]{
+    -webkit-box-sizing:content-box;
+    -moz-box-sizing:content-box;
+    box-sizing:content-box;
+    -webkit-appearance:textfield
+}
+input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{
+    -webkit-appearance:none
+}
+fieldset{
+    padding:.35em .625em .75em;
+    margin:0 2px;
+    border:1px solid silver
+}
+legend{
+    padding:0;
+    border:0
+}
+textarea{
+    overflow:auto
+}
+optgroup{
+    font-weight:700
+}
+table{
+    border-spacing:0;
+    border-collapse:collapse
+}
+td,th{
+    padding:0
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.logOut{
+    position:fixed;
+    top:10px;
+    right:10px;
+    font-size:12px;
+}
+
+
+.logOut a{
+    color:rgb(32,51,100);
+    display:inline;
+    text-decoration: none;
+    padding:2px;
+    background-color:rgba(0,255,50,1);
+    border-radius:3px;
+    border:1px solid rgb(255,255,255,1);
+    box-shadow:2px 2px 4px rgba(0,0,0,0.34);
+    -webkit-transition:all ease 0.5s;
+    -moz-transition:all ease 0.5s;
+    -ms-transition:all ease 0.5s;
+    -o-transition:all ease 0.5s;
+    transition:all ease 0.5s;
+}
+
+.logOut a:hover{
+    box-shadow:2px 2px 4px rgba(0,0,0,0);
+    border:1px solid rgba(255,255,255,0);
+    color:rgb(237,28,36);
+}
+
+.lightbox{
+    position:fixed;
+    z-index:2000;
+    background: rgba(255,255,255,0.8);
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+}
+
+.lightbox .lightboxContent{
+    position:fixed;
+    top:50%;
+    left:50%;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    max-width:80%;
+    max-height:80vh;
+}
+
+#load-lightbox img{
+    opacity:1;
+}
+
+#load-lightbox .title{
+    position:absolute;
+    top:20px;
+    font-size:20px;
+    font-weight:700;
+    text-align:center;
+    width:100%;
+    color:rgb(237,28,36);
+}
+
+#load-lightbox .title span{
+    color:rgb(32,51,100);
+}
+
+#site-background{
+    background: rgb(230,230,230);
+    background: linear-gradient(0deg, rgba(230,230,230,1) 26%, rgba(255,255,255,1) 100%);
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    position: fixed;
+    z-index: 10;
+}
+
+#logo{
+    position:absolute;
+    z-index:90;
+    top:10px;
+    left:10px;
+    width:200px;
+}
+
+#site-content{
+    position: relative;
+    z-index: 100;
+    margin-top: 45px;
+    width: 100%;
+    margin: 0 auto;
+    max-width: 950px;
+    text-align: center;
+    padding-bottom:100px;
+}
+
+#site-title{
+    font-size:36px;
+    margin-top:10px;
+    margin-bottom:5px;
+    font-weight:700;
+}
+
+.menuWrap{
+    margin:5px auto;
+}
+
+.menuWrap .button{
+    padding:0;
+}
+
+.menuWrap .button a{
+    display:block;
+    padding: 6px 24px;
+}
+
+.pageTitle{
+    font-size:26px;
+    font-weight:300;
+    font-style:italic;
+    margin-bottom:20px;
+}
+
+.pageSubTitle{
+    font-size:20px;
+    font-weight:100;
+    font-style:italic;
+    margin-bottom:10px;
+}
+
+.loginWrap{
+    width:80%;
+    margin:0 auto;
+    max-width:700px;
+}
+
+.loginWrap .inputWrap{
+    margin-bottom:10px;
+}
+
+.loginWrap .inputWrap .title{
+    font-size:22px;
+    margin-bottom:4px;
+    font-weight:500;
+    text-align:center;
+    color:rgb(50,50,50);
+    -webkit-transition:all ease 0.5s;
+    -moz-transition:all ease 0.5s;
+    -ms-transition:all ease 0.5s;
+    -o-transition:all ease 0.5s;
+    transition:all ease 0.5s;
+}
+
+.loginWrap .inputWrap input{
+    font-size:18px;
+    font-weight:300;
+    text-align:center;
+    color:rgb(255,255,255);
+    width:100%;
+    background-color:rgba(0,0,0,0.5);
+    padding:15px 5px;
+    border:2px solid rgba(50,50,50,1);
+    -webkit-transition:all ease 0.5s;
+    -moz-transition:all ease 0.5s;
+    -ms-transition:all ease 0.5s;
+    -o-transition:all ease 0.5s;
+    transition:all ease 0.5s;
+}
+
+
+.loginWrap .inputWrap input:focus{
+    outline:none;
+    border:2px solid rgba(0,255,50,1);
+    color:rgb(0,255,50);
+}
+
+.button{
+    box-shadow:inset 0px 1px 0px 0px #ffffff;
+    background:linear-gradient(to bottom, #f9f9f9 5%, #e9e9e9 100%);
+    background-color:#f9f9f9;
+    border-radius:3px;
+    border:1px solid rgb(50,50,50);
+    display:inline-block;
+    cursor:pointer;
+    color:rgb(99,82,223);
+    padding:6px 24px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #ffffff;
+    -webkit-transition:all ease 0.5s;
+    -moz-transition:all ease 0.5s;
+    -ms-transition:all ease 0.5s;
+    -o-transition:all ease 0.5s;
+    transition:all ease 0.5s;
+}
+
+.button:hover {
+    background:linear-gradient(to bottom, #e9e9e9 5%, #f9f9f9 100%);
+    background-color:#e9e9e9;
+    color:rgb(0,255,50);
+}
+
+.button:active {
+    position:relative;
+    top:1px;
+}
+
+.highlight{
+    color:rgb(0,255,50) !important;
+}
+
+.loginWrap .inputWrap .button{
+    width:100%;
+    margin-top:25px;
+    font-size:20px;
+    font-weight:500;
+    padding:10px 5px;
+}
+
+.calculatorWrap{
+    width:90%;
+    margin:0 auto;
+    max-width:960px;
+    padding-top:20px;
+    padding-bottom:20px;
+}
+
+.calculatorWrap .header{
+    margin-bottom:5px;
+    padding-bottom:5px;
+    border-bottom:1px solid rgb(255,255,255);
+    font-size:16px;
+    font-weight:600;
+    font-size:0;
+}
+
+.calculatorWrap .inputsWrap{
+    text-align:left;
+}
+
+.calculatorWrap .inlineItem{
+    display:inline-block;
+    vertical-align:middle;
+    font-size:14px;
+    font-weight:300;
+    color:rgb(32,51,100);
+    text-align:left;
+}
+
+.calculatorWrap .header .inlineItem{
+    color:rgb(255,255,255);
+    vertical-align:top;
+}
+
+
+
+
+.calculatorWrap .inputsWrap{
+    font-size:0;
+}
+
+
+.calculatorWrap .redniBroj{
+    width:50px;
+}
+
+.calculatorWrap .sifraArtikla{
+    width:105px;
+}
+
+.calculatorWrap .nazivArtikla{
+    width:345px;
+}
+
+.calculatorWrap .jedinicaMere{
+    width:65px;
+}
+
+.calculatorWrap .planiranaKolicina{
+    width:65px;
+}
+
+.calculatorWrap .izvedenaKolicina{
+    width:50px;
+}
+
+.calculatorWrap .jedinicnaCena{
+    width:75px;
+}
+
+.calculatorWrap .iznos{
+    width:100px;
+}
+
+.calculatorWrap input{
+    max-width: 100%;
+    width:100%;
+    outline:none !important;
+    border:1px solid rgb(32,51,100);
+    color:rgb(32,51,100);
+}
+
+
+.calculatorWrap input:focus{
+    border:1px solid rgb(237,28,36);
+    background-color:rgb(32,51,100);
+    color:rgb(255,255,255);
+}
+
+.calculatorWrap .copy{
+    padding:3px;
+    font-size:10px;
+    font-weight:400;
+}
+
+.calculatorWrap .inputsWrap .redniBroj{
+    vertical-align: top;
+}
+
+.calculatorWrap .inputsWrap .inputRow{
+    margin-bottom:2px;
+    border-bottom:1px solid rgb(255,255,255);
+    padding-bottom:3px;
+    position:relative;
+}
+
+.calculatorWrap .inputsWrap .inputRow .suggested{
+    position:absolute;
+    background-color:rgb(32,51,100);
+    width:100%;
+    left:0;
+    right:0;
+    top:50%;
+    height:100px;
+    z-index:2000;
+    display:none;
+
+}
+
+.calculatorWrap .inputsWrap .inputRow:nth-child(even){
+    background-color:rgba(0,0,0,0.4);
+}
+
+.calculatorWrap .inputsWrap .inputRow .suggested .relative{
+    position:relative;
+    overflow-y:scroll;
+    overflow-x:hidden;
+    height:90px;
+    z-index:2100;
+}
+
+
+.calculatorWrap .inputsWrap .inputRow .suggested .relative .close{
+    position:absolute;
+    top:5px;
+    right:5px;
+    cursor:pointer;
+    font-size:9px;
+    padding:3px;
+    text-align:center;
+    color:rgb(255,255,255);
+    background-color:rgb(237,28,36);
+    border:1px solid rgb(255,255,255);
+    z-index:2300;
+}
+
+.calculatorWrap .inputsWrap .inputRow .suggested .relative .suggestedRow{
+    position:relative;
+    z-index:2200;
+    padding-left:51px;
+    margin:2px auto;
+    padding:2px 0;
+    padding-left:50px;
+}
+
+.calculatorWrap .inputsWrap .inputRow .suggested .relative .suggestedRow:nth-child(odd){
+    background-color:rgba(0,0,0,0.4);
+}
+
+.calculatorWrap .inputsWrap .inputRow .suggested .relative .suggestedRow:hover{
+    background-color:rgb(255,255,255);
+}
+
+
+.calculatorWrap .inputsWrap .inputRow .suggested .relative .suggestedRow:hover .inlineItem{
+    color:rgb(32,51,100);
+}
+
+
+.calculatorWrap .inputsWrap .inputRow .suggested .relative .suggestedRow .inlineItem{
+    color:rgb(255,255,255);
+}
+
+.totalWrap{
+    margin-top:20px;
+    padding-top:20px;
+    border-top:4px solid rgb(255,255,255);
+    text-align:right;
+}
+
+
+.ukupno span{
+    font-weight: 600 !important;
+}
+
+.ukupno .inline{
+    display:inline-block;
+    vertical-align: top !important;
+    padding-right:20px;
+    text-align: left !important;
+    font-size: 12px !important;
+    font-weight:300 !important;
+}
+
+.ukupno .inline .title{
+    text-align:left;
+    font-weight:600 !important;
+    font-size:14px !important;
+}
+
+.nalogWrap{
+    text-align:left;
+}
+
+.nalogWrap .row{
+    padding:3px;
+}
+
+.nalogWrap .row:nth-child(odd){
+    background-color:rgba(0,0,0,0.3);
+}
+
+.nalogWrap .key, .nalogWrap .value{
+    display:inline-block;
+    vertical-align:top;
+}
+
+.nalogWrap .key{
+    font-weight:600;
+    width:250px;
+}
+
+.nalogWrap .value{
+    font-weight:300;
+    width:690px;
+}
+
+.nalogWrap .value span{
+    font-weight:600;
+}
+
+#nalog2{
+    background-color:rgb(255,255,255);
+    padding:15px;
+    color:rgb(0,0,0);
+}
+
+#nalog2 .topBox{
+    background-color:#eaf1dd;
+    border:1px solid rgb(0,0,0);
+    text-align:center;
+    font-size:14px;
+    padding:5px;
+    margin-bottom:15px;
+}
+
+#nalog2 .topBox .narudzbenicaWrap{
+    font-weight:700;
+    margin-top:4px;
+}
+
+#nalog2 .topBox .narudzbenicaWrap .note, #nalog2 .topBox .narudzbenicaWrap .input{
+    display:inline-block;
+    vertical-align: middle;
+}
+
+#nalog2 .topBox .narudzbenicaWrap .input{
+    width:90px;
+}
+
+#nalog2 .topBox .narudzbenicaWrap .input input{
+    max-width:100%;
+}
+
+#nalog2 .topTables{
+    font-size:0;
+}
+
+#nalog2 .topTables .inline{
+    font-size:14px;
+    display:inline-block;
+    vertical-align:top;
+    width:50%;
+}
+
+#nalog2 .topTables .inline .tableWrap{
+    width:400px;
+}
+
+#nalog2 .topTables .inline .tableWrap .header{
+    border:1px solid rgb(0,0,0);
+    border-bottom:none;
+    padding:5px;
+    background-color:#d6e3bc;
+    font-size:18;
+    font-weight:500;
+}
+
+#nalog2 .topTables .inline .tableWrap table{
+    border-collapse: collapse;
+    width:100%;
+}
+
+#nalog2 .topTables .inline .tableWrap td{
+    border:1px solid rgb(0,0,0);
+}
+
+#nalog2 .topTables .inline .tableWrap td input, #nalog2 .topTables .inline .tableWrap td textarea{
+    border:none;
+    outline:none !important;
+    width:100%;
+    text-align:center;
+}
+
+#nalog2 .topTables .inline .tableWrap td input:focus, #nalog2 .topTables .inline .tableWrap td textarea:focus{
+    background-color:rgba(0,0,0,0.3);
+}
+
+#nalog2 .topTables .inline .tableWrap .itemName{
+    width:132px;
+    padding:3px;
+}
+
+#nalog2 .topTables .extended{
+    margin-left:60px;
+}
+
+#nalog2 .topTables .extended .tableWrap{
+    width:500px;
+}
+
+#nalog2 .topTables .extended .tableWrap .itemName{
+    width:160px;
+}
+
+#nalog2 .note1{
+    font-size:16px;
+    text-align:left;
+    padding-left:7px;
+    margin-top:9px;
+    margin-bottom:5px;
+}
+
+
+#nalog2 .middleTables{
+    font-size:0;
+}
+
+#nalog2 .middleTables .inline{
+    font-size:14px;
+    display:inline-block;
+    vertical-align:top;
+    width:50%;
+}
+
+#nalog2 .middleTables .inline .tableWrap{
+    width:100%;
+}
+
+#nalog2 .middleTables .inline .tableWrap table{
+    border-collapse: collapse;
+    width:100%;
+}
+
+#nalog2 .middleTables .inline .tableWrap td{
+    border:1px solid rgb(0,0,0);
+}
+
+#nalog2 .middleTables .inline .tableWrap td input, #nalog2 .middleTables .inline .tableWrap td textarea{
+    border:none;
+    outline:none !important;
+    width:100%;
+    text-align:center;
+}
+
+#nalog2 .middleTables .inline .tableWrap td input:focus, #nalog2 .middleTables .inline .tableWrap td textarea:focus{
+    background-color:rgba(0,0,0,0.3);
+}
+
+#nalog2 .middleTables .inline .tableWrap .itemName{
+    width:160px;
+    padding:3px;
+    font-size:16px;
+    font-weight:400;
+}
+
+#nalog2 .middleTables .shortened{
+    padding-left:91px;
+}
+
+#nalog2 .middleTables .shortened .tableWrap{
+    width:369px;
+}
+
+#nalog2 .middleTables .shortened .tableWrap .itemName{
+    width:200px;
+}
+
+#nalog2 .singleTable{
+    margin-top:10px;
+}
+
+#nalog2 .singleTable table{
+    border-collapse: collapse;
+    width:100%;
+}
+
+#nalog2 .singleTable table td{
+    border:1px solid rgb(0,0,0);
+}
+
+#nalog2 .singleTable td input, #nalog2 .singleTable td textarea{
+    border:none;
+    outline:none !important;
+    width:100%;
+    text-align:center;
+}
+
+#nalog2 .singleTable td input:focus, #nalog2 .singleTable td textarea:focus{
+    background-color:rgba(0,0,0,0.3);
+}
+
+#okvirni-ugovor2{
+    width:185px;
+    border:1px solid rgb(0,0,0);
+    border-radius:0;
+    outline:none !important;
+    text-align:center;
+    border-top:none;
+}
+
+#okvirni-ugovor2:focus, #okvirni-ugovor2:focus{
+    background-color:rgba(0,0,0,0.3);
+}
+
+#nalog2 .dualTables{
+    font-size:0;
+    margin-top:15px;
+}
+
+#nalog2 .dualTables .inline{
+    font-size:16px;
+    width:50%;
+    display:inline-block;
+    vertical-align:top;
+}
+
+#nalog2 .dualTables .inline .tableWrap{
+    width:400px;
+}
+
+#nalog2 .dualTables .inline .tableWrap table{
+    border-collapse: collapse;
+    width:100%;
+}
+
+#nalog2 .dualTables .inline .tableWrap table td{
+    border:1px solid rgb(0,0,0);
+    padding:3px;
+}
+
+#nalog2 .dualTables .inline .tableWrap table .itemName{
+    font-weight:400;
+    text-align:left;
+    width:230px;
+}
+
+#nalog2 .dualTables td input, #nalog2 .dualTables td textarea{
+    border:none;
+    outline:none !important;
+    width:100%;
+    text-align:center;
+}
+
+#nalog2 .dualTables td input:focus, #nalog2 .dualTables td textarea:focus{
+    background-color:rgba(0,0,0,0.3);
+}
+
+#nalog2 .fakturisanje{
+    margin-top:15px;
+}
+
+#nalog2 .fakturisanje .calculatorWrap{
+    width:100%;
+    padding:0;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .header{
+    text-align:left;
+    margin-bottom:0;
+    padding-bottom:0;
+    border-bottom:none;
+} 
+
+#nalog2 .fakturisanje .calculatorWrap .header .inlineItem{
+    color:rgb(0,0,0);
+    background-color:#f2f3f3;
+    height:43px;
+    font-weight:500;
+    border-top:1px solid rgb(0,0,0);
+    border-left:1px solid rgb(0,0,0);
+    border-bottom:1px solid rgb(0,0,0);
+    padding:4px;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .header .inlineItem:last-child{
+    border-right:1px solid rgb(0,0,0);
+}
+
+#nalog2 .fakturisanje .calculatorWrap .izvedenaKolicina{
+    width:65px;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .inputsWrap .inputRow{
+    margin-bottom:0;
+    padding-bottom:0;
+    border-bottom:0;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .inputsWrap .inputRow:nth-child(even){
+    background-color:rgba(0,0,0,0);
+}
+
+#nalog2 .fakturisanje .calculatorWrap .inlineItem{
+    color:rgb(0,0,0);
+    border-bottom:1px solid rgb(0,0,0);
+    border-left:1px solid rgb(0,0,0);
+}
+
+#nalog2 .fakturisanje .calculatorWrap .inputsWrap{
+    border-top:1px solid rgb(0,0,0);
+}
+
+#nalog2 .fakturisanje .calculatorWrap input{
+    color:rgb(0,0,0);
+    border:none;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .jedinicnaCenaInput{
+    text-align:right;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .iznosInput{
+    text-align:right;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .izvedenaKolicinaInput{
+    text-align:center;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .planiranaKolicinaInput{
+    text-align:right;
+}
+
+
+#nalog2 .fakturisanje .calculatorWrap input:focus{
+    background-color:rgba(0,0,0,0.3);
+}
+
+#nalog2 .fakturisanje .calculatorWrap textarea{
+    color:rgb(0,0,0);
+    width:100%;
+    height:16px;
+    border:none;
+    outline: none !important;
+}
+
+#nalog2 .fakturisanje .calculatorWrap textarea:focus{
+    background-color:rgba(0,0,0,0.3);
+}
+
+#nalog2 .fakturisanje .calculatorWrap .iznos{
+    border-right:1px solid rgb(0,0,0);
+}
+
+#nalog2 .fakturisanje .calculatorWrap .inputsWrap .inputRow .suggested{
+    top:100%;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .suggested .inlineItem{
+    color:rgb(255,255,255);
+    border:none;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .suggested .suggestedRow:hover .inlineItem{
+    color:rgb(0,0,0);
+}
+
+#nalog2 .fakturisanje .calculatorWrap .nazivArtiklaInput{
+    padding:1px;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .jedinicaMereInput{
+    padding:1px;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .planiranaKolicinaInput{
+    padding:1px;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .jedinicaMere{
+    width:73px;
+}
+
+#nalog2 .fakturisanje .calculatorWrap .nazivArtikla{
+    width:387px;
+}
+
+#nalog2 .fakturisanje .totalWrap{
+    margin-top:0;
+    padding-top:0;
+    border-top:0;
+}
+
+#nalog2 .totalSlovima{
+    margin-top:10px;
+}
+
+#nalog2 .totalSlovima table{
+    width:100%;
+    border-collapse: collapse;
+}
+
+
+#nalog2 .totalSlovima table td{
+    border:1px solid rgb(0,0,0);
+}
+
+#nalog2 .totalSlovima textarea{
+    width:100%;
+    outline:none !important;
+    color:rgb(0,0,0);
+    border:none;
+}
+
+#nalog2 .totalSlovima textarea:focus{
+    background-color:rgba(0,0,0,0.3);
+}
+
+.sviNalozi{
+    text-align:left;
+}
+
+.sviNalozi .header{
+    font-size:0;
+    background-color:rgb(32,51,100);
+    color:rgb(255,255,255);
+}
+
+.sviNalozi .inline{
+    display:inline-block;
+    vertical-align: middle;
+    padding:5px;
+    font-size:16px;
+}
+
+.sviNalozi .header .inline{
+    padding:5px 1px;
+}
+
+.sviNalozi .redniBroj{
+    width:70px;
+}
+
+.sviNalozi .broj{
+    width:100px;
+}
+
+.sviNalozi .opstina{
+    width:150px;
+}
+
+.sviNalozi .opstina select{
+    width:100%;
+}
+
+.sviNalozi .adresa{
+    width:280px;
+}
+
+.sviNalozi .obracunat{
+    width:111px;
+}
+
+.sviNalozi .duplikat{
+    width:50px;
+}
+
+.sviNalozi .rowHighlight{
+    background-color:rgba(0,0,0,0.15);
+}
+
+.sviNalozi .podizvodjac{
+    background-color:rgb(226,0,255);
+    color:rgb(255,255,255);
+}
+
+.sviNalozi .storniranNalog{
+    background-color:rgb(0,0,0);
+    color:rgb(255,255,255);
+}
+
+.sviNalozi #table-content .nalogKasniPodizvodjac{
+    background: rgb(247,0,0);
+    background: linear-gradient(90deg, rgba(247,0,0,1) 0%, rgba(247,0,0,1) 49%, rgba(226,0,255,1) 49%, rgba(226,0,255,1) 100%);
+    color:rgb(255,255,255);
+}
+
+.sviNalozi #table-content .nalogKasni{
+    background: rgb(247,0,0);
+    color:rgb(255,255,255);
+}
+
+.mojiNalozi .statistika{
+    font-size:10px;
+}
+
+.mojiNalozi .statistika .statRow{
+    font-weight:400;
+}
+
+.mojiNalozi .statistika .statRow span{
+    font-weight:200;
+}
+
+#svi-nalozi .nalogKasni{
+    background: rgb(247,0,0);
+    color:rgb(255,255,255);
+}
+
+#svi-nalozi .nalogZut{
+    background: rgb(252, 227, 0);
+    color:rgb(0,0,0);
+}
+
+.sviNalozi .colorCodes{
+    text-align: center;
+}
+
+.sviNalozi .colorCodes .item{
+    display:inline-block;
+    vertical-align:top;
+    margin:10px;
+    padding:5px;
+}
+
+.sviNalozi .colorCodes .nalogKasni{
+    background: rgb(247,0,0);
+    color:rgb(255,255,255);
+}
+
+.sviNalozi .colorCodes .nalogKasniPodizvodjac{
+    background: rgb(247,0,0);
+    background: linear-gradient(90deg, rgba(247,0,0,1) 0%, rgba(247,0,0,1) 49%, rgba(226,0,255,1) 49%, rgba(226,0,255,1) 100%);
+    color:rgb(255,255,255);
+}
+
+.sviNalozi .colorCodes .podizvodjac{
+    background-color:rgb(226,0,255);
+    color:rgb(255,255,255);
+}
+
+.sviNalozi .colorCodes .zavrseno{
+    color:rgb(255,255,255);
+    background-color:rgb(0,200,0);
+}
+
+
+.sviNalozi .button{
+    font-size:10px;
+    padding:2px;
+    margin-right:10px;
+}
+
+.sviNalozi .deleteButton{
+    background:rgb(255,0,0) !important;
+    color:rgb(255,255,255) !important;
+    border:1px solid rgb(0,0,0);
+}
+
+.sviNalozi .filters{
+    color:rgb(32,51,100);
+    padding-bottom:10px;
+}
+
+.sviNalozi .filters .opstinaFilter{
+    font-size:12px;
+    display:inline-block;
+    vertical-align: middle;
+}
+
+.sviNalozi .filters .numberFilter{
+    font-size:12px;
+    display:inline-block;
+    vertical-align: middle;
+}
+
+.sviNalozi .filters .obracunatFilter{
+    font-size:12px;
+    display:inline-block;
+    vertical-align: middle;
+    width:100px;
+}
+
+.sviNalozi .filters .duplikatFilter{
+    font-size:12px;
+    display:inline-block;
+    vertical-align: middle;
+}
+
+.sviNalozi .filters .statusFilter{
+    font-size:12px;
+    display:inline-block;
+    vertical-align: middle;
+}
+
+.sviNalozi .filters .penalFilter{
+    font-size:12px;
+    display:inline-block;
+    vertical-align: middle;
+}
+
+
+.sviNalozi .filters .numberFilter input{
+    max-width:100%;
+    width:100%;
+}
+
+.sviNalozi .vremePrijema{
+    width:150px;
+    word-wrap: break-word;
+}
+
+.sviNalozi .datumNaloga{
+    width:110px;
+    word-wrap: break-word;
+}
+
+#nalog2 .totalSlovima table td:first-child{
+    width:100px;
+}
+
+.pogledajNalog{
+    padding:0 !important;
+}
+
+.pogledajNalog a{
+    padding:2px;
+}
+
+.nalogExtras{
+    text-align:left;
+}
+
+.nalogExtras .inputWrap{
+    display:inline-block;
+    vertical-align:top;
+    margin-right:6px;
+    margin-top:15px;
+}
+
+.nalogExtras .inputWrap .title{
+    font-weight:700;
+}
+
+.nalogExtras .inputWrap input, .nalogExtras .inputWrap select, .nalogExtras .inputWrap textarea{
+    background-color:rgba(0,0,0,0.3);
+    outline:none;
+    border:1px solid rgb(255,255,255);
+    width:100%;
+    max-width: 100%;
+    color:rgb(255,255,255);
+}
+
+.nalogExtras .inputWrap textarea{
+    height:150px;
+}
+
+.nalogExtras .inputWrap input:focus{
+    border:1px solid rgb(0,255,0);
+}
+
+.nalogExtras .inputWrap textarea:focus{
+    border:1px solid rgb(0,255,0);
+}
+
+.nalogExtras .opisRadova, .nalogExtras .opisKvara, .nalogExtras .komentariStambeno, .nalogExtras .izvestajiSaTerena{
+    width:450px;
+}
+
+.nalogExtras .komentariStambeno .row{
+    margin-bottom:7px;
+}
+
+.nalogExtras .komentariStambeno .datum{
+    font-size:12px;
+    font-style:italic;
+    font-weight: 200;
+}
+
+.nalogExtras .izvestajiSaTerena .row{
+    margin-bottom:7px;
+}
+
+.nalogExtras .izvestajiSaTerena .datum{
+    font-size:12px;
+    font-style:italic;
+    font-weight: 200;
+}
+
+#pregled-naloga .opstineMenu{
+    text-align:center;
+    margin-bottom: 10px;
+    border-bottom:1px solid rgb(255,255,255);
+    font-size:0;
+}
+
+#pregled-naloga .opstineMenu .item{
+    display:inline-block;
+    vertical-align: bottom;
+    font-size:16px;
+    font-weight:600;
+    padding:4px;
+    border:1px solid rgb(0,0,0);
+    background-color:rgb(255,255,255);
+    color:rgb(0,0,0);
+    cursor:pointer;
+}
+
+#pregled-naloga .opstineMenu .itemActive{
+    border:1px solid rgba(0,0,0,0);
+    background-color:rgba(255,255,255,0);
+    color:rgb(0,255,0);
+}
+
+#pregled-naloga #nalozi{
+    background-color: rgb(255,255,255);
+    color:rgb(0,0,0);
+    border-collapse: collapse;
+    width:auto;
+    font-size:12px;
+}
+
+#pregled-naloga #nalozi td{
+    padding:5px 2px;
+    border:1px solid rgb(0,0,0);
+}
+
+#pregled-naloga #nalozi tr:hover{
+    background-color: rgba(0,0,0,0.2);
+}
+
+#pregled-naloga .value{
+    max-height:40px;
+    overflow:auto;
+}
+
+#pregled-naloga .tableWrap .redniBroj .value{
+    width:60px;
+}
+
+#pregled-naloga .tableWrap .brojNarudzbenice .value{
+    width:50px;
+}
+
+#pregled-naloga .tableWrap .brojNaloga .value{
+    width:70px;
+}
+
+#pregled-naloga .tableWrap .adresa .value{
+    width:140px;
+    word-wrap: break-word;
+}
+
+#pregled-naloga .tableWrap .datum .value{
+    width:70px;
+}
+
+#pregled-naloga .tableWrap .datumOdlaganja .value{
+    width:70px;
+}
+
+#pregled-naloga .tableWrap .opisKvara .value{
+    width:270px;
+}
+
+#pregled-naloga .tableWrap .opisRadova .value{
+    width:270px;
+}
+
+#pregled-naloga .tableWrap .statusNaloga .value{
+    width:150px;
+}
+
+#pregled-naloga .tableWrap .iznosNaloga .value{
+    width:150px;
+}
+
+#pregled-naloga .tableWrap .header{
+    text-align:left;
+    font-size:0;
+    background-color: rgb(32,51,100);
+    color:rgb(255,255,255);
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+}
+
+#pregled-naloga .tableWrap .header .item{
+    display:inline-block;
+    vertical-align:middle;
+    font-size:12px;
+    font-weight:600;
+    padding:0px 2px;
+    border-right:1px solid rgba(0,0,0,0);
+}
+
+#pregled-naloga .dateFilterWrap{
+    padding:15px 0px;
+    font-size:0;
+}
+
+
+#pregled-naloga .dateFilterWrap .inputWrap{
+    display:inline-block;
+    vertical-align: middle;
+    font-size:14px;
+    color:rgb(255,255,255);
+    text-align:left;
+    padding:0 10px;
+}
+
+#pregled-naloga .dateFilterWrap .inputWrap .title{
+    font-weight:600;
+}
+
+#pregled-naloga .dateFilterWrap .inputWrap input{
+    color:rgb(32,51,100);
+}
+
+#pregled-naloga #opstina-filter{
+    color:rgb(0,0,0);
+}
+
+.majstori .formWrap{
+    width:100%;
+    margin:0 auto;
+    max-width:950px;
+}
+
+.majstori .inputWrap{
+    margin-bottom:10px;
+    display:inline-block;
+    vertical-align:middle;
+    width:360px;
+}
+
+.majstori .inputWrap input{
+    border:1px solid rgb(255,255,255);
+    background-color:rgba(0,0,0,0.6);
+    color:rgb(255,255,255);
+    width:90%;
+    max-width:90%;
+    outline:none !important;
+    padding:5px;
+}
+
+.majstori .inputWrap input:focus{
+    color:rgb(20,255,20);
+    border:1px solid rgb(20,255,20);
+
+}
+
+.majstori .inputWrap .title{
+    font-weight:700;
+    margin-bottom:5px;
+}
+
+.majstori #opstine-pick .opstina{
+    border:1px solid rgb(50,50,50);
+    margin:5px;
+    background-color:rgba(255,255,255,0);
+    width:120px;
+    height:50px;
+    line-height:50px;
+    font-size:12px;
+    display:inline-block;
+    cursor:pointer;
+    position:relative;
+}
+
+.majstori #opstine-pick .opstinaActive{
+    border:1px solid rgb(0,0,0);
+    color:rgb(255,255,255);
+    font-weight:700;
+    background-color:rgba(20,255,20,1);
+}
+
+.listaMajstora{
+    font-size:0;
+    text-align:left;
+}
+
+.listaMajstora .inline{
+    display:inline-block;
+    vertical-align: top;
+    font-size:16px;
+    padding:3px;
+}
+
+.listaMajstora .header{
+    background-color:rgb(32,51,100);
+    font-weight:600;
+    color:rgb(255,255,255);
+}
+
+.listaMajstora .broj{
+    width:60px;
+}
+
+.listaMajstora .ime{
+    width:200px;
+    word-wrap: break-word;
+}
+
+.listaMajstora .telefon{
+    width:200px;
+}
+
+.listaMajstora .opstine{
+    width:300px;
+    word-wrap: break-word;
+}
+
+
+.listaMajstora .button{
+    font-size:10px;
+    padding:3px;
+    margin-right:10px;
+}
+
+
+.listaMajstora .redRow{
+    color:rgb(255,0,0);
+}
+
+.listaMajstora .row:nth-child(odd){
+    background-color:rgba(0,0,0,0.2);
+}
+
+.copyInfo{
+    display:inline-block;
+    vertical-align:middle;
+    color:rgb(0,255,0);
+    font-size:14px;
+    visibility: hidden;
+}
+
+.mojiNalozi .adresa{
+    width:250px;
+}
+
+.mojiNalozi .status{
+    width:200px;
+    margin-right:5px;
+}
+
+.mojiNalozi .vremePrijema{
+    width:160px;
+    word-wrap:break-word;
+}
+
+.mojiNalozi .datumNaloga{
+    width:100px;
+    word-wrap:break-word;
+}
+
+.mojiNalozi .filters .numberFilter{
+    margin-left:257px;
+}
+
+.mojiNalozi .iznos{
+    width:150px;
+}
+
+.mojiNalozi .zavrseno{
+    color:rgb(255,255,255);
+    background-color:rgb(0,200,0);
+}
+
+.nadjiNalog input{
+    border:1px solid rgb(255,255,255);
+    font-size:18px;
+    width:300px;
+    padding:5px;
+    background-color:rgba(0,0,0,0.3);
+    color:rgb(255,255,255);
+    outline:none !important;
+    text-align:center;
+}
+
+.nadjiNalog input:focus{
+    color:rgb(20,255,20);
+    border:1px solid rgb(20,255,20);
+}
+
+.appRegistration input{
+    border:1px solid rgb(255,255,255);
+    font-size:18px;
+    width:300px;
+    padding:5px;
+    background-color:rgba(0,0,0,0.3);
+    outline:none !important;
+    text-align:center;
+}
+
+.appRegistration input:focus{
+    color:rgb(20,255,20);
+    border:1px solid rgb(20,255,20);
+}
+
+.appMenu{
+    background-color:rgb(255,255,255);
+    color:rgb(0,0,0);
+    position:fixed;
+    z-index:2500;
+    bottom:0;
+    left:0;
+    right:0;
+    width:100%;
+    text-align:center;
+    padding:5px;
+    border-top:2px solid rgb(50,50,50);
+}
+
+.appMenu .menuItem{
+    display:inline-block;
+    font-size:12px;
+    vertical-align:middle;
+    box-shadow: inset 0.2em 0.2em 0.2em 0 rgba(255,255,255,0.5), inset -0.2em -0.2em 0.2em 0 rgba(0,0,0,0.5);
+    background:linear-gradient(to bottom, #0a4076, #0f539b 100%);
+    background-color:#0a4076;
+    border-radius:6px;
+    border:1px solid #c6363d;
+    cursor:pointer;
+    color:#ffffff;
+    padding:6px 3px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #1570cd;
+    text-align: center;
+    font-weight:500;
+    margin:0 3px;
+    width:25%;
+}
+
+.kancelarijaAppButton{
+    display:inline-block;
+    font-size:12px;
+    vertical-align:middle;
+    box-shadow: inset 0.2em 0.2em 0.2em 0 rgba(255,255,255,0.5), inset -0.2em -0.2em 0.2em 0 rgba(0,0,0,0.5);
+    background:linear-gradient(to bottom, #0a4076, #0f539b 100%);
+    background-color:#0a4076;
+    border-radius:6px;
+    border:1px solid #c6363d;
+    cursor:pointer;
+    color:#ffffff;
+    padding:6px 3px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #1570cd;
+    text-align: center;
+    font-weight:500;
+    margin:0 3px;
+    width:25%;
+}
+
+.appNalozi .row{
+    padding:0 3px;
+    padding-bottom:5px;
+    padding-top:5px;
+    border-bottom:1px solid rgb(0,0,0);
+}
+
+.appNalozi .row:nth-child(odd){
+    background-color: rgba(0,0,0,0.1);
+}
+
+.appNalozi .netaknut{
+    background-color: rgba(220,0,0) !important;
+    color:rgb(0,0,0);
+}
+
+.appNalozi .sredjeno{
+    background-color: rgba(0,220,0) !important;
+    color:rgb(255,255,255);
+}
+
+.appNalozi .doubleInline{
+    text-align:left;
+    font-size:0;
+}
+
+.appNalozi .doubleInline .itemWrap{
+    display:inline-block;
+    vertical-align: top;
+    width:50%;
+    font-size:16px;
+    padding:5px;
+}
+
+.appNalozi .doubleInline .itemWrap .title{
+    font-weight:600;
+}
+
+.appNalozi .doubleInline .itemWrap select{
+    max-width: 100%;
+    width:100%;
+}
+
+.appNalozi .singleValue .title{
+    font-weight:600;
+    font-size:16px;
+    text-align:left;
+}
+
+.appNalozi .singleValue textarea{
+    font-size:16px;
+    max-width: 100%;
+    width:100%;
+}
+
+.nalogExtras .opisKvaraCheckbox{
+    margin-right:3px;
+    width:20px !important;
+    height:20px;
+}
+
+.nalogExtras .checkboxWrap .inline{
+    display:inline-block;
+    vertical-align: middle;
+}
+
+#pregled-naloga .tableWrap .opstina{
+    width:90px;
+}
+
+#opis-radova{
+    overflow-y:scroll;
+}
+
+#pregled-naloga #nalozi tr{
+    cursor:pointer;
+}
+
+.nadjiNalog .inputWrap{
+    display:inline-block;
+    vertical-align: top;
+    padding:10px;
+}
+
+.nadjiNalog .inputWrap .title{
+    font-weight:600;
+    font-size:18px;
+    margin-bottom:3px;
+}
+
+.magacinDodaj .inputWrap .title{
+    font-weight:600;
+    font-size:18px;
+    margin-bottom:3px;
+}
+
+.magacinDodaj .inputWrap input{
+    border:1px solid rgb(255,255,255);
+    font-size:18px;
+    width:300px;
+    padding:5px;
+    background-color:rgba(0,0,0,0.3);
+    outline:none !important;
+    text-align:center;
+    color:rgb(255,255,255);
+}
+
+.magacinDodaj .inputWrap input:focus{
+    color:rgb(20,255,20);
+    border:1px solid rgb(20,255,20);
+}
+
+.pageSeparator{
+    width:100%;
+    margin:30px auto;
+    height:1px;
+    background-color:rgb(50,50,50);
+}
+
+.listaProizvoda{
+    border:1px solid rgb(50,50,50);
+    background-color:rgb(255,255,255);
+}
+
+.listaProizvoda .mainRow .title{
+    background-color:rgb(32,51,100);
+    font-weight:600;
+    color:rgb(255,255,255);
+    padding:5px;
+    text-align:left;
+}
+
+
+.listaProizvoda .mainRow .title span{
+    font-weight: 300;
+}
+
+.listaProizvoda .mainRow .productRow{
+    text-align:left;
+    padding:5px 20px;
+    border-bottom:1px solid rgb(50,50,50);
+    font-weight:600;
+    cursor: pointer;   
+}
+
+.listaProizvoda .mainRow .productRow:nth-child(odd){
+    background-color:rgba(0,0,0,0.15);
+}
+
+.listaProizvoda .mainRow .productRow:hover{
+    background-color: rgb(50,50,50);
+    color:rgb(255,255,255);
+}
+
+.listaProizvoda .mainRow .productRow:hover span{
+    color:rgb(255,255,255);
+}
+
+.listaProizvoda .mainRow .productRow span{
+    font-weight:300;
+    color:rgb(32,51,100);
+}
+
+.listaProizvoda .mainRow .missingProduct{
+    background-color:rgb(200,0,0) !important;
+    color:rgb(255,255,255) !important;
+}
+
+.listaProizvoda .mainRow .missingProduct span{
+    color:rgb(255,255,255) !important;
+}
+
+.magacinUnosLightBox .title{
+    font-size:18px;
+    font-weight: 600;
+    color:rgb(32,51,100);
+}
+
+.lightbox .close{
+    position:absolute;
+    top:-30px;
+    right:-30px;
+    width:30px;
+    height:30px;
+    background-color:rgb(200,0,0);
+    color:rgb(255,255,255);
+    border:1px solid rgb(0,0,0);
+    cursor:pointer;
+    line-height: 30px;
+    font-size:20px;
+    font-weight:900;
+    border-radius:30px;
+}
+
+.styledInput{
+    border:1px solid rgb(255,255,255);
+    font-size:18px;
+    padding:5px;
+    background-color:rgba(0,0,0,0.3);
+    outline:none !important;
+    text-align:center;
+    color:rgb(255,255,255);
+}
+
+.styledInput:focus{
+    color:rgb(20,255,20);
+    border:1px solid rgb(20,255,20);
+}
+
+.magacinZaduzenje .formWrap .firstLevelGroup{
+    display:inline-block;
+    vertical-align:middle;
+    width:120px;
+    min-height:120px;
+    margin-right:5px;
+    margin-bottom:5px;
+    cursor:pointer;
+    color:rgb(255,255,255);
+    background-color:rgb(32,51,100);
+    border:1px solid rgb(255,255,255);
+    padding:5px;
+    word-wrap: break-word;
+}
+
+.magacinZaduzenje .formWrap .inputWrap .title{
+    font-weight:600;
+    font-size:18px;
+}
+
+.magacinZaduzenje .formWrap .inputWrap{
+    display: inline-block;
+    vertical-align: top;
+    margin-right:20px;
+    margin-bottom:10px;
+}
+
+.magacinZaduzenje .goBack{
+    text-align:left;
+}
+
+.magacinZaduzenje .goBack .dugme{
+    cursor:pointer;
+    background-color:rgb(236,29,35);
+    color:rgb(255,255,255);
+    font-weight:600;
+    display:inline-block;
+    padding:5px;
+}
+
+.magacinZaduzenje .title{
+    font-size:20px;
+    font-weight:600;
+    margin-bottom:5px;
+}
+
+.magacinZaduzenje .formWrap .secondLevelGroup{
+    display:inline-block;
+    vertical-align:middle;
+    width:120px;
+    min-height:60px;
+    margin-right:5px;
+    margin-bottom:5px;
+    cursor:pointer;
+    color:rgb(255,255,255);
+    background-color:rgb(32,51,100);
+    border:1px solid rgb(255,255,255);
+    padding:5px;
+    word-wrap: break-word;
+}
+
+#zaduzene-stavke{
+    background-color:rgb(255,255,255);
+    border:1px solid rgb(50,50,50);
+}
+
+#zaduzene-stavke .prozivodRow{
+    padding:5px;
+}
+
+#zaduzene-stavke .prozivodRow:nth-child(odd){
+    background-color:rgba(0,0,0,0.15);
+}
+
+#zaduzene-stavke .prozivodRow .item{
+    display:inline-block;
+    vertical-align: top;
+}
+
+#zaduzene-stavke .prozivodRow .name{
+    width:100px;
+    margin-right:10px;
+    word-wrap: break-word;
+    font-size:14px;
+}
+
+#zaduzene-stavke .prozivodRow .quantity{
+    width:60px;
+    margin-right:10px;
+    word-wrap: break-word;
+    font-size:12px;
+}
+
+#zaduzene-stavke .prozivodRow .destroy{
+    width:20px;
+    height: 20px;
+    border-radius: 20px;
+    border:1px solid rgb(50,50,50);
+    color:rgb(255,255,255);
+    background-color:rgb(236,29,35);
+    font-weight:900;
+    cursor:pointer;
+    word-wrap: break-word;
+}
+
+.magacinZaduzenja{
+    background-color:rgb(255,255,255);
+    border: 1px solid rgb(50,50,50);
+    text-align:left;
+    font-size:0;
+}
+
+.magacinZaduzenja .row{
+    padding:5px;
+    border-bottom:1px solid rgb(50,50,50);
+    cursor:pointer;
+}
+
+.magacinZaduzenja .row:nth-child(odd){
+    background-color: rgba(0,0,0,0.2);
+}
+
+.magacinZaduzenja .row:hover{
+    background-color:rgb(50,50,50);
+    color:rgb(255,255,255);
+}
+
+.magacinZaduzenja .header{
+    background-color:rgb(32,51,100);
+    color:rgb(255,255,255);
+    font-weight:600;
+    padding:5px;
+}
+
+.magacinZaduzenja .item{
+    display:inline-block;
+    vertical-align: top;
+    font-size:12px;
+}
+
+.magacinZaduzenja .vreme{
+    width:105px;
+}
+
+.magacinZaduzenja .majstor{
+    width:115px;
+}
+
+.magacinZaduzenja .stavke{
+    width:250px;
+}
+
+#prethodni-izvestaji{
+    text-align:left;
+}
+
+#izvestaji-sa-terena .title{
+    font-weight:200;
+    font-size:12px;
+}
+
+
+#izvestaji-sa-terena img{
+    max-width: 100%
+}
+
+.mobileSeparator{
+    border-top:1px solid rgb(50,50,50);
+    border-bottom:1px solid rgb(50,50,50);
+    margin-bottom:5px;
+}
+
+.blueButton{
+    box-shadow: inset 0.2em 0.2em 0.2em 0 rgba(255,255,255,0.5), inset -0.2em -0.2em 0.2em 0 rgba(0,0,0,0.5);
+    background:linear-gradient(to bottom, #0a4076, #0f539b 100%);
+    background-color:#0a4076;
+    border-radius:6px;
+    border:1px solid #c6363d;
+    cursor:pointer;
+    color:#ffffff;
+    padding:6px 3px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #1570cd;
+    text-align: center;
+    width:90%;
+    font-weight:300;
+    margin:0 auto;
+}
+
+.blueButton .buttonTitle{
+    font-weight:500;
+    margin-bottom:5px;
+}
+
+.blueButton select{
+    background:linear-gradient(to bottom, #0a4076, #0f539b 100%);
+    background-color:#0a4076;
+    text-align:center;
+    border:1px solid rgb(255,255,255);
+    font-size:16px;
+    margin-top:10px;
+}
+
+.blueButton .icon{
+    width:40px;
+    margin:0 auto;
+}
+
+#prethodni-izvestaji .imageWrap{
+    width:30%;
+}
+
+#added-image{
+    margin: 0 auto;
+}
+
+.added-image{
+    width:100px;
+    margin: 0 auto;
+    display:inline-block;
+}
+
+.serbiaButton{
+    background: rgb(198,54,61);
+    background: linear-gradient(180deg, rgba(198,54,61,1) 33%, rgba(13,64,119,1) 33%, rgba(13,64,119,1) 66%, rgba(255,255,255,1) 66%, rgba(255,255,255,1) 100%);
+    color:#ead33a;
+    font-weight:700;
+    border:2px solid rgb(50,50,50);
+    border-radius:2px;
+    padding:10px;
+    font-size:30px;
+    text-align:center;
+    box-shadow: inset 0.2em 0.2em 0.2em 0 rgba(255,255,255,0.5), inset -0.2em -0.2em 0.2em 0 rgba(0,0,0,0.5);
+}
+
+.appNalozi .doubleInline .itemWrap .value{
+    word-wrap: break-word;
+    padding:2px;
+}
+
+.specifikacije .button{
+    padding:0;
+}
+
+.specifikacije .button a{
+    padding:6px 24px;
+    display:block;
+}
+
+.specifikacija{
+    background-color: rgb(255,255,255);
+    padding:10px;
+    color:rgb(0,0,0);
+}
+
+.specifikacija .header{
+    text-align: center;
+    border:1px solid rgb(0,0,0);
+    font-weight:700;
+    font-size:20px;
+}
+
+.specifikacija .header .inline{
+    display:inline-block;
+    vertical-align: middle;
+}
+
+.specifikacija #spec-table{
+    border-collapse: collapse;
+}
+
+.specifikacija #spec-table tr{
+    cursor:pointer;
+}
+.specifikacija #spec-table tr:hover{
+    background-color:rgba(0,0,0,0.2);
+}
+
+.specifikacija .colorCodes{
+    margin-bottom:20px;
+    text-align: center;
+}
+.specifikacija .colorCodes .color{
+    display:inline-block;
+    width:200px;
+    margin:10px 20px;
+    padding:10px;
+    border:1px solid rgb(0,0,0);
+    font-size:12px;
+    cursor:pointer;
+}
+
+.specifikacija .fakturisan{
+    color:rgb(0,0,0);
+    background-color:rgba(20,255,20);
+}
+
+.specifikacija .spremanZaFakturisanje{
+    color:rgb(255,255,255);
+    background-color:rgba(37,78,118);
+}
+
+.specifikacija .uStambenom{
+    color:rgb(0,0,0);
+    background-color:rgba(230,230,0);
+}
+
+.specifikacija .nestoDrugo{
+    color:rgb(255,255,255);
+    background-color:rgba(255,20,20);
+}
+
+.specifikacija #spec-table tr:first-child{
+    font-weight:600;
+}
+
+.specifikacija #spec-table td{
+    padding:5px 3px;
+    border:1px solid rgb(0,0,0);
+}
+
+.specifikacija #spec-table td:first-child .value{
+    width:75px;
+}
+
+.specifikacija #spec-table td:nth-child(2) .value{
+    width:140px;
+}
+
+.specifikacija #spec-table td:nth-child(3) .value{
+    width:140px;
+}
+
+.specifikacija #spec-table td:nth-child(4) .value{
+    width:150px;
+}
+
+.specifikacija #spec-table td:nth-child(5) .value{
+    width:379px;
+    text-align: left;
+}
+
+.specifikacija #spec-table tr:first-child td:nth-child(5) .value{
+    text-align: center;
+}
+
+.specifikacija #spec-table td:nth-child(6) .value{
+    width:150px;
+}
+
+.specifikacija #ukupno{
+    text-align:right;
+    font-weight:300;
+}
+
+.naloziPoMajstoru .wrap .title{
+    font-size: 20px;
+    font-weight:600;
+    color:rgb(255,255,255);
+    padding:10px;
+    background-color:rgb(20,42,64);
+}
+
+
+.naloziPoMajstoru .wrap table{
+    background-color:rgb(255,255,255);
+    border-collapse: collapse;
+}
+
+
+.naloziPoMajstoru .wrap table tr:first-child{
+    font-weight:600;
+}
+
+.naloziPoMajstoru .wrap table td{
+    padding:5px;
+    border:1px solid rgb(0,0,0);
+}
+
+.naloziPoMajstoru .wrap table td .value, .naloziPoMajstoru .wrap table td .izvestaj{
+    word-wrap:break-word;
+    max-height:200px;
+    overflow-y:scroll;
+    overflow-x:hidden;
+}
+
+.naloziPoMajstoru .wrap table td:nth-child(1) .value{
+    width:100px;
+}
+
+.naloziPoMajstoru .wrap table td:nth-child(2) .value{
+    width:80px;
+}
+
+.naloziPoMajstoru .wrap table td:nth-child(3) .value{
+    width:122px;
+}
+
+.naloziPoMajstoru .wrap table td:nth-child(4) .value{
+    width:110px;
+}
+
+.naloziPoMajstoru .wrap table td:nth-child(5) .value{
+    width:80px;
+}
+
+.naloziPoMajstoru .wrap table td:nth-child(6) .value{
+    width:300px;
+}
+
+.naloziPoMajstoru .wrap table td:nth-child(7) .value{
+    width:300px;
+}
+
+.naloziPoMajstoru .wrap .izvestajPhoto{
+    max-width:250px;
+    margin:0 auto;
+    text-align:center;
+}
+
+.naloziPoMajstoru .wrap .izvestaj{
+    margin-bottom:10px;
+}
+
+.ucinakPoMajstoru .title{
+    font-size: 20px;
+    font-weight:600;
+    color:rgb(255,255,255);
+    padding:10px;
+    background-color:rgb(20,42,64);
+}
+
+.ucinakPoMajstoru .wrap{
+    border-bottom:2px solid rgb(100,100,100);
+    margin-bottom:40px;
+    padding-bottom:40px;
+}
+
+.ucinakPoMajstoru .wrap table{
+    background-color:rgb(255,255,255);
+    border-collapse: collapse;
+}
+
+
+.ucinakPoMajstoru .wrap table tr:first-child{
+    font-weight:600;
+}
+
+.ucinakPoMajstoru .wrap table td{
+    padding:5px;
+    border:1px solid rgb(0,0,0);
+}
+
+.ucinakPoMajstoru .wrap table td:nth-child(1) .value{
+    width:130px;
+}
+
+.ucinakPoMajstoru .wrap table td:nth-child(2) .value{
+    width:130px;
+}
+
+.ucinakPoMajstoru .wrap table td:nth-child(3) .value{
+    width:130px;
+}
+
+.ucinakPoMajstoru .wrap table td:nth-child(4) .value{
+    width:200px;
+}
+
+.magacinStavka{
+    font-size:0;
+    margin-top:6px;
+}
+
+.magacinStavka .number{
+    display:inline-block;
+    width:30px;
+    font-size:16px;
+    vertical-align: middle;
+}
+
+.magacinStavka .inputWrap{
+    display:inline-block;
+    width:300px;
+    font-size:16px;
+    vertical-align: middle;
+    position:relative;
+}
+
+.magacinStavka .numberInput{
+    display:inline-block;
+    width:50px;
+    font-size:16px;
+    vertical-align: middle;
+}
+
+.magacinStavka .numberInput input{
+    max-width:100%;
+}
+
+.magacinStavka .numberInput2{
+    display:inline-block;
+    width:50px;
+    font-size:16px;
+    vertical-align: middle;
+}
+
+.magacinStavka .numberInput2 input{
+    max-width:100%;
+}
+
+.magacinStavka .inputWrap input{
+    width:100%;
+    padding:4px;
+}
+
+.magacinStavka .kill{
+    display:inline-block;
+    width:30px;
+    height:30px;
+    border-radius:30px;
+    line-height: 30px;
+    background-color:rgb(200,0,0);
+    border:1px solid rgb(0,0,0);
+    text-align:center;
+    color:rgb(255,255,255);
+    cursor:pointer;
+    font-size:16px;
+    vertical-align: middle;
+    position:relative;
+    margin-left:30px;
+}
+
+#reversi .title2{
+    margin-top:15px;
+    padding-top:5px;
+    border-top:1px solid rgb(0,0,0);
+    margin-bottom:3px;
+    font-weight:700;
+}
+
+.magacinStavka .suggestions{
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    background-color:rgb(32,51,100);
+    color:rgb(255,255,255);
+    text-align:left;
+    height:150px;
+    overflow-y:scroll;
+    display:none;
+    z-index:3000;
+}
+
+
+.magacinStavka .suggestions .kill{
+    position:sticky;
+    right:0;
+    top:0;
+    cursor:pointer;
+    float:right;
+}
+
+.magacinStavka .suggestions .row{
+    padding:3px;
+    margin:3px 0;
+    border-bottom:1px solid rgb(255,255,255);
+    cursor:pointer;
+}
+
+.magacinStavka .suggestions .row:hover{
+    background-color:rgb(255,255,255);
+    color:rgb(32,51,100);
+}
+
+#reversi-list table{
+    border-collapse: collapse;
+}
+
+#reversi-list table tr{
+    background-color: rgb(255,255,255);
+    color:rgb(50,50,50);
+}
+
+#reversi-list table tr:first-child{
+    background-color:rgb(31,52,100);
+    color:rgb(255,255,255);
+}
+
+#reversi-list table tr td{
+    border:1px solid rgb(0,0,0);
+    padding:5px;
+}
+
+#unosi-lista table{
+    border-collapse: collapse;
+}
+
+#unosi-lista table tr{
+    background-color: rgb(255,255,255);
+    color:rgb(50,50,50);
+}
+
+#unosi-lista table tr:first-child{
+    background-color:rgb(31,52,100);
+    color:rgb(255,255,255);
+}
+
+#unosi-lista table tr td{
+    border:1px solid rgb(0,0,0);
+    padding:5px;
+}
+
+.bonusWrap{
+    width:90%;
+    margin:5px auto;
+    height:20px;
+    border:1px solid rgb(50,50,50);
+    position:relative;
+}
+
+.bonusWrap .fill{
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    background-color:rgb(0,176,255);
+    -webkit-transition:all ease 2s;
+    -moz-transition:all ease 2s;
+    -ms-transition:all ease 2s;
+    -o-transition:all ease 2s;
+    transition:all ease 2s;
+    z-index:1000;
+    width:0%;
+}
+
+.bonusWrap .percentage{
+    text-align:center;
+    color:rgb(0,0,0);
+    font-size:16px;
+    line-height: 20px;
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:2000;
+}
+
+#izvestaji-sa-terena .row{
+    display: inline-block;
+    vertical-align: top;
+    width:200px;
+    margin-top:20px;
+}
+
+.podizvodjacNalog #izvestaji-sa-terena .row{
+    margin:15px !important;
+}
+
+#izvestaji-sa-terena .row:nth-child(1){
+    margin-top:0px;
+}
+
+#izvestaji-sa-terena .row:nth-child(2){
+    margin-top:0px;
+}
+
+#izvestaji-sa-terena .row:nth-child(odd){
+    margin-right:25px;
+}
+
+.podizvodjacNalog #izvestaji-sa-terena .row:nth-child(1){
+    margin:15px !important;
+}
+
+.podizvodjacNalog #izvestaji-sa-terena .row:nth-child(2){
+    margin:15px !important;
+}
+
+
+#izvestaji-sa-terena .row .text{
+    height:30px;
+    font-size:12px;
+    overflow:auto;
+}
+
+#izvestaji-sa-terena .row .imageWrap{
+    width:200px;
+    height:200px;
+    position: relative;
+    overflow: hidden;
+    border:1px solid rgb(31,52,100);
+    background-image:url(/images/imageLoad.gif);
+    background-size:cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+#izvestaji-sa-terena .row .imageWrap img{
+    position:absolute;
+    top:50%;
+    left:50%;
+    -webkit-transform: translate(-50%,-50%) scale(1);
+    -moz-transform: translate(-50%,-50%) scale(1);
+    -ms-transform: translate(-50%,-50%) scale(1);
+    -o-transform: translate(-50%,-50%) scale(1);
+    transform: translate(-50%,-50%) scale(1);
+    max-width: 200px;
+    min-height: 100%;
+    min-width: 100%;
+    -webkit-transition: all ease 0.5s;
+    -moz-transition: all ease 0.5s;
+    -ms-transition: all ease 0.5s;
+    -o-transition: all ease 0.5s;
+    transition: all ease 0.5s;
+}
+
+#izvestaji-sa-terena .row .imageWrap:hover img{
+    -webkit-transform: translate(-50%,-50%) scale(1.5);
+    -moz-transform: translate(-50%,-50%) scale(1.5);
+    -ms-transform: translate(-50%,-50%) scale(1.5);
+    -o-transform: translate(-50%,-50%) scale(1.5);
+    transform: translate(-50%,-50%) scale(1.5);
+}
+
+#izvestaji-sa-terena .row .imageWrap .deleteOverlay{
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background-color:rgba(255,0,0,0.6);
+}
+
+
+.magacinTable{
+    border-collapse: collapse;
+    background-color:rgb(255,255,255);
+}
+
+.magacinTable tr:first-child{
+    font-weight:bold;
+    color:rgb(255,255,255) !important;
+    background-color:rgb(31,52,100) !important;
+}
+
+.magacinTable tr:hover{
+    background-color:rgb(220,220,220);
+}
+
+.magacinTable td{
+    border:1px solid rgb(50,50,50);
+    padding:3px;
+    text-align:left;
+}
+
+
+.magacinTable .broj .value{
+    width:50px;
+}
+
+.magacinTable .ime .value{
+    width:380px;
+}
+
+.magacinTable .sifra .value{
+    width:100px;
+}
+
+#nalozi-na-dan-table{
+    border-collapse: collapse;
+    background-color:rgb(255,255,255);
+    text-align:left;
+}
+
+#nalozi-na-dan-table td{
+    border: 1px solid rgb(0,0,0);
+    padding:5px;
+}
+
+.naloziPoMajstoruNaDan .title{
+    background-color:rgb(31,52,100);
+    padding:20px;
+    font-weight:500;
+    font-size:20px;
+    color:rgb(255,255,255);
+    text-align: center;
+}
+
+.naloziPoMajstoruNaDan table{
+    border-collapse: collapse;
+}
+
+
+.naloziPoMajstoruNaDan table tr:first-child{
+    font-weight:500;
+}
+
+.naloziPoMajstoruNaDan table td{
+    border:1px solid rgb(50,50,50);
+    padding:5px;
+    text-align:center;
+}
+
+.premijusLista .iznos{
+    width:150px;
+}
+
+.istorijat .title{
+    font-weight:600;
+    font-size:20px;
+    margin-bottom:5px;
+}
+
+.istorijat .istorijaButton{
+    display:inline-block;
+    vertical-align:top;
+    border:2px solid rgb(255,255,255);
+    background-color:rgb(31,52,100);
+    color:rgb(255,255,255);
+    padding:5px;
+    -webkit-transition:all ease 0.5;
+    -moz-transition:all ease 0.5;
+    -ms-transition:all ease 0.5;
+    -o-transition:all ease 0.5;
+    transition:all ease 0.5;
+    cursor:pointer;
+}
+
+.istorijat .istorijaButtonActive{
+    border:2px solid rgb(31,52,100);
+    background-color:rgb(255,255,255);
+    color:rgb(31,52,100);
+}
+
+.istorijat .istorijaButton .datum{
+    font-weight:500;
+}
+
+.istorijat .istorijaButton .korisnik{
+    font-weight:200;
+}
+
+.skidanjeIznosaNaloga .header{
+    background-color:rgb(31,52,100);
+    color:rgb(255,255,255);
+    padding:10px;
+    font-size:20px;
+    font-weight:500;
+    margin-top:30px;
+}
+
+.skidanjeIznosaNaloga table{
+    border-collapse: collapse;
+}
+
+.skidanjeIznosaNaloga table td{
+    border:1px solid rgb(100,100,100);
+    padding:4px;
+}
+
+.skidanjeIznosaNaloga table tr:nth-child(odd){
+    background-color:rgb(200,200,200);
+}
+
+.skidanjeIznosaNaloga table tr{
+    cursor:pointer;
+}
+
+.skidanjeIznosaNaloga table tr:hover{
+    background-color:rgb(31,52,100);
+    color:rgb(255,255,255);
+}
+
+.skidanjeIznosaNaloga table tr:first-child{
+    background-color:rgb(31,52,100);
+    color:rgb(255,255,255);
+    font-weight:500;
+}
+
+.kancelarijaApp .welcome{
+    width:90%;
+    margin:0 auto;
+    padding-top:10px;
+    font-size:14px;
+    font-weight:300;
+    text-align:center;
+}
+
+.kancelarijaApp .welcome span{
+    font-weight:600;
+}
+
+.calendarTableWrap{
+    width:100%;
+    padding:0 10px;
+    margin-top:10px;
+}
+
+.calendarTableWrap #calendar-table{
+    width:100%;
+    border-collapse: collapse;
+}
+
+.calendarTableWrap #calendar-table td{
+    border:1px solid rgb(50,50,50);
+}
+
+.calendarTableWrap #calendar-table th{
+    font-size:12px;
+    font-weight:600;
+}
+
+.calendarTableWrap #calendar-table td .value{
+    height:calc((100vw - 25px)/7);
+    width:calc((100vw - 25px)/7);
+    padding:4px;
+}
+
+.calendarTableWrap #calendar-table td .calendarDateTitle{
+    text-align:left;
+    font-size:12px;
+    font-weight:600;
+}
+
+.calendarTableWrap #calendar-table td .value .hourElem{
+    font-size:12px;
+    text-align:center;
+
+}
+
+.calendarTableWrap #calendar-table td .value .statuses{
+    font-size:0;
+}
+
+.calendarTableWrap #calendar-table td .value .statuses .icon{
+    width:30%;
+    height:15px;
+    background-size:contain;
+    background-repeat: no-repeat;
+    display:inline-block;
+    vertical-align: top;
+}
+
+.calendarTableWrap .dailyInformation{
+    font-size:14px;
+    text-align:left;
+    margin-top:10px;
+}
+
+.calendarTableWrap .dailyInformation .title{
+    text-align: center;
+}
+
+.calendarTableWrap .dailyInformation .borderSeparator{
+    border-bottom:1px solid rgb(50,50,50);
+    margin:5px auto;
+}
+
+.calendarTableWrap #total-info{
+   font-size:12px;
+   margin-bottom:10px; 
+}
+
+.calendarTableWrap #total-info b{
+    font-weight:500;
+}
+
+.radniDani .calendarTableWrap #calendar-table td{
+    width:calc(100%/7);
+} 
+
+.radniDani .calendarTableWrap #calendar-table td .value{
+    min-height:75px;
+    height:auto;
+    /*width:calc(100%/7);*/
+    width:100%;
+    padding:4px;
+}
+
+.radniDani #worker-name{
+    fotn-weight:600;
+    font-size:30px;
+    margin:20px auto;
+    margin-bottom:5px;
+}
+
+.kategorijeFilters{
+    text-align: center;
+    margin-bottom:20px;
+}
+
+.kategorijeFilters .item{
+    display:inline-block;
+    vertical-align: top;
+    margin:0 10px;
+}
+
+.kategorijeTableWrap table{
+    margin:20px auto;
+    border-collapse: collapse;
+    background-color:rgb(255,255,255);
+}
+
+.kategorijeTableWrap table tr:first-child{
+    background-color:rgb(32,51,100);
+    color:rgb(255,255,255);
+}
+
+
+.kategorijeTableWrap table tr:nth-child(even){
+    background-color:rgba(0,0,0,0.2);
+}
+
+.kategorijeTableWrap table th{
+    vertical-align: middle;
+    padding:5px;
+}
+
+.kategorijeTableWrap table td{
+    vertical-align: middle;
+    padding:5px;
+    border:1px solid rgb(50,50,50);
+}
+
+.rasporedCasova table{
+    border-collapse: collapse;
+    width:100%;
+}
+
+.rasporedCasova td{
+    border:1px solid rgb(100,100,100);
+    vertical-align:top;
+}
+
+
+.rasporedCasova td .wrapper{
+    padding:5px;
+    font-size:0px;
+}
+
+.rasporedCasova td .wrapper .checkboxWrap{
+    display:inline-block;
+    vertical-align: middle;
+    width:20px;
+}
+
+.rasporedCasova td .wrapper .checkboxLabel{
+    display:inline-block;
+    vertical-align: middle;
+    width:calc( 100% - 30px );
+    font-size:14px;
+    padding-left:5px;
+}
+
+.rasporedCasova td .wrapper .checkboxWrap input{
+    width:20px;
+    height:20px;
+}
+
+.fakturisaniFilterWrap{
+    margin-bottom:20px;
+    text-align:center;
+}
+
+.fakturisaniFilterWrap .inputWrapper{
+    display:inline-block;
+    vertical-align: middle;
+    padding:20px;
+}
+
+.fakturisaniInfo{
+    margin-bottom:30px;
+}
+
+.fakturisaniInfo span{
+    font-weight:700;
+}
+
+.fakturisaniTable{
+    border-collapse: collapse;
+    background-color:rgb(255,255,255);
+}
+
+.fakturisaniTable td{
+    border:1px solid rgb(50,50,50);
+    padding:5px;
+}
+
+
+.fakturisaniTable tr:hover{
+    background-color:rgb(31,51,100);
+    color:rgb(255,255,255);
+}
+
+.fakturisaniTable tr:first-child{
+    background-color:rgb(31,51,100);
+    color:rgb(255,255,255);
+    position:sticky;
+}
+
+#lista-ucinka table{
+    border-collapse: collapse;
+}
+
+#lista-ucinka table tr td{
+    border:1px solid rgb(50,50,50);
+}
+
+#lista-ucinka table tr td .value{
+    padding:5px;
+}
+
+#ucinak-pite-wrap{
+    font-size:0;
+}
+
+#ucinak-pite-wrap .item{
+    display:inline-block;
+    vertical-align: top;
+    width:25%;
+    font-size:14px;
+    padding:10px;
+}
+
+#ucinak-pite-wrap .item .pita{
+    width:100px;
+    height:100px;
+    position:relative;
+    margin:0 auto;
+    margin-bottom:5px;
+    border-radius:200px;
+    border:2px solid rgb(0,0,0);
+}
+
+#ucinak-pite-wrap .item .pita .procenatPite{
+    position:absolute;
+    top:50%;
+    left:50%;
+    -webkit-transform:translate(-50%,-50%);
+    -moz-transform:translate(-50%,-50%);
+    -ms-transform:translate(-50%,-50%);
+    -o-transform:translate(-50%,-50%);
+    transform:translate(-50%,-50%);
+    width:100%;
+    text-align:center;
+    color:rgb(237,28,37);
+    text-shadow:0px 0px 1px rgb(255,255,255);
+}
+
+#table-lightbox{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background-color:rgba(0,0,0,0.7);
+    display:none;
+}
+
+#table-lightbox .content{
+    width:80%;
+    margin:0 auto;
+    height:80vh;
+    overflow:auto;
+    background-color:rgba(255,255,255,1);
+    position:relative;
+    padding:10px;
+}
+
+#table-lightbox .content .close{
+    font-weight:bold;
+    font-size:20px;
+    position:absolute;
+    right:10px;
+    top:10px;
+    cursor:pointer;
+}
+
+#table-lightbox .content table{
+    border-collapse: collapse;
+    margin:0 auto;
+    margin-top:10px;
+}
+
+#table-lightbox .content table tr:first-child{
+    background-color:rgb(32,51,100);
+    color:rgb(255,255,255);
+}
+
+#table-lightbox .content table td{
+    border:1px solid rgb(50,50,50);
+}
+
+#table-lightbox .content table td .value{
+    padding:5px;
+}
+
+#table-lightbox .content table td:nth-child(1){
+    width:60px;
+}
+
+#table-lightbox .content table td:nth-child(2){
+    width:200px;
+}
+
+#table-lightbox .content table td:nth-child(3){
+    width:200px;
+}
+
+#table-lightbox .content table td .item{
+    padding-bottom:3px;
+    margin-bottom:3px;
+    border-bottom:1px solid rgb(150,150,150);
+    text-align:left;
+    font-size:12px;
+}
+
+#table-lightbox .subTitle{
+    font-size:12px;
+    margin-top:10px;
+}
+
+#revers-lightbox{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:3000;
+    background-color:rgba(0,0,0,0.8);
+}
+
+#revers-lightbox .content{
+    position:relative;
+    width:90%;
+    margin:0 auto;
+    height:90%;
+    margin-top:5%;
+    background-color:rgba(255,255,255,1);
+    overflow-y:auto;
+    overflow-x:hidden;
+    padding-top:40px;
+}
+
+#revers-lightbox .content .close{
+    cursor:pointer;
+    font-size:16px;
+    font-weight:bold;
+    position:absolute;
+    top:5px;
+    right:5px;
+    color:rgb(255,255,255);
+    background-color:rgb(200,0,0);
+    text-align:center;
+    width:30px;
+    height:30px;
+    line-height: 20px;
+    border:1px solid rgb(255,255,255);
+    border-radius:40px;
+    padding:5px;
+}
+
+#revers-lightbox .content .box{
+    font-size:0;
+    text-align:left;
+}
+
+#revers-lightbox .content .box .proizvodi{
+    display:inline-block;
+    vertical-align:top;
+    width:70%;
+    font-size:14px;
+    border-right:1px solid rgb(50,50,50);
+    padding-right:20px;
+}
+
+#revers-lightbox .content .box .reversPreview{
+    display:inline-block;
+    vertical-align:top;
+    width:30%;
+    font-size:14px;
+    padding-left:1px;
+}
+
+#revers-lightbox .content .box .productButton{
+    position:relative;
+    overflow:hidden;
+    width:150px;
+    height:150px;
+    display:inline-block;
+    margin:3px;
+    background-color:rgba(31,52,100,1);
+    border:2px outset rgb(50,50,50);
+    cursor:pointer;
+}
+
+#revers-lightbox .content .box .productButton:focus{
+    border:2px inset rgb(50,50,50);
+}
+
+#revers-lightbox .content .box .productButton:hover{
+    background-color:rgba(31,52,100,0.8);
+}
+
+#revers-lightbox .content .box .productButton .value{
+    position:absolute;
+    word-wrap: break-word;
+    width:100%;
+    top:50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+    text-align:center;
+    color:rgb(255,255,255);
+    font-weight:500;
+}
+
+#revers-lightbox .content .box .productButton .value span{
+    font-weight:200;
+    font-size:12px;
+}
+
+#revers-lightbox .backButton{
+    display:inline-block;
+    background-color:rgb(31,52,100);
+    color:rgb(255,255,255);
+    padding:5px;
+    border:2px outset rgb(50,50,50);
+    cursor: pointer;
+}
+
+#revers-lightbox .dateInput{
+    width:200px;
+    margin-bottom:20px;
+    display:inline-block;
+    vertical-align: top;
+}
+
+#revers-lightbox .majstorInput{
+    width:150px;
+    margin-bottom:20px;
+    display:inline-block;
+    vertical-align: top;
+}
+
+#preview-list .item{
+    padding-bottom:5px;
+    margin-bottom:5px;
+    border-bottom:1px solid rgb(50,50,50);
+}
+
+#preview-list .item .number{
+    display:inline-block;
+    vertical-align:top;
+    width:20px;
+}
+
+#preview-list .item .name{
+    display:inline-block;
+    vertical-align:top;
+    width:150px;
+    word-wrap: break-word;
+}
+
+#preview-list .item .name span{
+    font-weight:200;
+    font-size:10px;
+}
+
+#preview-list .item .quantity{
+    display:inline-block;
+    vertical-align:top;
+    width:50px;
+}
+
+#preview-list .item .remove{
+    display:inline-block;
+    vertical-align: top;
+    background-color:rgb(200,0,0);
+    color:rgb(255,255,255);
+    cursor:pointer;
+    text-align:center;
+    width:20px;
+    height:20px;
+    line-height: 20px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+#lista-reversa .item{
+    margin-bottom:4px;
+    padding-bottom:4px;
+    border-bottom:1px solid rgb(50,50,50);
+    text-align:left;
+    font-size:14px;
+}
+
+#lista-reversa .item .number{
+    width:15px;
+    display:inline-block;
+    vertical-align:middle;
+}
+
+#lista-reversa .item .majstor{
+    width:200px;
+    display:inline-block;
+    vertical-align:middle;
+    word-wrap: break-word;
+}
+
+#lista-reversa .item .date{
+    width:100px;
+    display:inline-block;
+    vertical-align:middle;
+}
+
+#lista-reversa .item .editButton{
+    padding:3px;
+    background-color:rgb(31,52,100);
+    color:rgb(255,255,255);
+    cursor:pointer;
+    display:inline-block;
+    vertical-align:middle;
+}
+
+#lista-reversa .item .printButton{
+    padding:3px;
+    background-color:rgb(31,52,100);
+    color:rgb(255,255,255);
+    cursor:pointer;
+    display:inline-block;
+    vertical-align:middle;
+    margin-left:10px;
+}
+
+#lista-reversa .item .deleteButton{
+    padding:3px;
+    background-color:rgb(200,0,0);
+    color:rgb(255,255,255);
+    cursor:pointer;
+    display:inline-block;
+    vertical-align:middle;
+    margin-left:10px;
+}
+
+.magacinStanje{
+    font-size:0;
+    text-align: left;
+}
+
+.magacinStanje .proizvodi{
+    display:inline-block;
+    vertical-align:top;
+    width:70%;
+    font-size:14px;
+    border-right:1px solid rgb(50,50,50);
+    padding-right:20px;
+}
+
+.magacinStanje .atributi{
+    display:inline-block;
+    vertical-align:top;
+    width:30%;
+    font-size:14px;
+    padding-left:1px;
+}
+
+.magacinStanje .productButton{
+    position:relative;
+    overflow:hidden;
+    width:150px;
+    height:150px;
+    display:inline-block;
+    margin:3px;
+    background-color:rgba(31,52,100,1);
+    border:2px outset rgb(50,50,50);
+    cursor:pointer;
+}
+
+.magacinStanje .productButton:focus{
+    border:2px inset rgb(50,50,50);
+}
+
+.magacinStanje .productButton:hover{
+    background-color:rgba(31,52,100,0.8);
+}
+
+.magacinStanje .productButton .value{
+    position:absolute;
+    word-wrap: break-word;
+    width:100%;
+    top:50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+    text-align:center;
+    color:rgb(255,255,255);
+    font-weight:500;
+}
+
+.magacinStanje .productButton .value .code{
+    font-weight:200;
+    font-size:12px;
+}
+
+.magacinStanje .productButton .value .stanjeKriticno{
+    color:rgb(200,0,0);
+}
+
+.magacinStanje .backButton{
+    display:inline-block;
+    background-color:rgb(31,52,100);
+    color:rgb(255,255,255);
+    padding:5px;
+    border:2px outset rgb(50,50,50);
+    cursor: pointer;
+}
+
+
+.magacinStanje .atributi{
+    padding-left:10px;
+}
+
+.magacinStanje .atributi .title{
+    font-weight:600;
+    font-size:18px;
+}
+
+.magacinStanje .atributi .note{
+    font-weight:200;
+    font-size:12px;
+}
+
+.magacinStanje .prikaziStanje{
+    color:rgb(31,52,100);
+    text-decoration: underline;
+    font-size:12px;
+    cursor:pointer;
+}
+
+.magacinStanje .atributi .inputWrap{
+    margin-bottom:10px;
+}
+
+#lista-ulaza .item{
+    margin-bottom:10px;
+    padding-bottom:10px;
+    border-bottom:1px solid rgb(50,50,50);
+    font-size:12px;
+}
+
+#lista-ulaza .item .number{
+    display:inline-block;
+    vertical-align: middle;
+    width:20px;
+}
+
+#lista-ulaza .item .datum{
+    display:inline-block;
+    vertical-align: middle;
+    width:75px;
+}
+
+#lista-ulaza .item .kolicina{
+    display:inline-block;
+    vertical-align: middle;
+    width:50px;
+}
+
+#lista-ulaza .item .obrisi{
+    display:inline-block;
+    vertical-align: middle;
+    padding:3px;
+    background-color:rgb(200,0,0);
+    color:rgb(255,255,255);
+    cursor:poitner;
+}
+
+
+@media screen and (max-width: 950px) {
+    #site-title{
+        display:none;
+    }
+
+    .pageTitle{
+        font-weight:600;
+        border-top:2px solid rgb(50,50,50);
+        padding:5px 0;
+        margin-bottom:1px;
+        font-size:18px;
+    }
+
+    #site-content{
+        padding-top:10px !important;
+    }
+
+    #logo{
+        position:relative !important;
+        width:200px !important;
+        margin:0 auto;
+
+    }
+}
+

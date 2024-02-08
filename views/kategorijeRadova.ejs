@@ -1,0 +1,234 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+
+	<div class="pageTitle">Kategorije radova</div>
+	<script>
+		document.getElementById("site-content").style.maxWidth="1400px";
+		var nalozi = <%-JSON.stringify(nalozi)%>;
+		for(var i=0;i<nalozi.length;i++){
+			if(podizvodjaci.indexOf(nalozi[i].majstorNaloga)>=0){
+				nalozi.splice(i,1);
+				i--;
+			}
+		}
+		var majstori = <%-JSON.stringify(majstori)%>;
+		var kategorije	=	["Odgušenje Sajlom","Odgušenje Voma","Zamena","Rov","Konstatacija","Crpljenje"];
+	</script>
+	<div class="kategorijeFilters">
+		<div class="item">
+			Radna Jedinica:<br>
+			<select id="opstina-filter" oninput="calculate();generateTable()">
+				<option value="SVE" default>SVE</option>
+			</select>
+			<script>
+				for(var i=0;i<radneJedinice.length;i++){
+					var option = document.createElement("OPTION");
+					option.setAttribute("value",radneJedinice[i]);
+					option.innerHTML = radneJedinice[i];
+					document.getElementById("opstina-filter").appendChild(option);
+				}
+			</script>
+		</div>
+		<div class="item">
+			Mesec:<br>
+			<select id="mesec-filter" oninput="calculate();generateTable()">
+				<option value="SVI" default>SVI</option>
+				<option value="10.2023">OKTOBAR</option>
+				<option value="11.2023">NOVEMBAR</option>
+				<option value="12.2023">DECEMBAR</option>
+			</select>
+		</div>
+		<div class="item">
+			Majstor:<br>
+			<select id="majstor-filter" oninput="calculate();generateTable()">
+				<option value="SVI" default>SVI</option>
+			</select>
+			<script>
+				for(var i=0;i<majstori.length;i++){
+					if(podizvodjaci.indexOf(majstori[i].uniqueId)<0){
+						var option = document.createElement("OPTION");
+						option.setAttribute("value",majstori[i].uniqueId);
+						option.innerHTML = majstori[i].ime;
+						document.getElementById("majstor-filter").appendChild(option);
+					}
+				}
+			</script>
+		</div>
+	</div>
+	<div class="kategorijeInformation">
+		<div class="item">Ukupno naloga: <span id="ukupno-naloga"></span></div>
+		<div class="item">Neobracunato: <span id="neobracunato"></span></div>
+		<div class="item">Ukupan iznos: <span id="ukupan-iznos"></span></div>
+		<div class="item">Nekategorisano: <span id="nekategorisano"></span></div>
+		<div class="item">Odgušenje Sajlom: <span id="sajla"></span></div>
+		<div class="item">Odgušenje Voma: <span id="voma"></span></div>
+		<div class="item">Zamena: <span id="zamena"></span></div>
+		<div class="item">Rov: <span id="rov"></span></div>
+		<div class="item">Konstatacija: <span id="konstatacija"></span></div>
+		<div class="item">Crpljenje: <span id="crpljenje"></span></div>
+	</div>
+	<div class="kategorijeTableWrap">
+		<table id="tabela"></table>
+	</div>
+	<script>
+		var naloziToShow	=	[];
+		function calculate(){
+			var opstinaFilter	=	document.getElementById("opstina-filter").value;
+			var mesecFilter 	=	document.getElementById("mesec-filter").value;
+			var majstorFilter	=	document.getElementById("majstor-filter").value;
+			naloziToShow	=	[];
+			for(var i=0;i<nalozi.length;i++){
+				var opstinaMatch	=	false;
+				if(opstinaFilter!="SVE"){
+					if(nalozi[i].radnaJedinica==opstinaFilter){
+						opstinaMatch = true;
+					}
+				}else{
+					opstinaMatch = true;
+				}
+
+				var mesecMatch	=	false;
+				if(mesecFilter!="SVI"){
+					if(nalozi[i].datum.includes(mesecFilter)){
+						mesecMatch = true;
+					}
+				}else{
+					mesecMatch = true;
+				}
+
+				var majstorMatch	=	false;
+				if(majstorFilter!="SVI"){
+					if(nalozi[i].majstorNaloga==majstorFilter){
+						majstorMatch = true;
+					}
+				}else{
+					majstorMatch = true;
+				}
+
+				if(opstinaMatch && mesecMatch && majstorMatch){
+					naloziToShow.push(nalozi[i]);
+				}
+			}
+
+			var neobracunato		=	0;
+			var ukupanIznos 		=	0;
+			var nekategorisani		=	0;
+			var sajla				=	0;
+			var sajlaIznos			=	0;
+			var voma				=	0;
+			var vomaIznos			=	0;
+			var zamena				=	0;
+			var zamenaIznos			=	0;
+			var rov 				=	0;
+			var rovIznos 			=	0;
+			var konstatacija		=	0;
+			var konstatacijaIznos	=	0;
+			var crpljenje			=	0;
+			var crpljenjeIznos		=	0;
+			for(var i=0;i<naloziToShow.length;i++){
+				if(parseFloat(naloziToShow[i].ukupanIznos)>0){
+					ukupanIznos += parseFloat(naloziToShow[i].ukupanIznos);
+				}else{
+					neobracunato++;
+				}
+
+				var kategorisan 	=	false;
+				if(naloziToShow[i].opisRadovaArr){
+					for(var j=0;j<naloziToShow[i].opisRadovaArr.length;j++){
+						if(kategorije.indexOf(naloziToShow[i].opisRadovaArr[j])>=0){
+							kategorisan = true;
+							break;
+						}
+					}
+				}
+				
+				if(!kategorisan){
+					nekategorisani++;
+				}else{
+					for(var j=0;j<naloziToShow[i].opisRadovaArr.length;j++){
+						if(naloziToShow[i].opisRadovaArr[j]=="Odgušenje Sajlom"){
+							sajla++;
+							sajlaIznos += parseFloat(naloziToShow[i].ukupanIznos)
+						}
+
+						if(naloziToShow[i].opisRadovaArr[j]=="Odgušenje Voma"){
+							voma++;
+							vomaIznos += parseFloat(naloziToShow[i].ukupanIznos)
+						}
+
+						if(naloziToShow[i].opisRadovaArr[j]=="Zamena"){
+							zamena++;
+							zamenaIznos += parseFloat(naloziToShow[i].ukupanIznos)
+						}
+
+						if(naloziToShow[i].opisRadovaArr[j]=="Rov"){
+							rov++;
+							rovIznos += parseFloat(naloziToShow[i].ukupanIznos)
+						}
+
+						if(naloziToShow[i].opisRadovaArr[j]=="Konstatacija"){
+							konstatacija++;
+							konstatacijaIznos += parseFloat(naloziToShow[i].ukupanIznos)
+						}
+
+						if(naloziToShow[i].opisRadovaArr[j]=="Crpljenje"){
+							crpljenje++;
+							crpljenjeIznos += parseFloat(naloziToShow[i].ukupanIznos)
+						}
+					}	
+				}
+			}
+
+			document.getElementById("ukupno-naloga").innerHTML	=	naloziToShow.length;
+			document.getElementById("neobracunato").innerHTML	=	neobracunato;
+			document.getElementById("ukupan-iznos").innerHTML	=	brojSaRazmacima(ukupanIznos);
+			document.getElementById("nekategorisano").innerHTML	=	nekategorisani;
+			document.getElementById("sajla").innerHTML			=	sajla +" naloga / "+brojSaRazmacima(sajlaIznos)+" RSD";
+			document.getElementById("voma").innerHTML			=	voma +" naloga / "+brojSaRazmacima(vomaIznos)+" RSD";
+			document.getElementById("zamena").innerHTML			=	zamena +" naloga / "+brojSaRazmacima(zamenaIznos)+" RSD";
+			document.getElementById("rov").innerHTML			=	rov +" naloga / "+brojSaRazmacima(rovIznos)+" RSD";
+			document.getElementById("konstatacija").innerHTML	=	konstatacija +" naloga / "+brojSaRazmacima(konstatacijaIznos)+" RSD";
+			document.getElementById("crpljenje").innerHTML		=	crpljenje +" naloga / "+brojSaRazmacima(crpljenjeIznos)+" RSD";
+
+
+		}
+		var table = document.getElementById("tabela");
+		function generateTable(){
+			table.innerHTML="";
+			table.innerHTML = "<tr><th>R.Br.</th><th>Broj Naloga</th><th>Radna Jedinica</th><th>Kategorija</th><th>Iznos</th></tr>";
+			for(var i=0;i<naloziToShow.length;i++){
+				var tr = document.createElement("TR");
+				tr.setAttribute("onclick","window.open('/pdfView/"+naloziToShow[i].uniqueId+"','_blank')");
+					var td = document.createElement("TD");
+					td.innerHTML = "<div class='value'>"+eval(i+1)+".</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					td.innerHTML = "<div class='value'>"+naloziToShow[i].broj+"</div>"
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					td.innerHTML = "<div class='value'>"+naloziToShow[i].radnaJedinica+"</div>"
+					tr.appendChild(td);
+
+					var kategorije = "";
+					if(naloziToShow[i].opisRadovaArr){
+						for(var j=0;j<naloziToShow[i].opisRadovaArr.length;j++){
+							kategorije += naloziToShow[i].opisRadovaArr[j]+"<br>"
+						}
+					}
+					
+					var td = document.createElement("TD");
+					td.innerHTML = "<div class='value'>"+kategorije+"</div>"
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					td.innerHTML = "<div class='value'>"+brojSaRazmacima(naloziToShow[i].ukupanIznos)+"</div>"
+					tr.appendChild(td);
+				table.appendChild(tr);
+			}
+		}
+		calculate();
+		generateTable();
+	</script>
+<%- include ("partials/footer") -%>

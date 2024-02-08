@@ -1,0 +1,265 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+
+	<% if (typeof pageTitle=="undefined") { %>
+		<div class="pageTitle">Nalozi</div>
+	<% }else{ %>
+		<div class="pageTitle"><%-pageTitle%></div>
+	<%}%>
+	<script>
+		var nalozi = <%-JSON.stringify(nalozi)%>;
+		var opstine	=	[];
+		for(var i=0;i<nalozi.length;i++){
+			nalozi[i].vremePrijemaNaloga	=	Number(nalozi[i].uniqueId.split("--")[1]);
+			if(opstine.indexOf(nalozi[i].radnaJedinica.toLowerCase())<0){
+				opstine.push(nalozi[i].radnaJedinica.toLowerCase());
+			}
+		}
+		nalozi.sort(function(a, b) {
+		    return parseFloat(b.vremePrijemaNaloga) - parseFloat(a.vremePrijemaNaloga);
+		});
+	</script>
+	<div class="sviNalozi">
+		<div class="ukupno">
+			<div class="inline">
+				<div class="title">Ukupno</div>
+				<div id="ukupno"></div>
+			</div>
+			<div class="inline">
+				<div class="title">Podizvodjaci</div>
+				<div id="podizvodjaci"></div>
+			</div>
+		</div>
+		<script>
+			if(window.location.href.includes("nadji")){
+				document.getElementById("ukupno").style.display="none";// Ne prikazuj iznos za pretragu naloga iz opcije nadji nalog po adresi
+			}
+		</script>
+		<div class="filters">
+			<div class="numberFilter broj">
+				<input type="text" id="number-filter" placeholder="Filter Broja" oninput="generateTable()">
+			</div>
+			<div class="opstinaFilter opstina">
+				<select id="opstina-filter" oninput="generateTable()"></select>
+				<script>
+					var option	=	document.createElement("OPTION");
+					option.setAttribute("value","SVE");
+					option.setAttribute("selected","selected");
+					option.innerHTML	=	"SVE OPSTINE";
+					document.getElementById("opstina-filter").appendChild(option);
+					for(var i=0;i<opstine.length;i++){
+						var option	=	document.createElement("OPTION");
+						option.setAttribute("value",opstine[i]);
+						option.innerHTML	=	opstine[i].toUpperCase();
+						document.getElementById("opstina-filter").appendChild(option);
+					}
+				</script>
+			</div>
+			<div class="numberFilter adresa">
+				<input type="text" id="adresa-filter" placeholder="Filter Adrese" oninput="generateTable()">
+			</div>
+			<div class="obracunatFilter obracunat">
+				<select id="obracunat" oninput="generateTable()">
+					<option selected="selected" value="SVI">SVI</option>
+					<option value="DA">DA</option>
+					<option value="NE">NE</option>
+				</select>
+			</div>
+
+		</div>
+		<div class="header">
+			<div class="inline redniBroj">Redni Broj:</div>
+			<div class="inline datumNaloga">Datum Naloga:</div>
+			<div class="inline broj">Broj:</div>
+			<div class="inline opstina">Opština:</div>
+			<div class="inline adresa">Adresa:</div>
+			<div class="inline obracunat">Obracunat:</div>
+		</div>
+		<div id="table-wrap" style="height:500px;overflow:scroll">
+			<div id="table-height" style="height:10000px">
+				<div id="table-content" style="position:sticky;top:0;border:1px solid rgb(0,0,0)"></div>
+			</div>
+		</div>
+		<script>
+			var rowHeight			=	50;
+			var scrollableElement 	=	document.getElementById("table-wrap");
+			scrollableElement.addEventListener("scroll", (event) => {
+				generateTable();
+			});
+			
+			function generateTable(){
+				document.getElementById("table-content").innerHTML	=	"";
+				var numberOfElements	=	500/rowHeight;
+				var scrollValue			=	scrollableElement.scrollTop;
+				//Reset filters
+				for(var i=0;i<nalozi.length;i++){
+					nalozi[i].display = 1;
+				}
+
+				//Filter out elements
+				//filter elements
+				var broj = document.getElementById("number-filter").value;
+				var adresa = document.getElementById("adresa-filter").value;
+				var opstina = document.getElementById("opstina-filter").value;
+				for(var i=0;i<nalozi.length;i++){
+					if(opstina!="SVE"){
+						if(nalozi[i].radnaJedinica.toLowerCase()!=opstina.toLowerCase()){
+							nalozi[i].display=0;
+						}
+					}
+
+					if(broj!=""){
+						if(!nalozi[i].broj.toString().includes(broj.toString())){
+							nalozi[i].display=0;
+						}
+					}
+
+					if(adresa!=""){
+						if(!nalozi[i].adresa.split(",")[0].toString().toLowerCase().includes(adresa.toString().toLowerCase())){
+							nalozi[i].display=0;
+						}
+					}
+
+					if(obracunat!="SVI"){
+						var ukupanIznos	=	parseFloat(nalozi[i].ukupanIznos);
+						if((ukupanIznos==0 || isNaN(ukupanIznos)) && obracunat=="DA"){
+							nalozi[i].display=0;
+						}else if(ukupanIznos>0 && obracunat=="NE"){
+							nalozi[i].display=0;
+						}
+					}
+				}
+
+				
+
+				//calculate needed scroll height and total sum of prices
+				var totalPrice 	=	0;
+				var totalVATPrice = 0;
+				var totalNaloga	=	0;
+				var totalObracunatihNaloga	=	0;
+				var naloziToShow	=	[];
+				for(var i=0;i<nalozi.length;i++){
+					if(nalozi[i].display==1){
+						naloziToShow.push(nalozi[i]);
+						if(!isNaN(parseFloat(nalozi[i].ukupanIznos))){
+							totalPrice = eval(totalPrice + parseFloat(nalozi[i].ukupanIznos));
+							if(parseFloat(nalozi[i].ukupanIznos)<500000){
+								totalVATPrice = eval(totalVATPrice+parseFloat(nalozi[i].ukupanIznos)*0.2);
+							}
+							totalNaloga++;
+							if(parseFloat(nalozi[i].ukupanIznos)>0){
+								totalObracunatihNaloga++;
+							}
+						}
+					}
+				}
+				document.getElementById("ukupno").innerHTML	= "Ukupan broj prikazanih naloga: <span>"+totalNaloga+"</span><br>";
+				document.getElementById("ukupno").innerHTML	+= "Ukupan broj obracunatih naloga: <span>"+totalObracunatihNaloga+"</span><br>";
+				document.getElementById("ukupno").innerHTML	+= "Ukupan iznos od prikazanih naloga: <span>"+brojSaRazmacima(totalPrice)+"</span><br>";
+				document.getElementById("ukupno").innerHTML	+= "Ukupan PDV za prikazane naloga: <span>"+brojSaRazmacima(totalVATPrice)+"</span><i> nalozi preko 500 000 ne ulaze u PDV obracun</i><br>";
+				document.getElementById("ukupno").innerHTML	+= "Ukupno za prikazane naloga: <span>"+brojSaRazmacima(eval(totalVATPrice+totalPrice))+"</span>";
+
+
+				//Podizvodjaci
+				var totalPriceP 	=	0;
+				var totalNalogaP	=	0;
+				var totalObracunatihNalogaP	=	0;
+				for(var i=0;i<nalozi.length;i++){
+					if(podizvodjaci.indexOf(nalozi[i].majstorNaloga)>=0){
+						if(nalozi[i].display==1){
+							if(!isNaN(parseFloat(nalozi[i].ukupanIznos))){
+								totalPriceP = eval(totalPriceP + Number(nalozi[i].ukupanIznos));
+								totalNalogaP++;
+								if(parseFloat(nalozi[i].ukupanIznos)>0){
+									totalObracunatihNalogaP++;
+								}
+							}
+						}
+					}
+				}
+				document.getElementById("podizvodjaci").innerHTML	= "Ukupan broj prikazanih naloga: <span>"+totalNalogaP+"</span><br>";
+				document.getElementById("podizvodjaci").innerHTML	+= "Ukupan broj obracunatih naloga: <span>"+totalObracunatihNalogaP+"</span><br>";
+				document.getElementById("podizvodjaci").innerHTML	+= "Ukupan iznos od prikazanih naloga: <span>"+brojSaRazmacima(totalPriceP)+"</span><br>";
+				document.getElementById("podizvodjaci").innerHTML	+= "Ukupan PDV za prikazane naloga: <span>"+brojSaRazmacima(totalPriceP*0.2)+"</span><br>";
+				document.getElementById("podizvodjaci").innerHTML	+= "Ukupno za prikazane naloga: <span>"+brojSaRazmacima(totalPriceP*1.2)+"</span>";
+
+				
+
+
+				var scrollHeight	=	naloziToShow.length*rowHeight;
+				document.getElementById("table-height").scrollTop	=	0;
+				document.getElementById("table-height").style.height	=	scrollHeight + "px";
+				var startIndex		=	Math.floor(scrollValue / rowHeight);
+				var endIndex		=	startIndex + numberOfElements;
+				var highlightNext	=	false;
+
+				for(var i = startIndex;i<endIndex;i++){
+					if(naloziToShow[i]){
+						var row = document.createElement("DIV");
+						row.setAttribute("class","row");
+						if(i%2==0){
+							row.classList.add("rowHighlight");
+						}
+
+						if(!isNaN(parseFloat(naloziToShow[i].ukupanIznos))){
+							if(parseFloat(naloziToShow[i].ukupanIznos)==0){
+								row.classList.add("nalogKasni");//ne kasni samo koristim crvenu boju za alarm da nije obracnuat
+							}							
+						}else{
+							row.classList.add("nalogKasni");//ne kasni samo koristim crvenu boju za alarm da nije obracnuat
+						}
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline redniBroj");
+							elem.innerHTML	=	eval(i+1);
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline datumNaloga");
+							elem.innerHTML	=	naloziToShow[i].datum.split("god.")[0];
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline broj");
+							elem.innerHTML	=	naloziToShow[i].broj;
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline opstina");
+							elem.innerHTML	=	naloziToShow[i].radnaJedinica;
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline adresa");
+							elem.innerHTML	=	naloziToShow[i].adresa.split(",")[0];
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline obracunat");
+							if(parseFloat(naloziToShow[i].ukupanIznos)>0){
+								elem.innerHTML	=	"DA";
+							}else{
+								elem.innerHTML	=	"NE"
+							}
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","button pogledajNalog");
+								var a = document.createElement("A");
+								a.setAttribute("href","/pdfView/"+naloziToShow[i].uniqueId);
+								a.setAttribute("target","_blank");
+								a.innerHTML = "Pogledaj Nalog"
+								elem.appendChild(a);
+							row.appendChild(elem);
+
+						document.getElementById("table-content").appendChild(row);
+					}
+					
+				}
+
+			}
+			generateTable();
+			
+		</script>
+	</div>
+<%- include ("partials/footer") -%>

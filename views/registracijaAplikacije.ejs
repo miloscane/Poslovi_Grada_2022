@@ -1,0 +1,38 @@
+<%- include ("partials/header") -%>
+	<div class="pageTitle">Registracija Aplikacije</div>
+	<div class="appRegistration">
+		<form method="POST" action="/app-register" id="app-register-form">
+			<input type="text" name="deviceid" id="app-register-device-id" style="">
+			<script>
+				var deviceid	=	window.location.href.split("/")[window.location.href.split("/").length-1];
+				document.getElementById("app-register-device-id").value = deviceid;
+			</script>
+			<div class="inputWrap">
+				<div class="title">Vaše ime:</div>
+				<div class="inputWrapper">
+					<input type="text" name="name" id="app-register-name">
+				</div>
+			</div>
+		</form>
+		<div class="button" style="margin-top:20px;" onclick="submitForm();">Registruj</div>
+		<div id="error" class="error" style="margin-top:5px;display: none;">Molimo upisite ime.</div>
+		<script>
+			function submitForm(){
+				
+				if(document.getElementById("app-register-name").value){
+					loadGif();
+					document.getElementById("app-register-form").submit()
+				}else{
+					document.getElementById("error").style.display	=	"none";
+				}
+			}
+
+
+		</script>
+	</div>
+<%- include ("partials/appFooter") -%>
+<script>
+	document.getElementsByClassName("appMenu")[0].getElementsByClassName("menuItem")[1].style.display="none";
+	document.getElementsByClassName("appMenu")[0].getElementsByClassName("menuItem")[2].style.display="none";
+</script>
+<%- include ("partials/footer") -%>

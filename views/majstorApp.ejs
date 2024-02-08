@@ -1,0 +1,132 @@
+<%- include ("partials/header") -%>
+	<script>
+		var nalozi = <%-JSON.stringify(nalozi)%>;
+		var izvestaji = <%-JSON.stringify(izvestaji)%>;
+		var deviceId = "<%-deviceId%>";
+		for(var i=0;i<nalozi.length;i++){
+			nalozi[i].vremePrijemaNaloga	=	Number(nalozi[i].uniqueId.split("--")[1]);
+		}
+		nalozi.sort(function(a, b) {
+		    return parseFloat(b.vremePrijemaNaloga) - parseFloat(a.vremePrijemaNaloga);
+		});
+		var today = new Date();
+		var firstDay = new Date(today.getFullYear(), today.getMonth(), 1).getTime();
+		var lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getTime();
+	</script>
+	<div class="pageTitle">ВАШИ НАЛОЗИ</div>
+	<!--<div class="bonusWrap">
+		<div class="fill" id="fill" style="width:0%"></div>
+		<div class="percentage" id="percentage"></div>
+	</div>
+	<script>
+		var ukupanIznos	=	0;
+		for(var i=0;i<nalozi.length;i++){
+			if((Number(nalozi[i].datumDodeljivanjaMajstora)>=firstDay && Number(nalozi[i].datumDodeljivanjaMajstora)<=lastDay) || (Number(nalozi[i].vremePrijemaNaloga)>=firstDay && Number(nalozi[i].vremePrijemaNaloga)<=lastDay)){
+				if(!isNaN(nalozi[i].ukupanIznos)){
+					ukupanIznos	=	ukupanIznos + parseFloat(nalozi[i].ukupanIznos);
+				}
+			}
+		}
+		var percentage = ukupanIznos/2000000*100;
+		document.getElementById("percentage").innerHTML	=	"Mesecni bonus " + percentage + "%";
+		document.getElementById("fill").style.width		=	percentage.toFixed(2) + "%";
+	</script>-->
+	<div class="mobileSeparator"></div>
+	<div class="appNalozi" id="lista-naloga"></div>
+	<script>
+		var dontShow	=	["Stornirano","Završeno","Nalog u Stambenom","Spreman za fakturisanje","Fakturisan"];
+		for(var i=0;i<nalozi.length;i++){
+			var nalogJson	=	JSON.parse(JSON.stringify(nalozi[i]));
+			if(dontShow.indexOf(nalogJson.statusNaloga)<0){
+				var row 	=	document.createElement("DIV");
+				row.setAttribute("class","row");
+				row.setAttribute("data-json",JSON.stringify(nalogJson));
+				var zavrseno = false;
+				var pregledano = false;
+				for(var j=0;j<izvestaji.length;j++){
+					if(izvestaji[j].majstorId==nalogJson.majstorNaloga){
+						if(izvestaji[j].uniqueId == nalogJson.uniqueId){
+							pregledano = true;
+							if(izvestaji[j].status=="Završeno"){
+								zavrseno = true;
+							}
+						}
+					}
+				}
+				if(!pregledano){
+					if(!zavrseno){
+						row.classList.add("netaknut")
+					}else{
+						row.classList.add("sredjeno")
+					}
+					
+				}else if(zavrseno){
+					row.classList.add("sredjeno")
+				}
+
+				row.setAttribute("onclick","loadGif();window.location.href='/aplikacija/"+deviceId+"/"+nalogJson.uniqueId+"'");
+					var div = document.createElement("DIV");
+					div.setAttribute("class","doubleInline");
+						var item 	=	document.createElement("DIV");
+						item.setAttribute("class","itemWrap");
+							var title = document.createElement("DIV");
+							title.setAttribute("class","title");
+							title.innerHTML	=	"Vreme Prijema:";
+							item.appendChild(title);
+							
+							var value = document.createElement("DIV");
+							value.setAttribute("class","value");
+							value.innerHTML	=	vremePrijema(nalogJson.vremePrijemaNaloga);
+							item.appendChild(value);
+						div.appendChild(item);
+
+						var item 	=	document.createElement("DIV");
+						item.setAttribute("class","itemWrap");
+							var title = document.createElement("DIV");
+							title.setAttribute("class","title");
+							title.innerHTML	=	"Opština Naloga:";
+							item.appendChild(title);
+							
+							var value = document.createElement("DIV");
+							value.setAttribute("class","value");
+							value.innerHTML	=	nalogJson.radnaJedinica;
+							item.appendChild(value);
+						div.appendChild(item);
+					row.appendChild(div);
+
+					var div = document.createElement("DIV");
+					div.setAttribute("class","doubleInline");
+						var item 	=	document.createElement("DIV");
+						item.setAttribute("class","itemWrap");
+							var title = document.createElement("DIV");
+							title.setAttribute("class","title");
+							title.innerHTML	=	"Adresa naloga:";
+							item.appendChild(title);
+							
+							var value = document.createElement("DIV");
+							value.setAttribute("class","value");
+							value.innerHTML	=	nalogJson.adresa.split(",")[0];
+							item.appendChild(value);
+						div.appendChild(item);
+
+						var item 	=	document.createElement("DIV");
+						item.setAttribute("class","itemWrap");
+							var title = document.createElement("DIV");
+							title.setAttribute("class","title");
+							title.innerHTML	=	"Status Naloga:";
+							item.appendChild(title);
+							
+							var value = document.createElement("DIV");
+							value.setAttribute("class","value");
+							value.innerHTML = nalogJson.statusNaloga;
+							item.appendChild(value);
+						div.appendChild(item);
+					row.appendChild(div);
+
+				document.getElementById("lista-naloga").appendChild(row);	
+			}
+			
+		}
+	</script>
+<%- include ("partials/appFooter") -%>
+<%- include ("partials/footer") -%>

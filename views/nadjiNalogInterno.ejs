@@ -1,0 +1,49 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/dispecermenu") -%>
+<%- include ("partials/magacinmenu") -%>
+<%- include ("partials/menu") -%>
+<script>
+	if(user.role=="20"){
+		document.getElementById("napredni-meni").style.display="none";
+		document.getElementById("magacin-meni").style.display="none";
+	}else if(Number(user.role=="25")){
+		document.getElementById("dispecer-meni").style.display="none";
+		document.getElementById("napredni-meni").style.display="none";
+	}else{
+		document.getElementById("dispecer-meni").style.display="none";
+		document.getElementById("magacin-meni").style.display="none";
+	}
+</script>
+<div class="pageTitle">Pronađi nalog po broju narudžbenice</div>
+<div class="nadjiNalog">
+	<form method="post" action="/nadji-nalog-broj" id="form-broj">
+		<input type="text" name="brojnaloga" id="form-broj-value">
+	</form>
+	<div class="button" onclick="submitBrojForm()" style="margin-top:20px;">Pronađi po broju</div>
+	<div id="error-broj" class="error" style="display: none;">Molimo Vas ukucajte broj naloga</div>
+	<div style="margin:30px auto;height:1px;background-color:rgb(50,50,50)"></div>
+	<div class="pageTitle">Pronađi nalog po adresi</div>
+	<form method="post" action="/nadji-nalog-adresa" id="form-adresa">
+		<input type="text" name="adresanaloga" id="form-adresa-value">
+	</form>
+	<div class="button" onclick="submitAdresaForm()" style="margin-top:20px;">Pronađi po adresi</div>
+	<div id="error-adresa" class="error" style="display: none;">Molimo Vas ukucajte adresu</div>
+	<script>
+		function submitBrojForm(){
+			if(document.getElementById("form-broj-value").value){
+				document.getElementById("form-broj").submit();
+			}else{
+				document.getElementById("error-broj").style.display="block";
+			}
+		}
+
+		function submitAdresaForm(){
+			if(document.getElementById("form-adresa-value").value){
+				document.getElementById("form-adresa").submit();
+			}else{
+				document.getElementById("error-adresa").style.display="block";
+			}
+		}
+	</script>
+</div>
+<%- include ("partials/footer") -%>

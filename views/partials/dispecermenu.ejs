@@ -1,0 +1,23 @@
+
+<div class="menuWrap" id="dispecer-meni">
+
+
+	<div class="button" id="moji-nalozi-meni">
+		<a href="/mojiNalozi" onclick="loadGif()">Moji nalozi</a>
+	</div>
+	<div class="button" id="nadji-nalog-2">
+		<a href="/nadji-nalog-interno" onclick="loadGif()">Nađi Nalog</a>
+	</div>
+	<div class="button">
+		<a href="/ucinak" onclick="loadGif()">Učinak Majstora</a>
+	</div>
+	<div class="button" id="dodaj-nalog" style="display:none">
+		<a href="/pdfUpload" onclick="loadGif()">Dodaj nalog</a>
+	</div>
+	<script>
+		var aleksandar = "aleksandar.varagic@poslovigrada.rs";
+		if(user.email=="aleksandar.varagic@poslovigrada.rs"){
+			document.getElementById("dodaj-nalog").style.display ="inline-block";
+		}
+	</script>
+</div>

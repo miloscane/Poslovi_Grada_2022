@@ -1,0 +1,27 @@
+<style>
+	#logo{
+		width:100px;
+		top:5px;
+		left:5px;
+		position:absolute;
+	}
+
+	#site-content{
+		padding-top:40px;
+	}
+</style>
+<div class="appMenu">
+	<div class="menuItem" onclick="loadGif();Android.close()">Zatvori<br>Aplikaciju</div>
+	<div class="menuItem" id="lista-naloga-app">Lista<br>Naloga</div>
+	<script>
+		try{
+			if(deviceId){
+				document.getElementById("lista-naloga-app").setAttribute("onclick","loadGif();window.location.href='/aplikacija/"+deviceId+"'")
+			}
+		}catch(err){
+			console.log(err)
+		}
+		
+	</script>
+	<div class="menuItem" onclick="loadGif();location.reload()">Osveži<br>&nbsp;</div>
+</div>

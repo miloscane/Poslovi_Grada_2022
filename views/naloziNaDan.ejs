@@ -1,0 +1,101 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+	<script>
+		var nalozi 	=	<%-JSON.stringify(nalozi)%>;
+		var date 	=	"<%-datum%>";
+		console.log(nalozi)
+	</script>
+	<div class="naloziNaDan">
+		<h1>Nalozi na dan:</h1>
+		<input type="date" id="nalozi-na-dan-input2">
+		<div class="button" onclick="naloziNaDan2()">Nova pretraga</div>
+		<script>
+			document.getElementById("nalozi-na-dan-input2").value 	=	date;
+			function naloziNaDan2(){
+				document.getElementById('nalozi-na-dan-input').value	=	document.getElementById('nalozi-na-dan-input2').value;
+				loadGif();
+				document.getElementById("nalozi-na-dan-form").submit();
+			}
+		</script>
+		<select id="opstina-filter-na-dan" oninput="filterNaDan()">
+			<option value="SVE">SVE</option>
+			<option value="RAKOVICA">RAKOVICA</option>
+			<option value="ČUKARICA">ČUKARICA</option>
+			<option value="STARI GRAD">STARI GRAD</option>
+			<option value="ZEMUN">ZEMUN</option>
+			<option value="NOVI BEOGRAD">NOVI BEOGRAD</option>
+			<option value="PALILULA">PALILULA</option>
+			<option value="VRAČAR">VRAČAR</option>
+			<option value="VOŽDOVAC">VOŽDOVAC</option>
+			<option value="ZVEZDARA">ZVEZDARA</option>
+			<option value="SAVSKI VENAC">SAVSKI VENAC</option>
+		</select>
+		<script>
+			function filterNaDan(){
+				var redovi	=	document.getElementById("nalozi-na-dan-table").getElementsByTagName("TR");
+				for(var i=1;i<redovi.length;i++){
+					redovi[i].style.display	=	"table-row";
+				}
+				for(var i=1;i<redovi.length;i++){
+					var json 	=	JSON.parse(redovi[i].dataset.nalog);
+					if(json.radnaJedinica!=document.getElementById("opstina-filter-na-dan").value){
+						redovi[i].style.display="none";
+					}
+				}
+				var counter 	=	1;
+				for(var i=1;i<redovi.length;i++){
+					if(redovi[i].style.display=="table-row"){
+						redovi[i].getElementsByTagName("TD")[0].innerHTML	=	counter+".";
+						counter++;
+					}
+				}
+				if(document.getElementById("opstina-filter-na-dan").value=="SVE"){
+					for(var i=1;i<redovi.length;i++){
+						redovi[i].style.display	=	"table-row";
+					}
+				}
+			}
+		</script>
+		<table id="nalozi-na-dan-table">
+			<tr style="font-weight:600">
+				<td>Redni Broj</td>
+				<td>Broj Naloga</td>
+				<td>Radna Jedinica</td>
+				<td>Adresa</td>
+				<td>Status</td>
+				<td>Iznos</td>
+			</tr>
+		</table>
+		<script>
+			for(var i=0;i<nalozi.length;i++){
+				var tr 	=	document.createElement("TR");
+				tr.setAttribute("data-nalog",JSON.stringify(nalozi[i]));
+					var td 	=	document.createElement("TD");
+					td.innerHTML	=	eval(i+1);
+					tr.appendChild(td);
+
+					var td 	=	document.createElement("TD");
+					td.innerHTML	=	nalozi[i].broj;
+					tr.appendChild(td);
+
+					var td 	=	document.createElement("TD");
+					td.innerHTML	=	nalozi[i].radnaJedinica;
+					tr.appendChild(td);
+
+					var td 	=	document.createElement("TD");
+					td.innerHTML	=	nalozi[i].adresa.split(",")[0];
+					tr.appendChild(td);
+
+					var td 	=	document.createElement("TD");
+					td.innerHTML	=	nalozi[i].statusNaloga;
+					tr.appendChild(td);
+
+					var td 	=	document.createElement("TD");
+					td.innerHTML	=	brojSaRazmacima(nalozi[i].ukupanIznos);
+					tr.appendChild(td);
+
+				document.getElementById("nalozi-na-dan-table").appendChild(tr);
+			}
+		</script>
+	</div>
+<%- include ("partials/footer") -%>

@@ -1,0 +1,123 @@
+<%- include ("partials/header") -%>
+
+	<% if (typeof pageTitle=="undefined") { %>
+		<div class="pageTitle">Nalozi</div>
+	<% }else{ %>
+		<div class="pageTitle"><%-pageTitle%></div>
+	<%}%>
+	<script>
+		var nalozi = <%-JSON.stringify(nalozi)%>;
+		var opstine	=	[];
+		for(var i=0;i<nalozi.length;i++){
+			nalozi[i].vremePrijemaNaloga	=	Number(nalozi[i].uniqueId.split("--")[1]);
+			if(opstine.indexOf(nalozi[i].radnaJedinica.toLowerCase())<0){
+				opstine.push(nalozi[i].radnaJedinica.toLowerCase());
+			}
+		}
+		nalozi.sort(function(a, b) {
+		    return parseFloat(b.vremePrijemaNaloga) - parseFloat(a.vremePrijemaNaloga);
+		});
+	</script>
+	<div class="sviNalozi">
+		<div class="header">
+			<div class="inline vremePrijema">Vreme Prijema:</div>
+			<div class="inline datumNaloga">Datum Naloga:</div>
+			<div class="inline broj">Broj:</div>
+			<div class="inline opstina">Opština:</div>
+			<div class="inline adresa">Adresa:</div>
+		</div>
+		<div id="table-wrap" style="height:500px;overflow:scroll">
+			<div id="table-height" style="height:10000px">
+				<div id="table-content" style="position:sticky;top:0;border:1px solid rgb(0,0,0)"></div>
+			</div>
+		</div>
+		<script>
+			var rowHeight			=	30;
+			var scrollableElement 	=	document.getElementById("table-wrap");
+			scrollableElement.addEventListener("scroll", (event) => {
+				generateTable();
+			});
+			
+			function generateTable(){
+				document.getElementById("table-content").innerHTML	=	"";
+				var numberOfElements	=	500/rowHeight;
+				var scrollValue			=	scrollableElement.scrollTop;
+				//Reset filters
+				for(var i=0;i<nalozi.length;i++){
+					nalozi[i].display = 1;
+				}
+
+				//Filter out elements
+				//filter elements
+
+				
+
+				//calculate needed scroll height and total sum of prices
+				var naloziToShow	=	[];
+				for(var i=0;i<nalozi.length;i++){
+					if(nalozi[i].display==1){
+						naloziToShow.push(nalozi[i]);
+					}
+				}
+
+
+				var scrollHeight	=	naloziToShow.length*rowHeight;
+				document.getElementById("table-height").scrollTop	=	0;
+				document.getElementById("table-height").style.height	=	scrollHeight + "px";
+				var startIndex		=	Math.floor(scrollValue / rowHeight);
+				var endIndex		=	startIndex + numberOfElements;
+				var highlightNext	=	false;
+
+				for(var i = startIndex;i<endIndex;i++){
+					if(naloziToShow[i]){
+						var row = document.createElement("DIV");
+						row.setAttribute("class","row");
+						if(i%2==0){
+							row.classList.add("rowHighlight");
+						}
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline redniBroj");
+							elem.innerHTML	=	eval(i+1);
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline datumNaloga");
+							elem.innerHTML	=	naloziToShow[i].datum.split("god.")[0];
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline broj");
+							elem.innerHTML	=	naloziToShow[i].broj;
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline opstina");
+							elem.innerHTML	=	naloziToShow[i].radnaJedinica;
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline adresa");
+							elem.innerHTML	=	naloziToShow[i].adresa.split(",")[0];
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","button pogledajNalog");
+								var a = document.createElement("A");
+								a.setAttribute("href","/pdfView/outside/"+naloziToShow[i].uniqueId);
+								a.setAttribute("target","_blank");
+								a.innerHTML = "Pogledaj Nalog"
+								elem.appendChild(a);
+							row.appendChild(elem);
+
+						document.getElementById("table-content").appendChild(row);
+					}
+					
+				}
+
+			}
+			generateTable();
+			
+		</script>
+	</div>
+	<div class="button" onclick="loadGif();window.location.href='/nadji-nalog'">Nazad na pretragu</div>
+<%- include ("partials/footer") -%>

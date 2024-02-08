@@ -1,0 +1,1374 @@
+<div style="overflow:hidden;height:1px;width:1px;">
+	<canvas id="header-canvas" height="3508" width="2480"></canvas>
+	<script>
+		var headerCanvas = document.getElementById('header-canvas');
+		var headerCanvasContext = headerCanvas.getContext('2d');
+		var headerLogoBlob;
+		function make_base(){
+		  base_image = new Image();
+		  base_image.src = '/images/nalogPrva.png';
+		  base_image.onload = function(){
+		    headerCanvasContext.drawImage(base_image, 0, 0);
+		    headerLogoBlob 	=	headerCanvas.toDataURL("image/png", 1.0);
+		  }
+		}
+		make_base();
+	</script>
+</div>
+<div style="overflow:hidden;height:1px;width:1px;">
+	<canvas id="ips-canvas" height="3508" width="2480"></canvas>
+	<script>
+		var ipsCanvas = document.getElementById('ips-canvas');
+		var ipsCanvasContext = ipsCanvas.getContext('2d');
+		var ipsLogoBlob;
+		function make_base2(){
+		  base_image2 = new Image();
+		  base_image2.src = '/images/nalogDruga.png';
+		  base_image2.onload = function(){
+		    ipsCanvasContext.drawImage(base_image2, 0, 0);
+		    ipsLogoBlob 	=	ipsCanvas.toDataURL("image/png", 1.0);
+
+		  }
+		}
+		make_base2();
+	</script>
+</div>
+<div style="overflow:hidden;height:1px;width:1px;">
+	<canvas id="logo-canvas" height="306" width="300"></canvas>
+	<script>
+		var logoCanvas = document.getElementById('logo-canvas');
+		var logoCanvasContext = logoCanvas.getContext('2d');
+		var logoLogoBlob;
+		function make_base3(){
+		  base_image3 = new Image();
+		  base_image3.src = '/images/fakturaLogo.png';
+		  base_image3.onload = function(){
+		    logoCanvasContext.drawImage(base_image3, 0, 0);
+		    logoLogoBlob 	=	logoCanvas.toDataURL("image/png", 1.0);
+
+		  }
+		}
+		make_base3();
+	</script>
+</div>
+<div style="overflow:hidden;height:1px;width:1px;">
+	<canvas id="banka-canvas" height="1000" width="1000"></canvas>
+	<script>
+		var bankaCanvas = document.getElementById('banka-canvas');
+		var bankaCanvasContext = bankaCanvas.getContext('2d');
+		var bankaLogoBlob;
+		function make_base4(){
+		  base_image4 = new Image();
+		  base_image4.src = '/images/ips_logo2.png';
+		  base_image4.onload = function(){
+		    bankaCanvasContext.drawImage(base_image4, 0, 0);
+		    bankaLogoBlob 	=	bankaCanvas.toDataURL("image/png", 1.0);
+
+		  }
+		}
+		make_base4();
+	</script>
+</div>
+<div style="overflow:hidden;height:1px;width:1px;">
+	<canvas id="produzenje-canvas" height="3508" width="2480"></canvas>
+	<script>
+		var produzenjeCanvas = document.getElementById('produzenje-canvas');
+		var produzenjeCanvasContext = produzenjeCanvas.getContext('2d');
+		var produzenjeBlob;
+		function make_base5(){
+		  base_image5 = new Image();
+		  base_image5.src = '/images/produzenje2.jpg';
+		  base_image5.onload = function(){
+		    produzenjeCanvasContext.drawImage(base_image5, 0, 0);
+		    produzenjeBlob 	=	produzenjeCanvas.toDataURL("image/jpeg", 1.0);
+
+		  }
+		}
+		make_base5();
+	</script>
+</div>
+<div style="overflow:hidden;height:1px;width:1px;">
+	<div id="qr-code" style="width:300px;height:300px"></div>
+</div>
+<script src="/js/pdf.js"></script>
+<script src="/js/font.js"></script>
+<script src="/js/font2.js"></script>
+<script src="/js/qr.js"></script>
+<script>var mm = 3.7795275591;</script>
+<script>
+	function stringArray(string,count){
+		return string.match(new RegExp('.{1,' + count + '}', 'g'));
+	}
+
+	function savePDF(nalogJson,testCase){
+		doc = new jsPDF({
+			orientation: 'p',
+			unit: 'mm',
+			format: 'a4',
+			compress: true
+			//putOnlyUsedFonts:true
+		});
+
+		
+		pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+		pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+		var yPos = 12;
+
+		//doc.getFontList("Helvetica");
+	    doc.addFileToVFS("PTSans.ttf", PTSans);
+	    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+	    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+	    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+	    doc.setFont('PTSans'); // set font
+	    doc.getFontList("PTSans");
+        doc.addImage(headerLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+        doc.setFontType("bold");
+		doc.setFontSize(12);
+		if(nalogJson.broj){
+			doc.text(nalogJson.broj,123,23.5,'left');	
+		}
+        
+        doc.setFontType("normal");
+		doc.setFontSize(10);
+		var xOffset = 32;
+		if(nalogJson.narucilac.naziv){
+			doc.text(nalogJson.narucilac.naziv,xOffset,40.5);
+		}
+        
+        if(nalogJson.narucilac.adresa){
+        	doc.text(nalogJson.narucilac.adresa,xOffset,48);
+        }
+        
+        if(nalogJson.narucilac.pib){
+        	doc.text(nalogJson.narucilac.pib,xOffset,53.65);
+        }
+        
+        if(nalogJson.narucilac.mb){
+        	doc.text(nalogJson.narucilac.mb,xOffset,59);
+        }
+        
+        /*var splitText = doc.splitTextToSize(nalogJson.narucilac.racun, 50);
+        console.log(splitText);
+		doc.text(splitText, xOffset, 65);*/
+		if(nalogJson.narucilac.osobaZaKontakt){
+			doc.text(nalogJson.narucilac.osobaZaKontakt,xOffset,75);	
+		}
+        
+        if(nalogJson.narucilac.telefon){
+        	doc.text(nalogJson.narucilac.telefon,xOffset,81);
+        }
+        
+
+		var xOffset = 156;
+		if(nalogJson.pruzalac.naziv){
+			doc.text(nalogJson.pruzalac.naziv,xOffset,40.5);
+		}
+        
+        if(nalogJson.pruzalac.adresa){
+        	doc.text(nalogJson.pruzalac.adresa,xOffset,48);
+        }
+        
+        if(nalogJson.pruzalac.pib){
+        	doc.text(nalogJson.pruzalac.pib,xOffset,53.65);	
+        }
+        
+        if(nalogJson.pruzalac.mb){
+        	doc.text(nalogJson.pruzalac.mb,xOffset,59);
+        }
+        
+		doc.setFontSize(9);
+		if(nalogJson.pruzalac.racun){
+			doc.text(stringArray(nalogJson.pruzalac.racun,30), xOffset, 65.3);	
+		}
+		
+		doc.setFontSize(10);
+		if(nalogJson.pruzalac.osobaZaKontakt){
+			doc.text(nalogJson.pruzalac.osobaZaKontakt,xOffset,75);
+		}
+        
+        if(nalogJson.pruzalac.telefon){
+        	doc.text(nalogJson.pruzalac.telefon,xOffset,81);
+        }
+        
+
+        var xOffset = 38;
+		doc.setFontSize(9);
+		if(nalogJson.adresa){
+			doc.text(stringArray(nalogJson.adresa,40),xOffset,96);
+		}
+        
+		doc.setFontSize(10);
+		if(nalogJson.zahtevalac){
+			doc.text(stringArray(nalogJson.zahtevalac,36),xOffset,105);
+		}
+        
+        if(nalogJson.mivrada.code){
+        	doc.text(nalogJson.mivrada.code,xOffset,124);
+        }
+        
+        if(nalogJson.mivrada.desc){
+        	doc.text(stringArray(nalogJson.mivrada.desc,26),xOffset+21.5,122);
+        }
+        
+		doc.setFontSize(9);
+		if(nalogJson.opis){
+			doc.text(stringArray(nalogJson.opis,36),xOffset,132);
+		}
+        
+		doc.setFontSize(10);
+
+        var xOffset = 173;
+        if(nalogJson.radnaJedinica){
+        	doc.text(nalogJson.radnaJedinica,xOffset,98);	
+        }
+        
+        if(nalogJson.brojZahteva){
+        	doc.text(nalogJson.brojZahteva,xOffset,105);
+        }
+
+        if(nalogJson.datum){
+        	doc.text(nalogJson.datum,xOffset,111);
+        }
+        
+        if(nalogJson.vrstaRada){
+        	doc.text(nalogJson.vrstaRada,xOffset,117);	
+        }
+        
+        if(nalogJson.garantniRok){
+        	doc.text(nalogJson.garantniRok,xOffset,124);
+        }
+        
+        if(nalogJson.radUGarantnomRoku){
+        	doc.text(nalogJson.radUGarantnomRoku,xOffset,134);
+        }
+
+        var yOffset = 154;
+        if(nalogJson.nalogIzdao){
+        	doc.text(nalogJson.nalogIzdao,5,yOffset);	
+        }
+        
+        if(nalogJson.kontrolniOrgan){
+        	doc.text(nalogJson.kontrolniOrgan,39,yOffset);
+        }
+        
+        if(nalogJson.izvodjac){
+        	doc.text(nalogJson.izvodjac,80,yOffset);
+        }
+        
+        if(nalogJson.partija){
+        	doc.text(nalogJson.partija,137,yOffset);
+        }
+        
+        if(nalogJson.okvirniUgovor){
+        	doc.text(nalogJson.okvirniUgovor,160,yOffset);	
+        }
+
+        if(nalogJson.okvirniUgovor2){
+        	doc.text(nalogJson.okvirniUgovor2,160,yOffset+6.8);
+        }
+        
+
+        var yOffset = 171;
+        if(nalogJson.rokPocetkaIzvodjenjaRadova){
+        	doc.text(nalogJson.rokPocetkaIzvodjenjaRadova,73,yOffset);	
+        }
+        
+        if(nalogJson.rokIzvodjenjaRadova){
+        	doc.text(nalogJson.rokIzvodjenjaRadova,180,yOffset);
+        }
+
+
+        doc.setDrawColor(0);
+        doc.setFillColor(255,255,255);
+		doc.rect(3.6, 184.5, 202.1, 36.15, 'F');
+        doc.setFillColor(0,0,0);
+		doc.rect(16.15, 184, 0.2, 36.65, 'F');
+		doc.rect(40.1, 184, 0.2, 36.65, 'F');
+		doc.rect(107.5, 184, 0.2, 36.65, 'F');
+		doc.rect(123.1, 184, 0.2, 36.65, 'F');
+		doc.rect(141.9, 184, 0.2, 36.65, 'F');
+		doc.rect(160.75, 184, 0.2, 36.65, 'F');
+		doc.rect(180.8, 184, 0.2, 36.65, 'F');
+
+		var yOffset = 187.5;
+		doc.setFontSize(8);
+        doc.setFillColor(0,0,0);
+        var fakturiasnjeArray	=	JSON.parse(JSON.stringify(nalogJson.fakturisanje));
+		for(var i=0;i<9;i++){
+			var maxRows	=	1;
+			if(fakturiasnjeArray[i]){
+				doc.text(fakturiasnjeArray[i].redniBroj.toString()+".",5,yOffset);
+				doc.text(fakturiasnjeArray[i].sifraArtikla,17,yOffset);
+				var splitString	=	stringArray(fakturiasnjeArray[i].nazivArtikla,50);
+				if(splitString){
+					doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+				}
+				if(splitString){
+					if(splitString.length>maxRows){
+						maxRows = splitString.length;
+					}
+				}
+				
+				
+				if(fakturiasnjeArray[i].jedinicaMere!="&nbsp;"){
+					var splitString	=	stringArray(fakturiasnjeArray[i].jedinicaMere,8);
+					if(splitString){
+						doc.text(splitString,109,yOffset);
+					}
+					
+				}
+				if(splitString){
+					if(splitString.length>maxRows){
+						maxRows = splitString.length;
+					}
+				}
+				
+				
+				if(fakturiasnjeArray[i].planiranaKolicina!="&nbsp;"){
+					//doc.text(fakturiasnjeArray[i].planiranaKolicina,125,yOffset);
+					doc.text(" ",125,yOffset);
+				}
+				
+				doc.text(fakturiasnjeArray[i].izvedenaKolicina,145,yOffset);
+				doc.text(fakturiasnjeArray[i].jedinicnaCena,163,yOffset);
+				doc.text(fakturiasnjeArray[i].iznos,183,yOffset);
+				fakturiasnjeArray[i].done = 1;
+			}
+			var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+			if(yTest>215){
+				break;
+			}
+			doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 202.1, 0.2, 'F');
+			if(maxRows>1){
+				yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+			}else{
+				yOffset = yOffset + 4.1*maxRows;
+			}
+		}
+
+		doc.setFontSize(11);
+		if(nalogJson.radIzvrsen){
+			doc.text(nalogJson.radIzvrsen,55,225);	
+		}
+
+		if(nalogJson.datumIspostavljanjaNarudzbenice){
+			doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);
+		}
+		
+		
+
+        doc.addPage();
+        doc.addImage(ipsLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+        doc.setFontSize(11);
+		if(nalogJson.radIzvrsen){
+			doc.text(nalogJson.radIzvrsen,55,225);	
+		}
+
+		if(nalogJson.datumIspostavljanjaNarudzbenice){
+			doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);
+		}
+
+		doc.setFontSize(8);
+		var yOffset = 39;
+        doc.setDrawColor(0);
+        doc.setFillColor(255,255,255);
+		doc.rect(3.6, yOffset+0.5, 201.6, 68, 'F');
+        doc.setFillColor(0,0,0);
+		doc.rect(16, yOffset, 0.2, 68, 'F');
+		doc.rect(40, yOffset, 0.2, 68, 'F');
+		doc.rect(107.2, yOffset, 0.2, 68, 'F');
+		doc.rect(122.8, yOffset, 0.2, 68, 'F');
+		doc.rect(141.5, yOffset, 0.2, 68, 'F');
+		doc.rect(160.25, yOffset, 0.2, 68, 'F');
+		doc.rect(180.2, yOffset, 0.2, 68, 'F');
+
+		var yOffset = 42;
+		var firstInput	=	0;
+		for(var i=0;i<fakturiasnjeArray.length;i++){
+			if(!fakturiasnjeArray[i].done){
+				firstInput	=	eval(i);
+				break;
+			}
+		}
+		if(firstInput==0){
+			firstInput = fakturiasnjeArray.length;
+		}
+		for(var i=0;i<16;i++){
+			var maxRows	=	1;
+			if(fakturiasnjeArray[firstInput]){
+				doc.text(fakturiasnjeArray[firstInput].redniBroj.toString()+".",5,yOffset);
+				doc.text(fakturiasnjeArray[firstInput].sifraArtikla,17,yOffset);
+				var splitString	=	stringArray(fakturiasnjeArray[firstInput].nazivArtikla,50);
+				if(splitString){
+					doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+				}
+				if(splitString){
+					if(splitString.length>maxRows){
+						maxRows = splitString.length;
+					}
+				}
+				
+				if(fakturiasnjeArray[firstInput].jedinicaMere!="&nbsp;"){
+					var splitString	=	stringArray(fakturiasnjeArray[firstInput].jedinicaMere,8);
+					if(splitString){
+						doc.text(splitString,109,yOffset);
+					}
+				}
+
+				if(splitString){
+					if(splitString.length>maxRows){
+						maxRows = splitString.length;
+					}
+				}
+				
+				
+				if(fakturiasnjeArray[firstInput].planiranaKolicina!="&nbsp;"){
+					//doc.text(fakturiasnjeArray[firstInput].planiranaKolicina,125,yOffset);
+					doc.text(" ",125,yOffset);
+				}
+				
+				doc.text(fakturiasnjeArray[firstInput].izvedenaKolicina,145,yOffset);
+				doc.text(fakturiasnjeArray[firstInput].jedinicnaCena,163,yOffset);
+				doc.text(fakturiasnjeArray[firstInput].iznos,183,yOffset);
+				fakturiasnjeArray[firstInput].done = 1;
+				firstInput++;
+			}
+			var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+			if(yTest>100){
+				break;
+			}
+			doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 201.6, 0.2, 'F');
+			if(maxRows>1){
+				yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+			}else{
+				yOffset = yOffset + 4.1*maxRows;
+			}
+		}
+
+		var firstInput = 0;
+		for(var i=0;i<fakturiasnjeArray.length;i++){
+			if(!fakturiasnjeArray[i].done){
+				firstInput	=	eval(i);
+				break;
+			}
+		}
+		if(firstInput==0){
+			doc.setFontType("bold");
+			doc.setFontSize(12);
+	        doc.text(nalogJson.broj,123,23.5,'left');
+			doc.text(nalogJson.ukupanIznos,175,116);
+	       	doc.setFontType("normal");
+			doc.setFontSize(11);
+			doc.text(nalogJson.ukupanIznosSlovima,32,124);
+
+			doc.setFontSize(11);
+			if(nalogJson.radIzvrsen){
+				doc.text(nalogJson.radIzvrsen,55,225);	
+			}
+
+			if(nalogJson.datumIspostavljanjaNarudzbenice){
+				doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);
+			}
+		}else{
+			doc.addPage();
+	        doc.addImage(ipsLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+	        doc.setFontSize(11);
+			if(nalogJson.radIzvrsen){
+				doc.text(nalogJson.radIzvrsen,55,225);	
+			}
+
+			if(nalogJson.datumIspostavljanjaNarudzbenice){
+				doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);
+			}
+
+			doc.setFontSize(8);
+			var yOffset = 42;
+	        doc.setDrawColor(0);
+	        doc.setFillColor(255,255,255);
+			doc.rect(3.6, yOffset+0.5, 201.6, 68, 'F');
+	        doc.setFillColor(0,0,0);
+			doc.rect(16, yOffset, 0.2, 68, 'F');
+			doc.rect(40, yOffset, 0.2, 68, 'F');
+			doc.rect(107.2, yOffset, 0.2, 68, 'F');
+			doc.rect(122.8, yOffset, 0.2, 68, 'F');
+			doc.rect(141.5, yOffset, 0.2, 68, 'F');
+			doc.rect(160.25, yOffset, 0.2, 68, 'F');
+			doc.rect(180.2, yOffset, 0.2, 68, 'F');
+			for(var i=0;i<16;i++){
+				var maxRows	=	1;
+				if(fakturiasnjeArray[firstInput]){
+					doc.text(fakturiasnjeArray[firstInput].redniBroj.toString()+".",5,yOffset);
+					doc.text(fakturiasnjeArray[firstInput].sifraArtikla,17,yOffset);
+					var splitString	=	stringArray(fakturiasnjeArray[firstInput].nazivArtikla,50);
+					if(splitString){
+						doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+					}
+					
+					if(splitString){
+						if(splitString.length>maxRows){
+							maxRows = splitString.length;
+						}
+					}
+					
+					if(fakturiasnjeArray[firstInput].jedinicaMere!="&nbsp;"){
+						var splitString	=	stringArray(fakturiasnjeArray[firstInput].jedinicaMere,8);
+						if(splitString){
+							doc.text(splitString,109,yOffset);
+						}
+						
+					}
+					
+					if(splitString){
+						if(splitString.length>maxRows){
+							maxRows = splitString.length;
+						}
+					}
+					
+					if(fakturiasnjeArray[firstInput].planiranaKolicina!="&nbsp;"){
+						//doc.text(fakturiasnjeArray[firstInput].planiranaKolicina,125,yOffset);
+						doc.text(" ",125,yOffset);
+					}
+					
+					doc.text(fakturiasnjeArray[firstInput].izvedenaKolicina,145,yOffset);
+					doc.text(fakturiasnjeArray[firstInput].jedinicnaCena,163,yOffset);
+					doc.text(fakturiasnjeArray[firstInput].iznos,183,yOffset);
+					fakturiasnjeArray[firstInput].done = 1;
+					firstInput++;
+				}
+				var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+				if(yTest>100){
+					break;
+				}
+				doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 201.6, 0.2, 'F');
+				if(maxRows>1){
+					yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+				}else{
+					yOffset = yOffset + 4.1*maxRows;
+				}
+
+			}
+
+			var firstInput = 0;
+			for(var i=0;i<fakturiasnjeArray.length;i++){
+				if(!fakturiasnjeArray[i].done){
+					firstInput	=	eval(i);
+					break;
+				}
+			}
+
+			if(firstInput!=0){
+				doc.addPage();
+		        doc.addImage(ipsLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+		        doc.setFontSize(11);
+				doc.text(nalogJson.radIzvrsen,55,225);
+				doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);
+
+				doc.setFontSize(8);
+				var yOffset = 42;
+		        doc.setDrawColor(0);
+		        doc.setFillColor(255,255,255);
+				doc.rect(3.6, yOffset+0.5, 201.6, 68, 'F');
+		        doc.setFillColor(0,0,0);
+				doc.rect(16, yOffset, 0.2, 68, 'F');
+				doc.rect(40, yOffset, 0.2, 68, 'F');
+				doc.rect(107.2, yOffset, 0.2, 68, 'F');
+				doc.rect(122.8, yOffset, 0.2, 68, 'F');
+				doc.rect(141.5, yOffset, 0.2, 68, 'F');
+				doc.rect(160.25, yOffset, 0.2, 68, 'F');
+				doc.rect(180.2, yOffset, 0.2, 68, 'F');
+				for(var i=0;i<16;i++){
+					var maxRows	=	1;
+					if(fakturiasnjeArray[firstInput]){
+						doc.text(fakturiasnjeArray[firstInput].redniBroj.toString()+".",5,yOffset);
+						doc.text(fakturiasnjeArray[firstInput].sifraArtikla,17,yOffset);
+						var splitString	=	stringArray(fakturiasnjeArray[firstInput].nazivArtikla,50);
+						if(splitString){
+							doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+						}
+						
+						if(splitString){
+							if(splitString.length>maxRows){
+								maxRows = splitString.length;
+							}
+						}
+						
+						if(fakturiasnjeArray[firstInput].jedinicaMere!="&nbsp;"){
+							var splitString	=	stringArray(fakturiasnjeArray[firstInput].jedinicaMere,8);
+							if(splitString){
+								doc.text(splitString,109,yOffset);
+							}
+							
+						}
+						
+						if(splitString){
+							if(splitString.length>maxRows){
+								maxRows = splitString.length;
+							}
+						}
+						
+						if(fakturiasnjeArray[firstInput].planiranaKolicina!="&nbsp;"){
+							//doc.text(fakturiasnjeArray[firstInput].planiranaKolicina,125,yOffset);
+							doc.text(" ",125,yOffset);
+						}
+						
+						doc.text(fakturiasnjeArray[firstInput].izvedenaKolicina,145,yOffset);
+						doc.text(fakturiasnjeArray[firstInput].jedinicnaCena,163,yOffset);
+						doc.text(fakturiasnjeArray[firstInput].iznos,183,yOffset);
+						fakturiasnjeArray[firstInput].done = 1;
+						firstInput++;
+					}
+					var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+					if(yTest>100){
+						break;
+					}
+					doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 201.6, 0.2, 'F');
+					if(maxRows>1){
+						yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+					}else{
+						yOffset = yOffset + 4.1*maxRows;
+					}
+				}
+			}
+
+			var firstInput = 0;
+			for(var i=0;i<fakturiasnjeArray.length;i++){
+				if(!fakturiasnjeArray[i].done){
+					firstInput	=	eval(i);
+					break;
+				}
+			}
+
+			if(firstInput!=0){
+				doc.addPage();
+		        doc.addImage(ipsLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+		        doc.setFontSize(11);
+				if(nalogJson.radIzvrsen){
+					doc.text(nalogJson.radIzvrsen,55,225);	
+				}
+
+				if(nalogJson.datumIspostavljanjaNarudzbenice){
+					doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);
+				}
+
+				doc.setFontSize(8);
+				var yOffset = 42;
+		        doc.setDrawColor(0);
+		        doc.setFillColor(255,255,255);
+				doc.rect(3.6, yOffset+0.5, 201.6, 68, 'F');
+		        doc.setFillColor(0,0,0);
+				doc.rect(16, yOffset, 0.2, 68, 'F');
+				doc.rect(40, yOffset, 0.2, 68, 'F');
+				doc.rect(107.2, yOffset, 0.2, 68, 'F');
+				doc.rect(122.8, yOffset, 0.2, 68, 'F');
+				doc.rect(141.5, yOffset, 0.2, 68, 'F');
+				doc.rect(160.25, yOffset, 0.2, 68, 'F');
+				doc.rect(180.2, yOffset, 0.2, 68, 'F');
+				for(var i=0;i<16;i++){
+					var maxRows	=	1;
+					if(fakturiasnjeArray[firstInput]){
+						doc.text(fakturiasnjeArray[firstInput].redniBroj.toString()+".",5,yOffset);
+						doc.text(fakturiasnjeArray[firstInput].sifraArtikla,17,yOffset);
+						var splitString	=	stringArray(fakturiasnjeArray[firstInput].nazivArtikla,50);
+						if(splitString){
+							doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+						}
+						
+						if(splitString){
+							if(splitString.length>maxRows){
+								maxRows = splitString.length;
+							}
+						}
+						
+						if(fakturiasnjeArray[firstInput].jedinicaMere!="&nbsp;"){
+							var splitString	=	stringArray(fakturiasnjeArray[firstInput].jedinicaMere,8);
+							if(splitString){
+								doc.text(splitString,109,yOffset);
+							}
+							
+						}
+						
+						if(splitString){
+							if(splitString.length>maxRows){
+								maxRows = splitString.length;
+							}
+						}
+						
+						if(fakturiasnjeArray[firstInput].planiranaKolicina!="&nbsp;"){
+							//doc.text(fakturiasnjeArray[firstInput].planiranaKolicina,125,yOffset);
+							doc.text(" ",125,yOffset);
+						}
+						
+						doc.text(fakturiasnjeArray[firstInput].izvedenaKolicina,145,yOffset);
+						doc.text(fakturiasnjeArray[firstInput].jedinicnaCena,163,yOffset);
+						doc.text(fakturiasnjeArray[firstInput].iznos,183,yOffset);
+						fakturiasnjeArray[firstInput].done = 1;
+						firstInput++;
+					}
+					var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+					if(yTest>100){
+						break;
+					}
+					doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 201.6, 0.2, 'F');
+					if(maxRows>1){
+						yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+					}else{
+						yOffset = yOffset + 4.1*maxRows;
+					}
+				}
+			}
+
+
+			doc.setFontType("bold");
+			doc.setFontSize(12);
+	        doc.text(nalogJson.broj,123,23.5,'left');
+			doc.text(nalogJson.ukupanIznos,175,116);
+	       	doc.setFontType("normal");
+			doc.setFontSize(11);
+			doc.text(nalogJson.ukupanIznosSlovima,32,124);
+
+			doc.setFontSize(11);
+			if(nalogJson.radIzvrsen){
+				doc.text(nalogJson.radIzvrsen,55,225);	
+			}
+
+			if(nalogJson.datumIspostavljanjaNarudzbenice){
+				doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);
+			}
+		}
+		
+
+
+
+		if(testCase==1){
+			doc.save("Radni Nalog-"+nalogJson.broj+"-Popunjen.pdf");
+		}else if(testCase==2){
+			//window.open(doc.output('bloburl'), '_blank');
+			window.open(URL.createObjectURL(doc.output("blob")),'_blank')
+		}
+	}
+
+	function stampajSpecifikaciju(opstina,datum,nalozi,testCase){
+		doc = new jsPDF({
+			orientation: 'p',
+			unit: 'mm',
+			format: 'a4',
+			compress:true
+			//putOnlyUsedFonts:true
+		});
+		
+		pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+		pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+		var yPos = 5;
+		var xPos = 5;
+		var yEnd = 200;
+		doc.addFileToVFS("PTSans.ttf", PTSans);
+	    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+	    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+	    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+	    doc.setFont('PTSans'); // set font
+	    doc.getFontList("PTSans");
+	    doc.setDrawColor(0);
+        doc.setFillColor(0,0,0);
+		doc.rect(xPos, yPos, yEnd, 0.4, 'F');
+        doc.setFontType("bold");
+		doc.setFontSize(14);
+		var title = "SPECIFIKACIJA "+opstina+" "+datum;
+		yPos = yPos + 5
+        doc.text(title,xPos+3,yPos);
+		doc.rect(xPos, yPos+3, yEnd, 0.4, 'F');
+		doc.rect(xPos, yPos-5, xPos-4.6, 8, 'F');//Leva margina
+		doc.rect(yEnd+4.6, yPos-5, xPos-4.6, 8, 'F');//desna margina
+
+		yPos = yPos + 8;
+		doc.text("R.BR.",xPos+2,yPos);
+		doc.rect(xPos, yPos+2, yEnd, 0.4, 'F');//Donja linija
+		doc.rect(xPos, yPos-7, xPos-4.6, 9, 'F');//Leva margina
+		doc.rect(yEnd+4.6, yPos-7, xPos-4.6, 9, 'F');//desna margina
+		doc.rect(xPos+15, yPos-5, xPos-4.6, 7, 'F');//desna margina broja
+		doc.text("NARUDŽBENICA",xPos+15+2,yPos);
+		doc.rect(xPos+15+38, yPos-5, xPos-4.6, 7, 'F');//desna margina narudzbenice
+		doc.text("ADRESA",xPos+15+38+2,yPos);
+		doc.rect(xPos+15+38+90, yPos-5, xPos-4.6, 7, 'F');//desna margina adrese
+		doc.text("IZNOS",xPos+15+38+90+2,yPos);
+        doc.setFontType("normal");
+
+        var ukupanIznos = 0;
+		for(var i=0;i<nalozi.length;i++){
+			yPos = yPos + 8;
+			doc.text(eval(i+1).toString(),xPos+2,yPos);
+			doc.rect(xPos, yPos+2, yEnd, 0.4, 'F');//Donja linija
+			doc.rect(xPos, yPos-7, xPos-4.6, 9, 'F');//Leva margina
+			doc.rect(yEnd+4.6, yPos-7, xPos-4.6, 9, 'F');//desna margina
+			doc.rect(xPos+15, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina broja
+			doc.text(nalozi[i].broj.toString(),xPos+15+2,yPos);
+			doc.rect(xPos+15+38, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina narudzbenice
+			doc.text(nalozi[i].adresa.split(",")[0],xPos+15+38+2,yPos);
+			doc.rect(xPos+15+38+90, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina adrese
+			//doc.text(brojSaRazmacima(nalozi[i].ukupanIznos),xPos+15+38+90+2,yPos,'right');
+			doc.text(brojSaRazmacima(nalozi[i].ukupanIznos),202,yPos,'right');
+			if(yPos>285){
+				doc.addPage()
+				yPos = 5;
+			}
+			ukupanIznos = ukupanIznos + parseFloat(nalozi[i].ukupanIznos);
+		}
+
+		yPos = yPos + 15;
+        doc.setFontType("bold");
+		doc.setFontSize(20);
+		doc.text("UKUPNO: " + brojSaRazmacima(ukupanIznos.toFixed(2).toString()),202,yPos,'right');
+
+		if(testCase==1){
+			doc.save("Specifikacija_"+datum+".pdf");
+		}else if(testCase==2){
+			//window.open(doc.output('bloburl'), '_blank');
+			window.open(URL.createObjectURL(doc.output("blob")),'_blank')
+		}
+
+	}
+
+
+	function zahtevZaOdlaganje(nalogJson){
+		doc = new jsPDF({
+			orientation: 'p',
+			unit: 'mm',
+			format: 'a4',
+			compress: true
+			//putOnlyUsedFonts:true
+		});
+
+		
+		pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+		pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+		var yPos = 12;
+
+		//doc.getFontList("Helvetica");
+	    doc.addFileToVFS("PTSans.ttf", PTSans);
+	    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+	    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+	    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+	    doc.setFont('PTSans'); // set font
+	    doc.getFontList("PTSans");
+        doc.addImage(headerLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+        doc.setFontType("bold");
+		doc.setFontSize(12);
+        doc.text(nalogJson.broj,123,23.5,'left');
+        doc.setFontType("normal");
+		doc.setFontSize(10);
+		var xOffset = 32;
+        doc.text(nalogJson.narucilac.naziv,xOffset,40.5);
+        doc.text(nalogJson.narucilac.adresa,xOffset,48);
+        doc.text(nalogJson.narucilac.pib,xOffset,53.65);
+        doc.text(nalogJson.narucilac.mb,xOffset,59);
+        /*var splitText = doc.splitTextToSize(nalogJson.narucilac.racun, 50);
+        console.log(splitText);
+		doc.text(splitText, xOffset, 65);*/
+        doc.text(nalogJson.narucilac.osobaZaKontakt,xOffset,75);
+        doc.text(nalogJson.narucilac.telefon,xOffset,81);
+
+		var xOffset = 156;
+        doc.text(nalogJson.pruzalac.naziv,xOffset,40.5);
+        doc.text(nalogJson.pruzalac.adresa,xOffset,48);
+        doc.text(nalogJson.pruzalac.pib,xOffset,53.65);
+        doc.text(nalogJson.pruzalac.mb,xOffset,59);
+		doc.setFontSize(9);
+		doc.text(stringArray(nalogJson.pruzalac.racun,30), xOffset, 65.3);
+		doc.setFontSize(10);
+        doc.text(nalogJson.pruzalac.osobaZaKontakt,xOffset,75);
+        doc.text(nalogJson.pruzalac.telefon,xOffset,81);
+
+        var xOffset = 38;
+		doc.setFontSize(9);
+        doc.text(stringArray(nalogJson.adresa,40),xOffset,96);
+		doc.setFontSize(10);
+        doc.text(stringArray(nalogJson.zahtevalac,36),xOffset,105);
+        doc.text(nalogJson.mivrada.code,xOffset,124);
+        doc.text(stringArray(nalogJson.mivrada.desc,26),xOffset+21.5,122);
+		doc.setFontSize(9);
+        doc.text(stringArray(nalogJson.opis,36),xOffset,132);
+		doc.setFontSize(10);
+
+        var xOffset = 173;
+        doc.text(nalogJson.radnaJedinica,xOffset,98);
+        doc.text(nalogJson.brojZahteva,xOffset,105);
+        doc.text(nalogJson.datum,xOffset,111);
+        doc.text(nalogJson.vrstaRada,xOffset,117);
+        doc.text(nalogJson.garantniRok,xOffset,124);
+        doc.text(nalogJson.radUGarantnomRoku,xOffset,134);
+
+        var yOffset = 154;
+        doc.text(nalogJson.nalogIzdao,5,yOffset);
+        doc.text(nalogJson.kontrolniOrgan,39,yOffset);
+        doc.text(nalogJson.izvodjac,80,yOffset);
+        doc.text(nalogJson.partija,137,yOffset);
+        doc.text(nalogJson.okvirniUgovor,160,yOffset);
+        doc.text(nalogJson.okvirniUgovor2,160,yOffset+6.8);
+
+        var yOffset = 171;
+        doc.text(nalogJson.rokPocetkaIzvodjenjaRadova,73,yOffset);
+        doc.text(nalogJson.rokIzvodjenjaRadova,180,yOffset);
+
+        doc.setDrawColor(0);
+        doc.setFillColor(255,255,255);
+		doc.rect(3.6, 184.5, 202.1, 36.15, 'F');
+        doc.setFillColor(0,0,0);
+		doc.rect(16.15, 184, 0.2, 36.65, 'F');
+		doc.rect(40.1, 184, 0.2, 36.65, 'F');
+		doc.rect(107.5, 184, 0.2, 36.65, 'F');
+		doc.rect(123.1, 184, 0.2, 36.65, 'F');
+		doc.rect(141.9, 184, 0.2, 36.65, 'F');
+		doc.rect(160.75, 184, 0.2, 36.65, 'F');
+		doc.rect(180.8, 184, 0.2, 36.65, 'F');
+
+		var yOffset = 187.5;
+		doc.setFontSize(8);
+        doc.setFillColor(0,0,0);
+        var fakturiasnjeArray	=	JSON.parse(JSON.stringify(nalogJson.fakturisanje));
+		for(var i=0;i<9;i++){
+			var maxRows	=	1;
+			if(fakturiasnjeArray[i]){
+				doc.text(fakturiasnjeArray[i].redniBroj.toString()+".",5,yOffset);
+				doc.text(fakturiasnjeArray[i].sifraArtikla,17,yOffset);
+				var splitString	=	stringArray(fakturiasnjeArray[i].nazivArtikla,50);
+				if(splitString){
+					doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+				}
+				
+				if(splitString){
+					if(splitString.length>maxRows){
+						maxRows = splitString.length;
+					}
+				}
+				
+				if(fakturiasnjeArray[i].jedinicaMere!="&nbsp;"){
+					var splitString	=	stringArray(fakturiasnjeArray[i].jedinicaMere,8);
+					if(splitString){
+						doc.text(splitString,109,yOffset);
+					}
+					
+				}
+				
+				if(splitString){
+					if(splitString.length>maxRows){
+						maxRows = splitString.length;
+					}
+				}
+				
+				if(fakturiasnjeArray[i].planiranaKolicina!="&nbsp;"){
+					//doc.text(fakturiasnjeArray[i].planiranaKolicina,125,yOffset);
+					doc.text(" ",125,yOffset);
+				}
+				
+				doc.text(fakturiasnjeArray[i].izvedenaKolicina,145,yOffset);
+				doc.text(fakturiasnjeArray[i].jedinicnaCena,163,yOffset);
+				doc.text(fakturiasnjeArray[i].iznos,183,yOffset);
+				fakturiasnjeArray[i].done = 1;
+			}
+			var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+			if(yTest>215){
+				break;
+			}
+			doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 202.1, 0.2, 'F');
+			if(maxRows>1){
+				yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+			}else{
+				yOffset = yOffset + 4.1*maxRows;
+			}
+		}
+
+		doc.setFontSize(11);
+		doc.text(nalogJson.radIzvrsen,55,225);
+		doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);
+
+        doc.addPage();
+        doc.addImage(ipsLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+
+		doc.setFontSize(8);
+		var yOffset = 39;
+        doc.setDrawColor(0);
+        doc.setFillColor(255,255,255);
+		doc.rect(3.6, yOffset+0.5, 201.6, 68, 'F');
+        doc.setFillColor(0,0,0);
+		doc.rect(16, yOffset, 0.2, 68, 'F');
+		doc.rect(40, yOffset, 0.2, 68, 'F');
+		doc.rect(107.2, yOffset, 0.2, 68, 'F');
+		doc.rect(122.8, yOffset, 0.2, 68, 'F');
+		doc.rect(141.5, yOffset, 0.2, 68, 'F');
+		doc.rect(160.25, yOffset, 0.2, 68, 'F');
+		doc.rect(180.2, yOffset, 0.2, 68, 'F');
+
+		var yOffset = 42;
+		var firstInput	=	0;
+		for(var i=0;i<fakturiasnjeArray.length;i++){
+			if(!fakturiasnjeArray[i].done){
+				firstInput	=	eval(i);
+				break;
+			}
+		}
+		if(firstInput==0){
+			firstInput = fakturiasnjeArray.length;
+		}
+		for(var i=0;i<16;i++){
+			var maxRows	=	1;
+			if(fakturiasnjeArray[firstInput]){
+				doc.text(fakturiasnjeArray[firstInput].redniBroj.toString()+".",5,yOffset);
+				doc.text(fakturiasnjeArray[firstInput].sifraArtikla,17,yOffset);
+				var splitString	=	stringArray(fakturiasnjeArray[firstInput].nazivArtikla,50);
+				if(splitString){
+					doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+				}
+				
+				if(splitString){
+					if(splitString.length>maxRows){
+						maxRows = splitString.length;
+					}
+				}
+				
+				if(fakturiasnjeArray[firstInput].jedinicaMere!="&nbsp;"){
+					var splitString	=	stringArray(fakturiasnjeArray[firstInput].jedinicaMere,8);
+					if(splitString){
+						doc.text(splitString,109,yOffset);
+					}
+					
+				}
+				if(splitString){
+					if(splitString.length>maxRows){
+						maxRows = splitString.length;
+					}
+				}
+				
+				
+				if(fakturiasnjeArray[firstInput].planiranaKolicina!="&nbsp;"){
+					//doc.text(fakturiasnjeArray[firstInput].planiranaKolicina,125,yOffset);
+					doc.text(" ",125,yOffset);
+				}
+				
+				doc.text(fakturiasnjeArray[firstInput].izvedenaKolicina,145,yOffset);
+				doc.text(fakturiasnjeArray[firstInput].jedinicnaCena,163,yOffset);
+				doc.text(fakturiasnjeArray[firstInput].iznos,183,yOffset);
+				fakturiasnjeArray[firstInput].done = 1;
+				firstInput++;
+			}
+			var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+			if(yTest>100){
+				break;
+			}
+			doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 201.6, 0.2, 'F');
+			if(maxRows>1){
+				yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+			}else{
+				yOffset = yOffset + 4.1*maxRows;
+			}
+		}
+       	doc.setFontType("bold");
+		doc.setFontSize(12);
+        doc.text(nalogJson.broj,123,23.5,'left');
+		doc.text(nalogJson.ukupanIznos,175,116);
+       	doc.setFontType("normal");
+		doc.setFontSize(11);
+		doc.text(nalogJson.ukupanIznosSlovima,32,124);
+
+		doc.setFontSize(11);
+		doc.text(nalogJson.radIzvrsen,55,225);
+		doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);
+        
+		doc.addPage();
+		doc.addImage(produzenjeBlob, 'JPEG', 0, 0, 210, 297);
+		var yPos	=	93.5;
+		var xPos	=	20;
+		doc.setFontSize(11);
+        doc.text(nalogJson.okvirniUgovor,102,88);
+		doc.text(nalogJson.broj,xPos,yPos);
+		doc.setFontSize(10);
+		doc.text(nalogJson.datum.split("god.")[0],xPos+25,yPos);
+		yPos = yPos + 4;
+		doc.text(nalogJson.adresa.split(",")[0],20,yPos);
+		yPos = yPos + 4.8;
+		var datumOdlaganja	=	new Date(nalogJson.datumOdlaganja);
+		var datumNaloga		=	new Date(reshuffleDate2(nalogJson.datum.split("god.")[0]));
+		try{
+			var delayDays	=	dateDifferenceinDays(datumOdlaganja,datumNaloga);
+		}catch(err){
+			var delayDays	=	"?";
+		}
+		doc.text(delayDays.toString(),53,yPos);
+		yPos = yPos + 15;
+		doc.text(nalogJson.razlogOdlaganja.toString(),20,yPos);
+
+
+		//if(testCase==1){
+			doc.save("Zahtev za oldganje po Radnom Nalogu "+nalogJson.broj+".pdf");
+		//}else if(testCase==2){
+			//window.open(doc.output('bloburl'), '_blank');
+			//window.open(URL.createObjectURL(doc.output("blob")),'_blank')
+		//}
+	}
+
+	function zaduzenjePDF(zaduzenjeJson){
+		doc = new jsPDF({
+			orientation: 'p',
+			unit: 'mm',
+			format: 'a4',
+			compress: true
+			//putOnlyUsedFonts:true
+		});
+
+		
+		pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+		pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+		var yPos = 12;
+
+		//doc.getFontList("Helvetica");
+	    doc.addFileToVFS("PTSans.ttf", PTSans);
+	    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+	    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+	    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+	    doc.setFont('PTSans'); // set font
+	    doc.getFontList("PTSans");
+	    doc.addImage(logoLogoBlob, 'PNG', 5, 5, 150/mm, 153/mm,'','FAST');
+        doc.setFontType("bold");
+		doc.setFontSize(16);
+        doc.text("Poslovi Grada d.o.o.",205,yPos,'right');
+        doc.setFontType("normal");
+		doc.setFontSize(11);
+		yPos = yPos + 5;
+        doc.text("Bulevar Kralja Aleksandra 20, 11000 Vračar",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("011/334-2325",205,yPos,'right');
+        yPos = yPos + 5;
+        doc.text("063/209-777",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("PIB: 110424762",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("Mat. Broj: 21348660",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("knjigovodstvo@poslovigrada.rs",205,yPos,'right');
+        yPos = yPos + 10;
+        doc.setFontType("bold");
+		doc.setFontSize(20);
+        doc.text("REVERS",pageWidth/2,yPos,'center');
+        doc.setFontType("normal");
+		doc.setFontSize(16);
+		yPos = yPos + 10;
+        doc.text(vremePrijema(zaduzenjeJson.datetime),pageWidth/2,yPos,'center');
+		yPos = yPos + 10;
+        doc.setFontType("bold");
+		doc.text("STAVKE:",5,yPos);
+		doc.setFontType("normal");
+		doc.setFontSize(14);
+		yPos = yPos + 7;
+		for(var i=0;i<zaduzenjeJson.stavke.length;i++){
+        	doc.setFontType("bold");
+			doc.text(eval(i+1).toString()+".",5,yPos);
+			doc.setFontType("normal");
+			doc.text(zaduzenjeJson.stavke[i].name,10,yPos);
+			doc.text(zaduzenjeJson.stavke[i].quantity+" kom.",80,yPos);
+			yPos = yPos + 7;
+		}
+		yPos = yPos + 10;
+		doc.setFontType("bold");
+		doc.text(zaduzenjeJson.imeMajstora,5,yPos);
+		yPos = yPos + 10;
+		doc.setDrawColor(0);
+        doc.setFillColor(0,0,0);
+		doc.rect(5, yPos, 50, 0.4, 'F');
+
+
+        window.open(doc.output('bloburl'), '_blank');
+	}
+
+	function trebPDF(reversJson){
+		doc = new jsPDF({
+			orientation: 'p',
+			unit: 'mm',
+			format: 'a4',
+			compress: true
+			//putOnlyUsedFonts:true
+		});
+
+		
+		pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+		pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+		var yPos = 12;
+
+		//doc.getFontList("Helvetica");
+	    doc.addFileToVFS("PTSans.ttf", PTSans);
+	    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+	    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+	    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+	    doc.setFont('PTSans'); // set font
+	    doc.getFontList("PTSans");
+	    doc.addImage(logoLogoBlob, 'PNG', 5, 5, 150/mm, 153/mm,'','FAST');
+        doc.setFontType("bold");
+		doc.setFontSize(16);
+        doc.text("Poslovi Grada d.o.o.",205,yPos,'right');
+        doc.setFontType("normal");
+		doc.setFontSize(11);
+		yPos = yPos + 5;
+        doc.text("Bulevar Kralja Aleksandra 20, 11000 Vračar",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("011/334-2325",205,yPos,'right');
+        yPos = yPos + 5;
+        doc.text("063/209-777",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("PIB: 110424762",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("Mat. Broj: 21348660",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("knjigovodstvo@poslovigrada.rs",205,yPos,'right');
+        yPos = yPos + 10;
+        doc.setFontType("bold");
+		doc.setFontSize(20);
+        doc.text("TREBOVANJE PO NALOGU BR. "+reversJson.nalog,pageWidth/2,yPos,'center');
+        doc.setFontType("normal");
+		doc.setFontSize(16);
+		yPos = yPos + 10;
+        doc.text(vremePrijema(reversJson.datetime),pageWidth/2,yPos,'center');
+		yPos = yPos + 10;
+        doc.setFontType("bold");
+		doc.text("TREBOVAN MATERIJAL:",5,yPos);
+		doc.setFontType("normal");
+		doc.setFontSize(14);
+		yPos = yPos + 7;
+		for(var i=0;i<reversJson.zaduzenje.length;i++){
+        	doc.setFontType("bold");
+			doc.text(eval(i+1).toString()+".",5,yPos);
+			doc.setFontType("normal");
+			doc.text(reversJson.zaduzenje[i].name,10,yPos);
+			doc.text(reversJson.zaduzenje[i].quantity+" kom.",120,yPos);
+			yPos = yPos + 7;
+			if(yPos>285){
+				doc.addPage()
+				yPos = 5;
+			}
+		}
+		yPos = yPos + 10;
+		doc.setFontType("bold");
+		doc.text(getMajstorNameFromId(reversJson.majstor),5,yPos);
+		yPos = yPos + 10;
+		doc.setDrawColor(0);
+        doc.setFillColor(0,0,0);
+		doc.rect(5, yPos, 50, 0.4, 'F');
+
+
+        window.open(doc.output('bloburl'), '_blank');
+	}
+
+	function reversPDF(reversJson){
+		doc = new jsPDF({
+			orientation: 'p',
+			unit: 'mm',
+			format: 'a4',
+			compress: true
+			//putOnlyUsedFonts:true
+		});
+
+		
+		pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+		pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+		var yPos = 12;
+
+		//doc.getFontList("Helvetica");
+	    doc.addFileToVFS("PTSans.ttf", PTSans);
+	    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+	    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+	    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+	    doc.setFont('PTSans'); // set font
+	    doc.getFontList("PTSans");
+	    doc.addImage(logoLogoBlob, 'PNG', 5, 5, 150/mm, 153/mm,'','FAST');
+        doc.setFontType("bold");
+		doc.setFontSize(16);
+        doc.text("Poslovi Grada d.o.o.",205,yPos,'right');
+        doc.setFontType("normal");
+		doc.setFontSize(11);
+		yPos = yPos + 5;
+        doc.text("Bulevar Kralja Aleksandra 20, 11000 Vračar",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("011/334-2325",205,yPos,'right');
+        yPos = yPos + 5;
+        doc.text("063/209-777",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("PIB: 110424762",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("Mat. Broj: 21348660",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("knjigovodstvo@poslovigrada.rs",205,yPos,'right');
+        yPos = yPos + 10;
+        doc.setFontType("bold");
+		doc.setFontSize(20);
+        doc.text("REVERS PO NALOGU BR. "+reversJson.nalog,pageWidth/2,yPos,'center');
+        doc.setFontType("normal");
+		doc.setFontSize(16);
+		yPos = yPos + 10;
+        doc.text(vremePrijema(reversJson.datetime),pageWidth/2,yPos,'center');
+		yPos = yPos + 10;
+        doc.setFontType("bold");
+		doc.text("TREBOVAN MATERIJAL:",5,yPos);
+		doc.setFontType("normal");
+		doc.setFontSize(14);
+		yPos = yPos + 7;
+		for(var i=0;i<reversJson.zaduzenje.length;i++){
+        	doc.setFontType("bold");
+			doc.text(eval(i+1).toString()+".",5,yPos);
+			doc.setFontType("normal");
+			doc.text(reversJson.zaduzenje[i].name,10,yPos);
+			doc.text(reversJson.zaduzenje[i].quantity+" kom.",120,yPos);
+			yPos = yPos + 7;
+			if(yPos>285){
+				doc.addPage()
+				yPos = 5;
+			}
+		}
+		yPos = yPos + 10;
+		if(yPos>285){
+			doc.addPage()
+			yPos = 5;
+		}
+		doc.setFontType("bold");
+		doc.text("VRAĆEN MATERIJAL:",5,yPos);
+		doc.setFontType("normal");
+		doc.setFontSize(14);
+		yPos = yPos + 7;
+		if(yPos>285){
+			doc.addPage()
+			yPos = 5;
+		}
+		for(var i=0;i<reversJson.zaduzenje.length;i++){
+        	doc.setFontType("bold");
+			doc.text(eval(i+1).toString()+".",5,yPos);
+			doc.setFontType("normal");
+			var razduzeno = reversJson.zaduzenje[i].quantity2 ? reversJson.zaduzenje[i].quantity2 : "0";
+			doc.text(reversJson.zaduzenje[i].name,10,yPos);
+			doc.text(razduzeno+" kom.",120,yPos);
+			yPos = yPos + 7;
+			if(yPos>285){
+				doc.addPage()
+				yPos = 5;
+			}
+		}
+
+		doc.setFontType("bold");
+		doc.text(getMajstorNameFromId(reversJson.majstor),5,yPos);
+		yPos = yPos + 10;
+		doc.setDrawColor(0);
+        doc.setFillColor(0,0,0);
+		doc.rect(5, yPos, 50, 0.4, 'F');
+
+
+        window.open(doc.output('bloburl'), '_blank');
+	}
+
+
+
+
+
+
+
+	
+</script>

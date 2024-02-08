@@ -1,0 +1,269 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+<%- include ("partials/pdfGenerate") -%>
+<script>
+	var proizvodi = <%-JSON.stringify(proizvodi)%>;
+	console.log(proizvodi)
+	var zaduzenja = <%-JSON.stringify(zaduzenja)%>;
+	var majstori = <%-JSON.stringify(majstori)%>;
+
+	var segmentor	=	[];
+	for(var i=0;i<proizvodi.length;i++){
+		var proizvod = proizvodi[i];
+		if(proizvod.name.split("@").length!=1){
+			var firstLevelName	=	proizvod.name.split("@")[0];
+			var firstLevelNameFound	=	false;
+			for(var j=0;j<segmentor.length;j++){
+				if(firstLevelName==segmentor[j].name){
+					firstLevelNameFound	=	true;
+					break;
+				}
+			}
+			if(!firstLevelNameFound){
+				var object			=	{};
+				object.name 		=	firstLevelName;
+				object.subgroups	=	[];
+				segmentor.push(object);
+			}
+		}
+	}
+</script>
+<div class="pageTitle">Novo Zaduzenje</div>
+<div class="magacinZaduzenje">
+	<form method="POST" action="/magacin-izlaz" id="zaduzenje-form" style="display:none">
+		<input type="text" name="zaduzenjejson" id="zaduzenje-json">
+	</form>
+	<div class="formWrap" id="proizvodi">
+		<div class="inputWrap">
+			<div class="title">Majstor:</div>
+			<select id="zaduzeni-majstor" style="margin-bottom: 10px;">
+				<option value="Nijedan" default="default">Nijedan</option>
+			</select>
+			<script>
+				for(var i=0;i<majstori.length;i++){
+					var option = document.createElement("OPTION");
+					option.setAttribute("value",majstori[i].uniqueId);
+					option.innerHTML	=	majstori[i].ime;
+					document.getElementById("zaduzeni-majstor").appendChild(option);
+				}
+			</script>
+		</div>
+		<div class="inputWrap">
+			<div class="title">Zadužene stavke:</div>
+			<div id="zaduzene-stavke"></div>
+		</div>
+		<div class="inputWrap">
+			<div class="button" onclick="zaduzi()">Zaduži</div>
+			<div class="error" id="zaduzenje-error" style="display:none">Popunite majstora i dodajte stavke.</div>
+			<script>
+				function zaduzi(){
+					var majstor = document.getElementById("zaduzeni-majstor").value;
+					var stavke = document.getElementById("zaduzene-stavke").getElementsByClassName("prozivodRow");
+					if(majstor!="Nijedan" && stavke.length>0){
+						var zaduzenjeJson	=	{};
+						zaduzenjeJson.majstor = document.getElementById("zaduzeni-majstor").value;
+						zaduzenjeJson.stavke = [];
+						for(var i=0;i<stavke.length;i++){
+							var json 		=	{};
+							json.id 		=	stavke[i].dataset.id;
+							json.quantity	=	stavke[i].dataset.quantity;
+							zaduzenjeJson.stavke.push(json);
+						}
+						document.getElementById("zaduzenje-json").value = JSON.stringify(zaduzenjeJson);
+						loadGif();
+						//console.log(zaduzenjeJson)
+						document.getElementById("zaduzenje-form").submit();
+					}else{
+						document.getElementById("zaduzenje-error").style.display="block";
+					}
+					
+				}
+			</script>
+		</div>
+		<div class="page" id="first-level-groups"></div>
+		<script>
+			for(var i=0;i<segmentor.length;i++){
+				var item = document.createElement("DIV");
+				item.setAttribute("class","firstLevelGroup");
+				item.setAttribute("onclick","firstLevelPick(this)");
+				item.setAttribute("data-name",segmentor[i].name);
+				item.innerHTML	=	segmentor[i].name;
+				document.getElementById("first-level-groups").appendChild(item);
+			}
+
+			function firstLevelPick(elem){
+				document.getElementById("products").getElementsByClassName("title")[0].innerHTML = elem.dataset.name;
+				for(var i=0;i<proizvodi.length;i++){
+					if(proizvodi[i].name.split("@")[0]==elem.dataset.name){
+						var item	=	document.createElement("DIV");
+						item.setAttribute("class","secondLevelGroup");
+						item.setAttribute("onclick","secondLevelPick(this)");
+						item.setAttribute("data-id",proizvodi[i].uniqueId);
+						item.innerHTML=proizvodi[i].name.split("@")[1].replace(/@/g, " ");
+						document.getElementById("products-list").appendChild(item);
+					}
+					
+
+				}
+				document.getElementById("products").style.display="block";
+				document.getElementById("first-level-groups").style.display="none";
+			}
+
+			function goBackFromProducts(){
+				document.getElementById("products-list").innerHTML="";
+				document.getElementById("products").getElementsByClassName("title")[0].innerHTML="";
+				document.getElementById("products").style.display="none";
+				document.getElementById("first-level-groups").style.display="block";
+			}
+
+			function goBackFromQuantity(){
+				document.getElementById("product-picked").getElementsByClassName("title")[0].innerHTML = "";
+				document.getElementById("product-name").value = "";
+				document.getElementById("product-id").value = "";
+				document.getElementById("product-quantity").value = 0;
+				document.getElementById("product-picked").style.display = "none";
+				document.getElementById("products").style.display = "block";
+			}
+
+			function secondLevelPick(elem){
+				var productName;
+				var productId;
+				for(var i=0;i<proizvodi.length;i++){
+					if(proizvodi[i].uniqueId == elem.dataset.id){
+						productName = proizvodi[i].name;
+						productId = proizvodi[i].uniqueId;
+					}
+				}
+				document.getElementById("product-picked").getElementsByClassName("title")[0].innerHTML = productName.replace(/@/g, " ");
+				document.getElementById("product-name").value = productName;
+				document.getElementById("product-id").value = productId;
+				document.getElementById("products").style.display = "none";
+				document.getElementById("product-picked").style.display = "block";
+			}
+
+			function dodajProizvod(){
+				var proizvodRow	=	document.createElement("DIV");
+				proizvodRow.setAttribute("class","prozivodRow");
+				proizvodRow.setAttribute("data-id",document.getElementById("product-id").value);
+				proizvodRow.setAttribute("data-quantity",document.getElementById("product-quantity").value);
+					var item	=	document.createElement("DIV");
+					item.setAttribute("class","item name");
+					item.innerHTML = document.getElementById("product-name").value.replace(/@/g, " ");
+					proizvodRow.appendChild(item);
+
+					var item	=	document.createElement("DIV");
+					item.setAttribute("class","item quantity");
+					item.innerHTML = document.getElementById("product-quantity").value + " kom.";
+					proizvodRow.appendChild(item);
+
+					var item	=	document.createElement("DIV");
+					item.setAttribute("class","item destroy");
+					item.setAttribute("onclick","ukloniProizvod(this)");
+					item.innerHTML = "X";
+					proizvodRow.appendChild(item);
+
+				document.getElementById("zaduzene-stavke").appendChild(proizvodRow);
+				goBackFromQuantity();
+				goBackFromProducts();
+			}
+
+			function ukloniProizvod(elem){
+				elem.parentElement.parentElement.removeChild(elem.parentElement);
+			}
+		</script>
+		<div class="page" id="products" style="display:none">
+			<div class="goBack">
+				<div class="dugme" onclick="goBackFromProducts()"><- Nazad</div>
+			</div>
+			<div class="title"></div>
+			<div id="products-list"></div>
+		</div>
+		<div class="page" id="product-picked" style="display:none">
+			<div class="goBack">
+				<div class="dugme" onclick="goBackFromQuantity()"><- Nazad</div>
+			</div>
+			<div class="title"></div>
+			<div class="subTitle">Količina</div>
+			<input type="text" id="product-name" style="display:none">
+			<input type="text" id="product-id" style="display:none">
+			<input type="number" id="product-quantity" value="0" class="styledInput"><br>
+			<div class="button" onclick="dodajProizvod()">Dodaj</div>
+		</div>
+	</div>
+</div>
+<div class="pageSeparator"></div>
+<div class="pageTitle">Stara zaduzenja</div>
+<div class="magacinZaduzenja">
+	<div class="header">
+		<div class="item vreme">Vreme</div>
+		<div class="item majstor">Majstor</div>
+		<div class="item stavke">Stavke</div>
+		<div class="item kolicina">Kolicina</div>
+	</div>
+	<div id="zaduzenja"></div>
+</div>
+<script>
+	for(var i=0;i<zaduzenja.length;i++){
+		var row = document.createElement("DIV");
+		row.setAttribute("class","row");
+		row.setAttribute("data-json",JSON.stringify(zaduzenja[i]));
+		row.setAttribute("onclick","stampajZaduzenje(this)");
+			var item = document.createElement("DIV");
+			item.setAttribute("class","item vreme");
+			item.innerHTML	=  vremePrijema(Number(zaduzenja[i].datetime));
+			row.appendChild(item);
+
+			var item = document.createElement("DIV");
+			item.setAttribute("class","item majstor");
+			for(var j=0;j<majstori.length;j++){
+				if(majstori[j].uniqueId==zaduzenja[i].majstor){
+					item.innerHTML	=  majstori[j].ime;
+					break;
+				}
+			}
+			row.appendChild(item);
+
+			var item = document.createElement("DIV");
+			item.setAttribute("class","item stavke")
+			for(var j=0;j<zaduzenja[i].stavke.length;j++){
+				for(var k=0;k<proizvodi.length;k++){
+					if(proizvodi[k].uniqueId==zaduzenja[i].stavke[j].id){
+						item.innerHTML += proizvodi[k].name.replace(/@/g," ")+"<br>";
+						break;
+					}
+				}
+			}
+			row.appendChild(item);
+
+			var item = document.createElement("DIV");
+			item.setAttribute("class","item kolicina")
+			for(var j=0;j<zaduzenja[i].stavke.length;j++){
+				item.innerHTML += zaduzenja[i].stavke[j].quantity+" kom.<br>";
+			}
+			row.appendChild(item);
+
+
+		document.getElementById("zaduzenja").appendChild(row);
+	}
+
+	function stampajZaduzenje(elem){
+		var zaduzenjeJson = JSON.parse(elem.dataset.json);
+		for(var i=0;i<majstori.length;i++){
+			if(zaduzenjeJson.majstor==majstori[i].uniqueId){
+				zaduzenjeJson.imeMajstora = majstori[i].ime;
+				break;
+			}
+		}
+		for(var i=0;i<zaduzenjeJson.stavke.length;i++){
+			for(var j=0;j<proizvodi.length;j++){
+				if(zaduzenjeJson.stavke[i].id == proizvodi[j].uniqueId){
+					zaduzenjeJson.stavke[i].name = proizvodi[j].name.replace(/@/g," ");
+					break;
+				}
+			}
+		}
+		console.log(zaduzenjeJson);
+		zaduzenjePDF(zaduzenjeJson);
+	}
+</script>
+<%- include ("partials/footer") -%>

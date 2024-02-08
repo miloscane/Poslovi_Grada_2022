@@ -1,0 +1,106 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+<script>
+	var majstori = <%-JSON.stringify(majstori)%>;
+</script>
+<div class="pageTitle">Majstori</div>
+<div class="majstori">
+	<div class="formWrap">
+		<form method="POST" action="/majstori-edit" id="majstor-form">
+			<input type="text" name="uniqueid" value="new" style="display:none">
+			<div class="inputWrap">
+				<div class="title">Ime Majstora</div>
+				<div class="inputWrapper">
+					<input type="text" name="name" id="ime-majstora">
+				</div>
+			</div>
+			<div class="inputWrap">
+				<div class="title">Telefon</div>
+				<div class="inputWrapper">
+					<input type="text" name="telefon" id="telefon-majstora">
+				</div>
+			</div>
+			<div class="inputWrap">
+				<div class="button" onclick="submitForm()">Dodaj Majstora</div>
+				<script>
+					function submitForm(){
+						if(document.getElementById("ime-majstora").value && document.getElementById("telefon-majstora")){
+							loadGif();
+							document.getElementById("majstor-form").submit();
+						}else{
+							document.getElementById("error").style.display="block";
+						}
+					}
+				</script>
+			</div>
+			<div id="error" style="margin-top:10px;font-weight:900;font-size:20;display:none">Sva polja moraju biti popunjena!</div>
+		</form>
+	</div>
+	<div class="listaMajstora">
+		<div class="header">
+			<div class="inline broj">Redni<br>Broj</div>
+			<div class="inline ime">Ime Majstora</div>
+			<div class="inline telefon">Telefon</div>
+		</div>
+		<div id="lista-majstora"></div>
+		<script>
+			for(var i=0;i<majstori.length;i++){
+				if(podizvodjaci.indexOf(majstori[i].uniqueId)<0){
+					var majstorJson	=	JSON.parse(JSON.stringify(majstori[i]));
+					var row 	=	document.createElement("DIV");
+					row.setAttribute("class","row");
+					if(Number(majstorJson.inactive)==1){
+						row.classList.add("redRow");
+					}
+					row.setAttribute("data-json",JSON.stringify(majstorJson));
+						var item 	=	document.createElement("DIV");
+						item.setAttribute("class","inline broj");
+						item.innerHTML	=	eval(i+1)+".";
+						row.appendChild(item);
+
+						var item 	=	document.createElement("DIV");
+						item.setAttribute("class","inline ime");
+						item.innerHTML	=	majstorJson.ime;
+						row.appendChild(item);
+
+						var item 	=	document.createElement("DIV");
+						item.setAttribute("class","inline telefon");
+						item.innerHTML	=	majstorJson.telefon;
+						row.appendChild(item);
+
+						var item 	=	document.createElement("DIV");
+						item.setAttribute("class","inline button");
+						if(Number(majstorJson.inactive)==1){
+							item.innerHTML	=	"Aktiviraj";
+							item.setAttribute("onclick","aktivirajMajstora(this,0)");
+						}else{
+							item.innerHTML	=	"Deaktiviraj";
+							item.setAttribute("onclick","aktivirajMajstora(this,1)");
+						}
+						
+						row.appendChild(item);
+					document.getElementById("lista-majstora").appendChild(row);	
+				}
+				
+			}
+		</script>
+	</div>
+</div>
+<form style="display:none" method="POST" action="/majstor-activate" id="majstor-activate-form">
+	<input type="text" name="uniqueid" id="majstor-activate-id">
+	<input type="text" name="activate" id="majstor-activate-value">
+</form>
+<script>
+	function aktivirajMajstora(elem,value){
+		var majstorJson	=	JSON.parse(elem.parentElement.dataset.json);
+		document.getElementById("majstor-activate-id").value = majstorJson.uniqueId;
+		document.getElementById("majstor-activate-value").value = value;
+		loadGif();
+		document.getElementById("majstor-activate-form").submit();
+	}
+
+	function izmeniMajstora(){
+		
+	}
+</script>
+<%- include ("partials/footer") -%>

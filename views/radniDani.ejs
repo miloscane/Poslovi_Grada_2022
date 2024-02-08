@@ -1,0 +1,191 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+	<% if (typeof pageTitle=="undefined") { %>
+		<div class="pageTitle">Radni dani</div>
+	<% }else{ %>
+		<div class="pageTitle"><%-pageTitle%></div>
+	<%}%>
+	<div class="pageNote">Kliknite na ime zaposlenog kako bi ste videli informacije o radnom mesecu.</div>
+	<script>
+		var dnevnice 	=	<%-JSON.stringify(dnevnice)%>;
+		var korisnici 	=	<%-JSON.stringify(korisnici)%>;
+		var month 		=	"<%=month%>";
+		var year 		=	"<%=year%>";
+		var weekdays	=	["Ponedeljak","Utorak","Sreda","Četvrtak","Petak","Subota","Nedelja"];
+		var monthNames	=	["Januar","Februar","Mart","April","Maj","Jun","Jul","Avgust","Septembar","Oktobar","Novembar","Decembar"];
+	</script>
+	<div class="radniDani">
+		<div class="buttonsWrap" id="buttons"></div>
+		<script>
+			var korisniniciSaDnevnicama = [];
+			for(var i=0;i<dnevnice.length;i++){
+				var korisnik = false;
+				for(var j=0;j<korisniniciSaDnevnicama.length;j++){
+					if(korisniniciSaDnevnicama[j].email == dnevnice[i].userId){
+						korisnik = true;
+						break;
+					}
+				}
+				if(!korisnik){
+					for(var j=0;j<korisnici.length;j++){
+						if(korisnici[j].email==dnevnice[i].userId){
+							korisniniciSaDnevnicama.push(JSON.parse(JSON.stringify(korisnici[j])));
+							break;
+						}
+					}
+				}
+			}
+			for(var i=0;i<korisniniciSaDnevnicama.length;i++){
+				var button = document.createElement("DIV");
+				button.setAttribute("class","button");
+				button.setAttribute("onclick","showWorker(\""+korisniniciSaDnevnicama[i].email+"\")");
+				button.innerHTML = korisniniciSaDnevnicama[i].ime;
+				document.getElementById("buttons").appendChild(button)
+			}
+
+			function showWorker(workerId){
+				for(var i=0;i<korisniniciSaDnevnicama.length;i++){
+					if(korisniniciSaDnevnicama[i].email == workerId){
+						document.getElementById("worker-name").innerHTML = korisniniciSaDnevnicama[i].ime;
+						break;
+					}
+				}
+				var dnevniceToShow = [];
+				for(var i=0;i<dnevnice.length;i++){
+					if(dnevnice[i].userId == workerId){
+						dnevniceToShow.push(JSON.parse(JSON.stringify(dnevnice[i])));
+					}
+				}
+				var valueElems = document.getElementsByClassName("calendarValue");
+				for(var i=0;i<valueElems.length;i++){
+					valueElems[i].innerHTML = "";
+				}
+				var ukupnoRadnihDana = dnevniceToShow.length;
+				var ukupnoOstvarenihSati = 0;
+				var ukupnoNecheckiranihDana = 0;
+				for(var i=0;i<dnevniceToShow.length;i++){
+					for(var j=0;j<valueElems.length;j++){
+						if(isSameDate(valueElems[j].parentElement.dataset.date,dnevniceToShow[i].starttime)){
+							if(dnevniceToShow[i].endtime){
+								var timeDiff = Number(dnevniceToShow[i].endtime)-Number(dnevniceToShow[i].starttime);
+								ukupnoOstvarenihSati = ukupnoOstvarenihSati + timeDiff;
+								valueElems[j].innerHTML = msToTime(timeDiff);
+							}else{
+								valueElems[j].innerHTML = "<span style=\"rgb(200,0,0)\">6:00</span>";
+								ukupnoOstvarenihSati = ukupnoOstvarenihSati + 2.16E+7;
+								ukupnoNecheckiranihDana++;
+							}
+							break;
+						}
+					}
+				}
+				document.getElementById("worker-info").innerHTML =  "Ukupno radnih dana: <span>"+ukupnoRadnihDana+"</span><br>";
+				document.getElementById("worker-info").innerHTML += "Ukupno ostvarenih sati: <span>"+msToTime2(ukupnoOstvarenihSati)+" od "+msToTime2(2.88E+7*ukupnoRadnihDana)+"</span><br>";
+				document.getElementById("worker-info").innerHTML += "Ukupno dana bez checkout-a: <span>"+ukupnoNecheckiranihDana+"</span>";
+			}
+		</script>
+		<div id="worker-name"></div>
+		<div id="worker-info"></div>
+		<div class="calendarTableWrap">
+			<table id="calendar-table">
+				<tr>
+					<th>PON</th>
+					<th>UTO</th>
+					<th>SRE</th>
+					<th>ČET</th>
+					<th>PET</th>
+					<th>SUB</th>
+					<th>NED</th>
+				</tr>
+				<tr></tr>
+				<tr></tr>
+				<tr></tr>
+				<tr></tr>
+				<tr></tr>
+				<tr></tr>
+			</table>
+		</div>
+	</div>
+	<div class="nextMonth">
+		<div>Odaberi mesec za prikaz: </div>
+		<select id="next-month" oninput="navigateToNextMonth()">
+			<option value="odaberi" default>Odaberi...</option>
+			<option value="2023-10">Oktobar 2023</option>
+			<option value="2023-11">Novembar 2023</option>
+			<option value="2023-12">Decembar 2023</option>
+		</select>
+		<script>
+			function navigateToNextMonth(){
+				var monthValue = document.getElementById("next-month").value;
+				if(monthValue.split("-").length>1){
+					window.location.href = "/radniDani/"+document.getElementById("next-month").value.split("-")[0]+"/"+document.getElementById("next-month").value.split("-")[1]
+				}
+				
+			}
+		</script>
+	</div>
+	<script>
+		function isSameDate(datetime1,datetime2){
+			var date1	=	new Date(Number(datetime1));
+			var date2	=	new Date(Number(datetime2));
+			
+			if(date1.getFullYear()==date2.getFullYear() && date1.getMonth()==date2.getMonth() && date1.getDate()==date2.getDate()){
+				return true
+			}else{
+				return false
+			}
+		}
+		//Initialize table with TD's
+		var tableRows	=	document.getElementById("calendar-table").querySelectorAll("TR");
+		for(var i=1;i<tableRows.length;i++){
+			for(var j=0;j<7;j++){
+				var td	=	document.createElement("TD");
+					var div = document.createElement("DIV");
+					div.setAttribute("class","value");
+					td.appendChild(div)
+				tableRows[i].appendChild(td);
+			}
+		}
+		var adaptedMonth = month.length>1 ? month : "0"+month;
+		var today = new Date(year+"-"+adaptedMonth+"-01");
+		var year 			=	today.getFullYear();
+		var month 			=	today.getMonth()+1;
+		var date			=	new Date(year,month-1,1);
+		var daysInMonth		=	new Date(year,month,0).getDate();
+		var weekDay			=	(date.getDay()==0) ? 7:date.getDay();//Return week day as 1-7
+		for(var i=1;i<=daysInMonth;i++){
+			var tempDate			=	new Date(year,month-1,i);
+			var calendarElement		=	document.createElement("DIV");
+			calendarElement.setAttribute("class","calendarElement");
+			calendarElement.setAttribute("data-date",tempDate.getTime());
+
+				var dateTitle		=	document.createElement("DIV");
+				dateTitle.innerHTML	=	i+".";
+				dateTitle.setAttribute("class","calendarDateTitle");
+				calendarElement.appendChild(dateTitle);
+
+				var calendarValue = document.createElement("DIV");
+				calendarValue.setAttribute("class","calendarValue");
+				calendarElement.appendChild(calendarValue);
+			if(i==1){
+				document.getElementById("calendar-table").querySelectorAll("TR")[1].querySelectorAll("TD")[weekDay-1].getElementsByClassName("value")[0].appendChild(calendarElement);
+			}else{
+				var elementPlaced	=	false;
+				for(var j=1;j<tableRows.length;j++){
+					if(elementPlaced){
+						break;
+					}
+					var rowTds	=	tableRows[j].querySelectorAll("TD");
+					var k		=	(j==1) ? weekDay-1:0;
+					for(k;k<rowTds.length;k++){
+						if(!rowTds[k].querySelectorAll(".calendarElement")[0]){
+							rowTds[k].getElementsByClassName("value")[0].appendChild(calendarElement);
+							elementPlaced	=	true;
+							break;
+						}
+					}
+				}
+			}
+		}
+	</script>
+<%- include ("partials/footer") -%>

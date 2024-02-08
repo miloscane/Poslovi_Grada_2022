@@ -1,0 +1,412 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+<%- include ("partials/dispecermenu") -%>
+	<style>
+		#site-content{
+			max-width:1200px;
+		}
+
+		.mojiNalozi .row{
+			padding:5px 0;
+		}
+
+		.mojiNalozi .row:hover{
+			background-color: rgba(0,0,0,0.5) !important;
+    		color: rgb(255,255,255) !important;
+		}
+
+		.sviNalozi #table-content .nalogKasniPodizvodjac:hover{
+			background:none;
+		}
+	</style>
+	<!--<script src="/js/nts1.js"></script>
+	<script src="/js/nts2.js"></script>
+	<script>
+		var ntsLog = new NtsLogin();
+		ntsLog.login("https://app.nts-international.net/NTSSecurity/login", "n7292-poslovigrada.api","api2023", function(){
+			var api = new NTSApi("https://app.nts-international.net");
+			api.allvehicles(function(result){
+				console.log(result);
+			});
+		});
+	</script>-->
+	<script>
+		if(user.role=="20"){
+			document.getElementById("napredni-meni").style.display="none";
+		}else{
+			document.getElementById("dispecer-meni").style.display="none";
+		}
+	</script>
+	<script src="/js/pdf.js"></script>
+	<script src="/js/font.js"></script>
+	<script src="/js/font2.js"></script>
+	<script>var mm = 3.7795275591;</script>
+	<div class="pageTitle">Moji Nalozi</div>
+	<!--<div class="pageSubTitle">U ovom prikazu se vide samo nalozi koji NISU obračunati i koji su samo na vašim opštinama.</div>-->
+	<div class="button" style="margin:20px auto;" onclick="loadGif();location.reload()">Osveži</div>
+	<script>
+		var nalozi = <%-JSON.stringify(nalozi)%>;
+		var opstine	=	[];
+		for(var i=0;i<nalozi.length;i++){
+			nalozi[i].vremePrijemaNaloga	=	Number(nalozi[i].uniqueId.split("--")[1]);
+			if(opstine.indexOf(nalozi[i].radnaJedinica.toLowerCase())<0){
+				opstine.push(nalozi[i].radnaJedinica.toLowerCase());
+			}
+		}
+		nalozi.sort(function(a, b) {
+		    return parseFloat(b.vremePrijemaNaloga) - parseFloat(a.vremePrijemaNaloga);
+		});
+	</script>
+	<div class="button" onclick="stampajTabelu()">Stampaj tabelu</div>
+	<div class="sviNalozi mojiNalozi">
+		<div style="font-weight:600;font-size:12px;text-align:left;">Statistika:</div>
+		<div class="statistika">
+			<div class="statRow">Opstina: <span id="statistika-opstina"></span></div>
+			<div class="statRow">Ukupno naloga: <span id="ukupno-naloga"></span></div>
+			<div class="statRow">Zavrseni nalozi: <span id="statistika-zavrseno"></span></div>
+			<div class="statRow">Nezavrseni PG: <span id="nezavrseni-PG"></span></div>
+			<div class="statRow">Nezavrseni podizvodjaci: <span id="nezavrseni-podizvodjaci"></span></div>
+			<div class="statRow">Finalizacija: <span id="statistika-finalizacija"></span></div>
+		</div>
+		<script>
+			function izracunajStatistiku(){
+				var opstina = document.getElementById("opstina-filter").value.toUpperCase();
+				document.getElementById('statistika-opstina').innerHTML = opstina.toUpperCase();
+				var ukupnoPrikazanihNaloga	=	0;
+				var zavrseno 				=	0;
+				var nezavrsenoPG			=	0;
+				var nezavrsenoPodizvodjac	=	0;
+				var finalizacija			=	0;
+				var zavrseno 				=	0;
+				for(var i=0;i<nalozi.length;i++){
+					if(nalozi[i].radnaJedinica==opstina || opstina=="SVE"){
+						ukupnoPrikazanihNaloga++;
+						if(nalozi[i].statusNaloga!="Završeno"){
+							if(podizvodjaci.indexOf(nalozi[i].majstorNaloga)>=0){
+								nezavrsenoPodizvodjac++;
+							}else{
+								nezavrsenoPG++;
+							}
+						}
+						if(nalozi[i].statusNaloga=="Finalizacija"){
+							finalizacija++;
+						}
+						if(nalozi[i].statusNaloga=="Završeno"){
+							zavrseno++;
+						}
+					}
+				}
+				document.getElementById("statistika-opstina").innerHTML = opstina;
+				document.getElementById("ukupno-naloga").innerHTML = ukupnoPrikazanihNaloga;
+				document.getElementById("nezavrseni-PG").innerHTML = nezavrsenoPG;
+				document.getElementById("nezavrseni-podizvodjaci").innerHTML = nezavrsenoPodizvodjac;
+				document.getElementById("statistika-finalizacija").innerHTML = finalizacija;
+				document.getElementById("statistika-zavrseno").innerHTML = zavrseno;
+			}
+		</script>
+		<div class="colorCodes">
+			<div class="item podizvodjac">Nalog podizvodjaca</div>
+			<div class="item nalogKasni">Nalog kasni</div>
+			<div class="item nalogKasniPodizvodjac">Podizvodjac kasni</div>
+			<div class="item zavrseno">Nalog zavrsen</div>
+		</div>
+		<div class="filters">
+			<div class="numberFilter broj">
+				<input type="text" id="number-filter" placeholder="Filter Broja" oninput="generateTable()">
+			</div>
+			<div class="opstinaFilter opstina">
+				<select id="opstina-filter" oninput="generateTable();izracunajStatistiku();"></select>
+				<script>
+					var option	=	document.createElement("OPTION");
+					option.setAttribute("value","SVE");
+					option.setAttribute("selected","selected");
+					option.innerHTML	=	"SVE OPSTINE";
+					document.getElementById("opstina-filter").appendChild(option);
+					for(var i=0;i<opstine.length;i++){
+						var option	=	document.createElement("OPTION");
+						option.setAttribute("value",opstine[i]);
+						option.innerHTML	=	opstine[i].toUpperCase();
+						document.getElementById("opstina-filter").appendChild(option);
+					}
+				</script>
+			</div>
+			<script>
+				izracunajStatistiku();
+			</script>
+			<div class="numberFilter adresa" style="margin-left:0px">
+				<input type="text" id="adresa-filter" placeholder="Filter Adrese" oninput="generateTable()">
+			</div>
+
+			<div class="statusFilter status" style="margin-left:0px">
+				<select id="status-filter" oninput="generateTable()">
+					<option value="SVI" default="default">SVI</option>
+					<option value="Primljen">Primljen</option>
+					<option value="Dodeljen majstoru">Dodeljen majstoru</option>
+					<option value="Radovi u toku">Radovi u toku</option>
+					<option value="Potrebna WOMA">Potrebna WOMA</option>
+					<option value="Zamena">Zamena</option>
+					<option value="Završeno">Završeno</option>
+					<option value="Kopanje">Kopanje</option>
+					<option value="Finalizacija">Finalizacija</option>
+					<option value="Betonaža">Betonaža</option>
+					<option value="Vraćen">Vraćen</option>
+					<option value="Spreman za obračun">Spreman za obračun</option>
+					<option value="Storniran">Storniran</option>
+				</select>
+			</div>
+		</div>
+		<div class="header">
+			<div class="inline redniBroj">Redni broj:</div>
+			<div class="inline datumNaloga">Datum<br>Naloga:</div>
+			<div class="inline broj">Broj:</div>
+			<div class="inline opstina">Opstina:</div>
+			<div class="inline adresa">Adresa:</div>
+			<div class="inline status">Status:</div>
+			<div class="inline iznos">Zakazano:</div>
+		</div>
+		<div id="table-wrap" style="height:500px;overflow:scroll">
+			<div id="table-height" style="height:10000px">
+				<div id="table-content" style="position:sticky;top:0;border:1px solid rgb(0,0,0)"></div>
+			</div>
+		</div>
+
+		<script>
+			var rowHeight			=	40;
+			var scrollableElement 	=	document.getElementById("table-wrap");
+			var naloziToShow	=	[];
+			scrollableElement.addEventListener("scroll", (event) => {
+				generateTable();
+			});
+			
+			function generateTable(){
+				document.getElementById("table-content").innerHTML	=	"";
+				var numberOfElements	=	500/rowHeight;
+				var scrollValue			=	scrollableElement.scrollTop;
+				//Reset filters
+				for(var i=0;i<nalozi.length;i++){
+					nalozi[i].display = 1;
+				}
+
+				//Filter out elements
+				//filter elements
+				var opstina = document.getElementById("opstina-filter").value;
+				var broj = document.getElementById("number-filter").value;
+				var adresa = document.getElementById("adresa-filter").value;
+				var status = document.getElementById("status-filter").value;
+				for(var i=0;i<nalozi.length;i++){
+
+					if(opstina!="SVE"){
+						if(nalozi[i].radnaJedinica.toLowerCase()!=opstina.toLowerCase()){
+							nalozi[i].display=0;
+						}
+					}
+
+					if(broj!=""){
+						if(!nalozi[i].broj.toString().includes(broj.toString())){
+							nalozi[i].display=0;
+						}
+					}
+
+					if(adresa!=""){
+						if(!nalozi[i].adresa.split(",")[0].toString().toLowerCase().includes(adresa.toString().toLowerCase())){
+							nalozi[i].display=0;
+						}
+					}
+
+					if(status!="SVI"){
+						if(nalozi[i].statusNaloga!=status){
+							nalozi[i].display=0;
+						}
+					}
+				}
+
+				//calculate needed scroll height
+				naloziToShow	=	[];
+				for(var i=0;i<nalozi.length;i++){
+					if(nalozi[i].display==1){
+						naloziToShow.push(nalozi[i]);
+					}
+				}
+
+
+				var scrollHeight	=	naloziToShow.length*rowHeight;
+				document.getElementById("table-height").scrollTop	=	0;
+				document.getElementById("table-height").style.height	=	scrollHeight + "px";
+				var startIndex		=	Math.floor(scrollValue / rowHeight);
+				var endIndex		=	startIndex + numberOfElements;
+				var highlightNext	=	false;
+
+				var timeNow	=	new Date().getTime();
+
+				
+				for(var i = startIndex;i<endIndex;i++){
+					if(naloziToShow[i]){
+						var row = document.createElement("DIV");
+						row.setAttribute("class","row");
+						if(i%2==0){
+							row.classList.add("rowHighlight");
+						}
+
+						if(podizvodjaci.indexOf(naloziToShow[i].majstorNaloga)>=0){
+							row.classList.add("podizvodjac")
+						}
+
+						if(naloziToShow[i].statusNaloga=="Storniran"){
+							row.classList.add("storniranNalog")
+						}
+
+						var timeNow 	=	new Date().getTime();
+						var vremePrijemaNaloga	=	naloziToShow[i].datumOdlaganja	?	new Date(naloziToShow[i].datumOdlaganja).getTime() : naloziToShow[i].vremePrijemaNaloga;
+						if((timeNow-vremePrijemaNaloga)>8.64e+7 && naloziToShow[i].statusNaloga!="Završeno" && naloziToShow[i].statusNaloga!="Storniran"){
+
+							if(row.classList.contains("podizvodjac")){
+								row.classList.add("nalogKasniPodizvodjac")
+							}else{
+								row.classList.add("nalogKasni")
+							}
+							
+						}/*else{
+							console.log(timeNow +" vs "+ vremePrijemaNaloga)
+						}*/
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline redniBroj");
+							elem.innerHTML	=	eval(i+1);
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline datumNaloga");
+							elem.innerHTML	=	naloziToShow[i].datum.split("00:00")[0];
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline broj");
+							elem.innerHTML	=	naloziToShow[i].broj;
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline opstina");
+							elem.innerHTML	=	naloziToShow[i].radnaJedinica;
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline adresa");
+							elem.innerHTML	=	naloziToShow[i].adresa.split(",")[0];
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline status");
+							elem.innerHTML	=	naloziToShow[i].statusNaloga;
+							if(naloziToShow[i].statusNaloga=="Završeno"){
+								row.classList.add("zavrseno")
+							}
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline iznos");
+							if(naloziToShow[i].datumZakazivanja){
+								elem.innerHTML	=	reshuffleDate(naloziToShow[i].datumZakazivanja)
+								if(naloziToShow[i].vremeZakazivanja){
+									elem.innerHTML += " " + naloziToShow[i].vremeZakazivanja;
+								}
+							}
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","button pogledajNalog");
+								var a = document.createElement("A");
+								a.setAttribute("href","/pdfView/"+naloziToShow[i].uniqueId);
+								//a.setAttribute("target","_blank");
+								a.innerHTML = "Pogledaj Nalog"
+								elem.appendChild(a);
+							row.appendChild(elem);
+
+						document.getElementById("table-content").appendChild(row);
+					}
+					
+				}
+
+			}
+			generateTable();
+			
+		</script>
+		<script>
+			function stampajTabelu(){
+				doc = new jsPDF({
+					orientation: 'p',
+					unit: 'mm',
+					format: 'a4',
+					compress: true
+					//putOnlyUsedFonts:true
+				});
+
+				
+				pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+				pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+				var yPos = 12;
+
+				//doc.getFontList("Helvetica");
+			    doc.addFileToVFS("PTSans.ttf", PTSans);
+			    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+			    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+			    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+			    doc.setFont('PTSans'); // set font
+			    doc.getFontList("PTSans");
+			    doc.setFontSize(10);
+			    doc.setFontType("bold");
+			    var xOffset = 10;
+			    doc.text("Br.",xOffset,yPos);
+			    xOffset = xOffset + 7;
+			    doc.text("Broj Naloga",xOffset,yPos);
+			    xOffset = xOffset + 25;
+			    doc.text("Datum Naloga",xOffset,yPos);
+			    xOffset = xOffset + 25;
+			    doc.text("Opstina",xOffset,yPos);
+			    xOffset = xOffset + 25;
+			    doc.text("Adresa",xOffset,yPos);
+			    xOffset = xOffset + 50;
+			    doc.text("Status",xOffset,yPos);
+			    yPos= yPos+7;
+			    doc.setFontType("normal");
+			    for(var i=0;i<naloziToShow.length;i++){
+			    	xOffset = 10;
+				    doc.text(eval(i+1).toString()+".",xOffset,yPos);
+				    xOffset = xOffset + 7;
+				    doc.text(naloziToShow[i].broj,xOffset,yPos);
+				    xOffset = xOffset + 25;
+				    doc.text(naloziToShow[i].datum.split("00:")[0],xOffset,yPos);
+				    xOffset = xOffset + 25;
+				    doc.text(naloziToShow[i].radnaJedinica,xOffset,yPos);
+				    xOffset = xOffset + 25;
+				    doc.text(naloziToShow[i].adresa.split(",")[0],xOffset,yPos);
+				    xOffset = xOffset + 50;
+				    doc.text(naloziToShow[i].statusNaloga,xOffset,yPos);
+				    yPos= yPos+7;
+				    if(yPos>=285){
+				    	doc.addPage();
+				    	yPos = 12;
+				    	xOffset = 10;
+
+			    		doc.setFontType("bold");
+					    doc.text("Br.",xOffset,yPos);
+					    xOffset = xOffset + 7;
+					    doc.text("Broj Naloga",xOffset,yPos);
+					    xOffset = xOffset + 25;
+					    doc.text("Datum Naloga",xOffset,yPos);
+					    xOffset = xOffset + 25;
+					    doc.text("Opstina",xOffset,yPos);
+					    xOffset = xOffset + 25;
+					    doc.text("Adresa",xOffset,yPos);
+					    xOffset = xOffset + 50;
+					    doc.text("Status",xOffset,yPos);
+					    yPos = yPos + 7;
+			    		doc.setFontType("normal");
+				    }
+			    }
+
+		        window.open(doc.output('bloburl'), '_blank');
+			}
+		</script>
+	</div>
+<%- include ("partials/footer") -%>

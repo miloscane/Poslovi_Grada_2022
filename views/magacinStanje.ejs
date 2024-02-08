@@ -1,0 +1,864 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+<style>
+	#site-content{
+		max-width:1300px;
+	}
+</style>
+<script>
+	var proizvodi = <%-JSON.stringify(proizvodi)%>;
+	console.log("PROIZVODI:");
+	console.log(proizvodi);
+	var reversi = <%-JSON.stringify(reversi)%>;
+	console.log("REVERSI:");
+	console.log(reversi);
+	var ulazi = <%-JSON.stringify(ulazi)%>;
+	console.log("UNOSI:");
+	console.log(ulazi);
+	var majstori = <%-JSON.stringify(majstori)%>;
+	console.log("MAJSTORI:");
+	console.log(majstori);
+</script>
+<div class="pageTitle">Magacin</div>
+<div style="margin-top:50px">
+	<div class="button" onclick="showStanje()">Stanje</div>
+	<script>
+		function showStanje(){
+			document.getElementById("stanje").style.display = "block";
+			document.getElementById("reversi").style.display = "none";
+			document.getElementById("unosi").style.display = "none";
+		}
+	</script>
+	<div class="button" onclick="showReversi()">Trebovanja</div>
+	<script>
+		function showReversi(){
+			document.getElementById("stanje").style.display = "none";
+			document.getElementById("reversi").style.display = "block";
+			document.getElementById("unosi").style.display = "none";
+		}
+	</script>
+	<div class="button" onclick="showUnosi()">Ulazi</div>
+	<script>
+		function showUnosi(){
+			document.getElementById("stanje").style.display = "none";
+			document.getElementById("reversi").style.display = "none";
+			document.getElementById("unosi").style.display = "block";
+		}
+	</script>
+</div>
+
+<div class="pageSeparator"></div>
+<div id="stanje">
+	<div class="pageTitle" id="ukupna-vrednost-print">Stanje</div>
+	<div class="listaProizvoda">
+		<div id="lista-proizvoda"></div>
+		<script>
+			//Saberi sve ulaze
+			for(var i=0;i<proizvodi.length;i++){
+				proizvodi[i].ulazi	=	0;
+				proizvodi[i].ulaziString	=	"<b>ULAZI:</b><br>";
+				for(var j=0;j<ulazi.length;j++){
+					if(proizvodi[i].uniqueId==ulazi[j].productUniqueId){
+						proizvodi[i].ulaziString += "Podesen ulaz datuma "+getDateAsString(new Date(Number(ulazi[j].datetime)))+" sa kolicinom:"+ulazi[j].quantity+"<br>";
+						proizvodi[i].ulazi = proizvodi[i].ulazi + parseFloat(ulazi[j].quantity);
+					}
+				}
+
+				proizvodi[i].trebovanja	=	0;
+				proizvodi[i].trebovanjaString	=	"<b>TREBOVANJA:</b><br>"
+				for(var j=0;j<reversi.length;j++){
+					for(var k=0;k<reversi[j].zaduzenje.length;k++){
+						if(proizvodi[i].uniqueId==reversi[j].zaduzenje[k].productUniqueId){
+							proizvodi[i].trebovanjaString += "Uzeto " + reversi[j].zaduzenje[k].quantity + " komada za nalog broj " + reversi[j].nalog + " a vraceno "+ reversi[j].zaduzenje[k].quantity2 + "<br>";
+							proizvodi[i].trebovanja = proizvodi[i].trebovanja + eval(parseFloat(reversi[j].zaduzenje[k].quantity)-parseFloat(reversi[j].zaduzenje[k].quantity2));
+						}
+					}
+				}
+			}
+			var table = document.createElement("TABLE");
+			table.setAttribute("class","magacinTable")
+				var tr = document.createElement("TR");
+					var td = document.createElement("TD");
+					td.innerHTML	=	"<div class='value'>R. Br.</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					td.innerHTML	=	"<div class='value'>Sifra</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					td.innerHTML	=	"<div class='value'>Vrsta materijala</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					td.innerHTML	=	"<div class='value'>Jed.</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					td.innerHTML	=	"<div class='value'>Cena</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					td.innerHTML	=	"<div class='value'>Stanje po popisu</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					td.innerHTML	=	"<div class='value'>Ulazi</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					td.innerHTML	=	"<div class='value'>Izlazi</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					td.innerHTML	=	"<div class='value'>Stanje u magacinu</div>";
+					tr.appendChild(td);
+					
+					var td = document.createElement("TD");
+					td.innerHTML	=	"<div class='value'>Vrednost</div>";
+					tr.appendChild(td);
+
+				table.appendChild(tr);
+				var ukupnaVrednost	=	0;
+				for(var i=0;i<proizvodi.length;i++){
+					var tr = document.createElement("TR");				
+					tr.setAttribute("data-id",proizvodi[i].uniqueId);
+					tr.setAttribute("data-name",proizvodi[i].name);
+					tr.setAttribute("data-code",proizvodi[i].code);
+					tr.setAttribute("data-unit",proizvodi[i].unit);
+					tr.setAttribute("data-price",proizvodi[i].price);
+					tr.setAttribute("data-alarm",proizvodi[i].alarm);
+						var td = document.createElement("TD");
+						td.setAttribute("class","broj");
+						td.innerHTML	=	"<div class='value'>"+eval(i+1)+"</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.setAttribute("class","sifra");
+						td.innerHTML	=	"<div class='value'>"+proizvodi[i].code+"</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.setAttribute("class","ime");
+						td.setAttribute("onclick","setProductAttributes(this)");
+						td.innerHTML	=	"<div class='value'>"+proizvodi[i].name+"</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.setAttribute("class","broj");
+						td.innerHTML	=	"<div class='value'>"+proizvodi[i].unit+"</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.setAttribute("class","price");
+						var productPrice	=	proizvodi[i].price ? proizvodi[i].price : "";
+						td.innerHTML	=	"<div class='value'>"+productPrice+"</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.setAttribute("class","broj");//stanje po popisu
+						td.setAttribute("onclick","setStanje(this)");
+						td.setAttribute("style","cursor:pointer");
+						td.innerHTML	=	"<div class='value'>"+proizvodi[i].stanje+"</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.setAttribute("class","broj");//ulazi (ukuljucuje i ono sto je vraceno po treboavnju)
+						td.setAttribute("onclick","podesiUlaz(this)");
+						td.setAttribute("style","cursor:pointer");
+						td.innerHTML	=	"<div class='value'>"+proizvodi[i].ulazi.toFixed(2)+"</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.setAttribute("class","broj");
+						td.innerHTML	=	"<div class='value'>"+proizvodi[i].trebovanja.toFixed(2)+"</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.setAttribute("class","broj");
+						td.innerHTML	=	"<div class='value'>"+eval(proizvodi[i].ulazi-proizvodi[i].trebovanja).toFixed(2)+"</div>";
+						if(proizvodi[i].alarm){
+							if(eval(proizvodi[i].ulazi-proizvodi[i].trebovanja)<Number(proizvodi[i].alarm)){
+								td.setAttribute("style","background-color:rgb(200,0,0);color:rgb(255,255,255)")
+							}
+						}else{
+							if(eval(proizvodi[i].ulazi-proizvodi[i].trebovanja)<10){
+								td.setAttribute("style","background-color:rgb(200,0,0);color:rgb(255,255,255)")
+							}
+						}
+						
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.setAttribute("class","totalPrice");
+						if(proizvodi[i].price){
+							td.innerHTML	=	"<div class='value'>"+brojSaRazmacima(proizvodi[i].price*eval(proizvodi[i].ulazi-proizvodi[i].trebovanja).toFixed(2))+"</div>";
+							ukupnaVrednost = ukupnaVrednost + (proizvodi[i].price*eval(proizvodi[i].ulazi-proizvodi[i].trebovanja));
+						}else{
+							td.innerHTML	=	"<div class='value'></div>";
+						}
+						
+						tr.appendChild(td);
+
+					table.appendChild(tr);
+					var tr = document.createElement("TR");
+						var td = document.createElement("TD");
+						td.setAttribute("colspan","9");
+						td.innerHTML	=	"<div style='width:1200px'>"+proizvodi[i].ulaziString+"<br>"+proizvodi[i].trebovanjaString+"</div>"
+						tr.appendChild(td);
+					table.appendChild(tr);
+				}
+				document.getElementById("ukupna-vrednost-print").innerHTML += " ("+brojSaRazmacima(ukupnaVrednost)+")";
+			document.getElementById("lista-proizvoda").appendChild(table);
+
+			function setStanje(elem){
+				var lightbox	=	document.getElementById("magacin-set-stanje-lightbox");
+				var productId	=	elem.parentElement.dataset.id;
+				document.getElementById("id-proizvoda-stanje").value = elem.parentElement.dataset.id;
+				document.getElementById("kolicina-stanje").value = Number(elem.getElementsByClassName("value")[0].innerHTML);
+				lightbox.getElementsByClassName("subTitle")[0].innerHTML	=	elem.parentElement.dataset.code + " / " + elem.parentElement.dataset.name + " / " + elem.parentElement.dataset.unit;
+				lightbox.style.display="block";
+			}
+
+			function podesiUlaz(elem){
+				var lightbox	=	document.getElementById("magacin-lightbox");
+				document.getElementById("id-proizvoda").value = elem.parentElement.dataset.id;
+				lightbox.getElementsByClassName("subTitle")[0].innerHTML	=	elem.parentElement.dataset.code + " / " + elem.parentElement.dataset.name + " / " + elem.parentElement.dataset.unit;
+				lightbox.style.display="block";
+			}
+
+			function setProductAttributes(elem){
+				var lightbox	=	document.getElementById("magacin-set-proizvod-attributes-lightbox");
+				var productId	=	elem.parentElement.dataset.id;
+				document.getElementById("id-atribut-proizvoda").value = productId;
+				document.getElementById("cena-proizvoda").value = Number(elem.parentElement.dataset.price);
+				document.getElementById("alarm-proizvoda").value = Number(elem.parentElement.dataset.alarm);
+				lightbox.getElementsByClassName("subTitle")[0].innerHTML	=	elem.parentElement.dataset.code + " / " + elem.parentElement.dataset.name + " / " + elem.parentElement.dataset.unit;
+				lightbox.style.display="block";
+			}
+
+
+
+
+
+			/*for(var i=0;i<proizvodi.length;i++){
+				proizvodi[i].kolicina 	=	0;
+				for(var j=0;j<unosi.length;j++){
+					if(unosi[j].productUniqueId==proizvodi[i].uniqueId){
+						proizvodi[i].kolicina = proizvodi[i].kolicina + parseFloat(unosi[j].quantity);
+					}
+				}
+				for(var j=0;j<reversi.length;j++){
+					for(var k=0;k<reversi[j].zaduzenje.length;k++){
+						if(reversi[j].zaduzenje[k].productUniqueId == proizvodi[i].uniqueId){
+							proizvodi[i].kolicina = proizvodi[i].kolicina - parseFloat(reversi[j].zaduzenje[k].quantity);
+						}
+					}
+
+					for(var k=0;k<reversi[j].razduzenje.length;k++){
+						if(reversi[j].razduzenje[k].productUniqueId == proizvodi[i].uniqueId){
+							proizvodi[i].kolicina = proizvodi[i].kolicina + parseFloat(reversi[j].razduzenje[k].quantity);
+						}
+					}
+				}
+			}*/
+			
+		</script>
+	</div>
+	<div id="magacin-set-stanje-lightbox" class="lightbox magacinUnosLightBox" style="background-color:rgba(0,0,0,0.5);display:none">
+		<div class="lightboxContent" style="width:500px;height:500px;background-color:rgb(255,255,255);border:1px solid rgb(50,50,50)">
+			<div style="position:relative">
+				<div class="close" onclick="this.parentElement.parentElement.parentElement.style.display='none'">X</div>
+				<div class="title">Podesi stanje sa popisa za proizvod:</div>
+				<div class="subTitle"></div>
+				<form method="POST" action="/magacin-set-stanje" id="magacin-set-stanje-form">
+					<input type="text" name="productid" id="id-proizvoda-stanje" style="display:none">
+					<input type="number" class="styledInput" id="kolicina-stanje" style="border:1px solid rgb(50,50,50);margin-top:15px" min="0" name="quantity" value="0"><br>
+					<div class="button" style="margin-top:15px" onclick="loadGif();document.getElementById('magacin-set-stanje-form').submit()">Unesi</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div id="magacin-set-proizvod-attributes-lightbox" class="lightbox magacinUnosLightBox" style="background-color:rgba(0,0,0,0.5);display:none">
+		<div class="lightboxContent" style="width:500px;height:500px;background-color:rgb(255,255,255);border:1px solid rgb(50,50,50)">
+			<div style="position:relative">
+				<div class="close" onclick="this.parentElement.parentElement.parentElement.style.display='none'">X</div>
+				<div class="title">Podesi atribute za proizvod:</div>
+				<div class="subTitle"></div>
+				<form method="POST" action="/magacin-set-proizvod-attributes" id="magacin-set-proizvod-attributes-form">
+					<input type="text" name="productid" id="id-atribut-proizvoda" style="display:none">
+					Cena: <input type="number" class="styledInput" id="cena-proizvoda" style="border:1px solid rgb(50,50,50);margin-top:15px" min="0" name="price" value="0"><br>
+					Alarm:	<input type="number" class="styledInput" id="alarm-proizvoda" style="border:1px solid rgb(50,50,50);margin-top:15px" min="0" name="alarm" value="0"><br>
+					<div class="button" style="margin-top:15px" onclick="loadGif();document.getElementById('magacin-set-proizvod-attributes-form').submit()">Podesi</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div id="magacin-lightbox" class="lightbox magacinUnosLightBox" style="background-color:rgba(0,0,0,0.5);display:none">
+		<div class="lightboxContent" style="width:500px;height:500px;background-color:rgb(255,255,255);border:1px solid rgb(50,50,50)">
+			<div style="position:relative">
+				<div class="close" onclick="this.parentElement.parentElement.parentElement.style.display='none'">X</div>
+				<div class="title">Ulaz za proizvod:</div>
+				<div class="subTitle"></div>
+				<form method="POST" action="/magacin-ulaz" id="magacin-ulaz-form">
+					<input type="text" name="productid" id="id-proizvoda" style="display:none">
+					<input type="number" class="styledInput" style="border:1px solid rgb(50,50,50);margin-top:15px" min="0" name="quantity" value="0"><br>
+					<div class="button" style="margin-top:15px" onclick="loadGif();document.getElementById('magacin-ulaz-form').submit()">Unesi</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div id="reversi" style="display:none">
+	<div class="pageTitle">Trebovanja</div>
+	<div class="reversForm">
+		<div class="inputsWrap">
+			<input type="text" id="id-reversa" style="display: none;">
+			<input type="text" id="date-reversa" style="display: none;">
+			<div class="title">Majstor:</div>
+			<div class="inputWrap">
+				<select id="odabir-majstora">
+					<option value="Nijedan" default="default">Nijedan</option>
+				</select>
+				<script>
+					var majstori = <%-JSON.stringify(majstori)%>;
+					for(var i=0;i<majstori.length;i++){
+						if(podizvodjaci.indexOf(majstori[i].uniqueId)<0){
+							var option = document.createElement("OPTION");
+							option.setAttribute("value",majstori[i].uniqueId);
+							option.innerHTML	=	majstori[i].ime;
+							document.getElementById("odabir-majstora").appendChild(option);
+						}
+						
+					}
+				</script>
+			</div>
+		</div>
+		<div class="inputsWrap">
+			<div class="title">Broj naloga:</div>
+			<div class="inputWrap">
+				<input type="text" id="zaduzenje-broj-naloga">
+			</div>
+		</div>
+		<div class="title2">Stavke:</div>
+		<div id="zaduzene-stavke"></div>
+		<div class="addButtonWrap">
+			<div class="button" onclick="addZaduzenaStavka()">Dodaj stavku</div>
+		</div>
+		<script>
+			function removeZaduzenaStavka(elem){
+				elem.parentElement.remove();
+				var stavke = document.getElementById("zaduzene-stavke").getElementsByClassName("magacinStavka");
+				for(var i=0;i<stavke.length;i++){
+					stavke[i].getElementsByClassName("number")[0].innerHTML = eval(i+1)+".";
+				}
+			}
+
+			function addZaduzenaStavka(json){
+				var stavka = document.createElement("DIV");
+				stavka.setAttribute("class","magacinStavka");
+					var number = document.createElement("DIV");
+					number.setAttribute("class","number");
+					number.innerHTML	=	document.getElementById("zaduzene-stavke").getElementsByClassName("magacinStavka").length+1;
+					stavka.appendChild(number);
+
+					var inputWrap = document.createElement("DIV");
+					inputWrap.setAttribute("class","inputWrap");
+						var input = document.createElement("INPUT");
+						input.setAttribute("class","stavka");
+						input.setAttribute("type","text");
+						input.setAttribute("placeholder","Ime proizvoda");
+						if(json){
+							input.value = json.name;
+						}
+						input.setAttribute("oninput","filterProizvode(this)");
+						input.setAttribute("onfocus","showSuggestions(this)");
+						inputWrap.appendChild(input);
+
+						var input = document.createElement("INPUT");
+						input.setAttribute("class","stavkaId");
+						input.setAttribute("type","text");
+						if(json){
+							input.value = json.productUniqueId;
+						}
+						input.setAttribute("style","display:none");
+						inputWrap.appendChild(input)
+
+						var suggestionsWrap = document.createElement("DIV");
+						suggestionsWrap.setAttribute("class","suggestions");
+							var div = document.createElement("DIV");
+							div.setAttribute("style","position:relative");
+								var kill = document.createElement("DIV");
+								kill.setAttribute("class","kill");
+								kill.setAttribute("onclick","this.parentElement.parentElement.style.display=\"none\"");
+								kill.innerHTML = "X";
+								div.appendChild(kill);
+
+								for(var i=0;i<proizvodi.length;i++){
+									var row = document.createElement("DIV");
+									row.setAttribute("class","row");
+									row.setAttribute("onclick","inputSuggestion(this)");
+									row.setAttribute("data-uniqueid",proizvodi[i].uniqueId);
+									row.innerHTML = proizvodi[i].name;
+									div.appendChild(row);
+								}
+								
+							suggestionsWrap.appendChild(div);
+						inputWrap.appendChild(suggestionsWrap);
+
+					stavka.appendChild(inputWrap);
+
+
+
+					var inputWrap = document.createElement("DIV");
+					inputWrap.setAttribute("class","numberInput");
+						var input = document.createElement("INPUT");
+						input.setAttribute("class","kolicina");
+						input.setAttribute("type","number");
+						input.setAttribute("value","1");
+						input.setAttribute("min","1");
+						if(json){
+							input.value = json.quantity;
+						}
+						inputWrap.appendChild(input);
+					stavka.appendChild(inputWrap);
+
+					var inputWrap = document.createElement("DIV");
+					inputWrap.setAttribute("class","numberInput");
+						var input = document.createElement("INPUT");
+						input.setAttribute("class","kolicina2");
+						input.setAttribute("type","number");
+						input.setAttribute("value","0");
+						input.setAttribute("min","0");
+						if(json){
+							input.value = json.quantity2;
+						}
+						inputWrap.appendChild(input);
+					stavka.appendChild(inputWrap);
+
+					var kill = document.createElement("DIV");
+					kill.setAttribute("class","kill");
+					kill.setAttribute("onclick","removeZaduzenaStavka(this)");
+					kill.innerHTML	=	"X";
+					stavka.appendChild(kill);
+				document.getElementById("zaduzene-stavke").appendChild(stavka);
+			}
+			addZaduzenaStavka();
+		</script>
+
+		<script>
+
+			function showSuggestions(elem){
+				elem.parentElement.getElementsByClassName("suggestions")[0].style.display="block"
+			}
+
+			function filterProizvode(elem){
+				var suggestionRows	=	elem.parentElement.getElementsByClassName("row");
+				var filterValue = elem.value;
+				for(var i=0;i<suggestionRows.length;i++){
+					if(suggestionRows[i].innerHTML.toString().toLowerCase().includes(filterValue.toLowerCase())){
+						suggestionRows[i].style.display="block";
+					}else{
+						suggestionRows[i].style.display="none";
+					}
+				}
+			}
+
+			function inputSuggestion(elem){
+				var name = elem.innerHTML;
+				var uniqueId	=	elem.dataset.uniqueid;
+				elem.parentElement.parentElement.parentElement.getElementsByClassName("stavkaId")[0].value = uniqueId;
+				elem.parentElement.parentElement.parentElement.getElementsByClassName("stavka")[0].value = name;
+				elem.parentElement.parentElement.style.display="none";
+			}
+		</script>
+	</div>
+	<div style="text-align:center">
+		<div class="button" onclick="saveRevers()">SACUVAJ</div>
+		<form method="POST" action="/revers" style="display:none" id="revers-form">
+			<input type="text" name="json" id="revers-input">
+		</form>
+		<script>
+			function saveRevers(){
+				var majstor = document.getElementById("odabir-majstora").value;
+				var brojNaloga = document.getElementById("zaduzenje-broj-naloga").value;
+				if(!majstor || majstor == "Nijedan"){
+					alert("Mora se odabrati majstor!");
+				}else{
+					if(!brojNaloga){
+						alert("Mora postojati broj naloga")
+					}else if(isNaN(Number(brojNaloga))){
+						alert("Broj naloga ne deluje kao broj")
+					}else if(brojNaloga.length!=7){
+						alert("Broj naloga mora imati 7 cifara")
+					}else{
+						var reversJson	=	{};
+						reversJson.uniqueId	=	document.getElementById("id-reversa").value;
+						reversJson.majstor = majstor;
+						reversJson.nalog = brojNaloga;
+						reversJson.datetime = document.getElementById("date-reversa").value;
+						reversJson.zaduzenje = [];
+						var zaduzeneStavke = document.getElementById("zaduzene-stavke").getElementsByClassName("magacinStavka");
+						for(var i=0;i<zaduzeneStavke.length;i++){
+							var itemJson	=	{};
+							if(zaduzeneStavke[i].getElementsByClassName("stavkaId")[0].value){
+								itemJson.productUniqueId	=	zaduzeneStavke[i].getElementsByClassName("stavkaId")[0].value;
+								itemJson.code				=	getProizvodCodeFromId(zaduzeneStavke[i].getElementsByClassName("stavkaId")[0].value);
+								itemJson.name				=	zaduzeneStavke[i].getElementsByClassName("stavka")[0].value;
+								itemJson.quantity			=	zaduzeneStavke[i].getElementsByClassName("kolicina")[0].value;
+								itemJson.quantity2			=	zaduzeneStavke[i].getElementsByClassName("kolicina2")[0].value;
+								reversJson.zaduzenje.push(itemJson);
+							}
+							
+						}
+						document.getElementById("revers-input").value = JSON.stringify(reversJson);
+						loadGif();
+						document.getElementById("revers-form").submit();
+					}
+				}
+			}
+		</script>
+	</div>
+	<div class="pageSeparator"></div>
+	<div id="reversi-list"></div>
+	<script>
+		function getMajstorNameFromId(id){
+			var name = "?"
+			for(var i=0;i<majstori.length;i++){
+				if(id==majstori[i].uniqueId){
+					name = majstori[i].ime;
+					break;
+				}
+			}
+			return name
+		}
+
+		var table = document.createElement("TABLE");
+			var tr = document.createElement("TR");
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">Datum</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">Majstor</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">Nalog</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">Adresa</div>";
+				tr.appendChild(td);
+			table.appendChild(tr);
+		for(var i=0;i<reversi.length;i++){
+			var tr = document.createElement("TR");
+			tr.setAttribute("data-json",JSON.stringify(reversi[i]))
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">"+getDateAsString(new Date(Number(reversi[i].datetime)))+"</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">"+getMajstorNameFromId(reversi[i].majstor)+"</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">"+reversi[i].nalog+"</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">"+reversi[i].adresa+"</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"button\" onclick=\"editRevers(this)\">Izmeni</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"button\" onclick=\"deleteRevers(this)\">Obriši</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"button\" onclick=\"printRevers(this,2)\">Štampaj</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"button\" onclick=\"printRevers(this,1)\">Skini PDF</div>";
+				tr.appendChild(td);
+			table.appendChild(tr);
+		}
+		document.getElementById("reversi-list").appendChild(table);
+
+		function editRevers(elem){
+			var json = JSON.parse(elem.parentElement.parentElement.dataset.json);
+			document.getElementById("id-reversa").value = json.uniqueId;
+			document.getElementById("date-reversa").value = json.datetime;
+			document.getElementById("odabir-majstora").value = json.majstor;
+			document.getElementById("zaduzenje-broj-naloga").value = json.nalog;
+			document.getElementById("zaduzene-stavke").innerHTML = "";
+			for(var i=0;i<json.zaduzenje.length;i++){
+				addZaduzenaStavka(json.zaduzenje[i])
+			}
+			document.getElementById("reversi").scrollIntoView(true);
+		}
+
+		function deleteRevers(elem){
+			var json = JSON.parse(elem.parentElement.parentElement.dataset.json);
+			document.getElementById("delete-revers-input").value = json.uniqueId;
+			loadGif();
+			document.getElementById("delete-revers-form").submit();
+		}
+	</script>
+	<form method="POST" action="/delete-revers" id="delete-revers-form" style="display: none;">
+		<input type="text" id="delete-revers-input" name="id">
+	</form>
+</div>
+
+<div id="unosi" style="display:none">
+	<div class="pageTitle">Ulazi</div>
+	<div id="unosi-lista"></div>
+	<script>
+
+		function getProizvodNameFromId(id){
+			var name = "?";
+			for(var i=0;i<proizvodi.length;i++){
+				if(id==proizvodi[i].uniqueId){
+					name = proizvodi[i].name;
+					break;
+				}
+			}
+			return name
+		}
+
+		function getProizvodCodeFromId(id){
+			var code = "?";
+			for(var i=0;i<proizvodi.length;i++){
+				if(id==proizvodi[i].uniqueId){
+					code = proizvodi[i].code;
+					break;
+				}
+			}
+			return code
+		}
+
+
+		var table = document.createElement("TABLE");
+			var tr = document.createElement("TR");
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">Datum</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">Sifra</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">Proizvod</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">Količina</div>";
+				tr.appendChild(td);
+			table.appendChild(tr);
+		for(var i=0;i<ulazi.length;i++){
+			var tr = document.createElement("TR");
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">"+getDateAsString(new Date(Number(ulazi[i].datetime)))+"</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">"+getProizvodCodeFromId(ulazi[i].productUniqueId)+"</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">"+getProizvodNameFromId(ulazi[i].productUniqueId)+"</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">"+ulazi[i].quantity+"</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"button\" onclick=\"deleteUnos('"+ulazi[i].uniqueId+"')\">Obriši</div>";
+				tr.appendChild(td);
+			table.appendChild(tr);
+		}
+		document.getElementById("unosi-lista").appendChild(table);
+
+		function deleteUnos(id){
+			document.getElementById("delete-unos-input").value = id;
+			loadGif();
+			document.getElementById("delete-unos-form").submit();
+		}
+	</script>
+	<form method="POST" action="/delete-unos" id="delete-unos-form" style="display:none">
+		<input type="text" id="delete-unos-input" name="id">
+	</form>
+</div>
+<div style="overflow:hidden;height:1px;width:1px;">
+	<canvas id="logo-canvas" height="306" width="300"></canvas>
+	<script>
+		var logoCanvas = document.getElementById('logo-canvas');
+		var logoCanvasContext = logoCanvas.getContext('2d');
+		var logoLogoBlob;
+		function make_base3(){
+		  base_image3 = new Image();
+		  base_image3.src = '/images/fakturaLogo.png';
+		  base_image3.onload = function(){
+		    logoCanvasContext.drawImage(base_image3, 0, 0);
+		    logoLogoBlob 	=	logoCanvas.toDataURL("image/png", 1.0);
+
+		  }
+		}
+		make_base3();
+	</script>
+</div>
+<script src="/js/pdf.js"></script>
+<script src="/js/font.js"></script>
+<script src="/js/font2.js"></script>
+<script>var mm = 3.7795275591;</script>
+<script>
+	function printRevers(elem,testCase){
+		var json = JSON.parse(elem.parentElement.parentElement.dataset.json);
+		var istiReversi	=	[];
+		for(var i=0;i<reversi.length;i++){
+			if(reversi[i].nalog==json.nalog){
+				istiReversi.push(reversi[i])
+			}
+		}
+		istiReversi.sort((a, b) => {
+		  if (a.datetime < b.datetime) {
+		    return -1;
+		  }
+		});
+
+		var brojReversa	=	"?";
+		for(var i=0;i<istiReversi.length;i++){
+			if(istiReversi[i].uniqueId==json.uniqueId){
+				brojReversa	=	eval(i+1);
+			}
+		}
+		doc = new jsPDF({
+			orientation: 'p',
+			unit: 'mm',
+			format: 'a4',
+			compress:true
+			//putOnlyUsedFonts:true
+		});
+		
+		pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+		pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+		var yPos = 5;
+		var xPos = 5;
+		var yEnd = 200;
+		doc.addFileToVFS("PTSans.ttf", PTSans);
+	    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+	    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+	    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+	    doc.setFont('PTSans'); // set font
+	    doc.getFontList("PTSans");
+	    doc.addImage(logoLogoBlob, 'PNG', 5, 5, 150/mm, 153/mm,'','FAST');
+        doc.setFontType("bold");
+		doc.setFontSize(16);
+        doc.text("Poslovi Grada d.o.o.",205,yPos,'right');
+        doc.setFontType("normal");
+		doc.setFontSize(11);
+		yPos = yPos + 5;
+        doc.text("Bulevar Kralja Aleksandra 20, 11000 Vračar",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("011/334-2325",205,yPos,'right');
+        yPos = yPos + 5;
+        doc.text("063/209-777",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("PIB: 110424762",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("Mat. Broj: 21348660",205,yPos,'right');
+		yPos = yPos + 5;
+        doc.text("info@poslovigrada.rs",205,yPos,'right');
+        yPos = yPos + 10;
+        doc.setFontType("bold");
+		doc.setFontSize(20);
+        doc.text("TREBOVANJE / POVRATNICA",pageWidth/2,yPos,'center');
+		yPos = yPos + 7;
+        doc.text("PO NALOGU " +json.nalog +  " / " + brojReversa ,pageWidth/2,yPos,'center');
+        doc.setFontType("normal");
+		doc.setFontSize(16);
+		yPos = yPos + 7;
+		doc.text(json.adresa,pageWidth/2,yPos,'center');
+		yPos = yPos + 7;
+		var daniUNedelji = ["Nedelja","Ponedeljak","Utorak","Sreda","Četvrtak","Petak","Subota"];
+        doc.text(daniUNedelji[new Date(Number(json.datetime)).getDay()] + " " + vremePrijema(json.datetime),pageWidth/2,yPos,'center');
+		yPos = yPos + 7;
+		doc.text(getMajstorNameFromId(json.majstor),pageWidth/2,yPos,'center');
+		yPos = yPos + 7;
+		doc.setFontSize(12);
+		/*doc.setDrawColor(0);
+        doc.setFillColor(31,51,100);
+        doc.rect(xPos, yPos-5, 200, 7, 'F');
+		doc.setTextColor(255,255,255);*/
+        doc.setFontType("bold");
+        doc.text("Stavke:",7,yPos);
+        doc.text("Zaduženo:",80,yPos);
+        doc.text("Vraćeno:",110,yPos);
+		doc.setTextColor(0,0,0);
+        doc.setFontType("normal");
+		yPos = yPos + 6.5;
+
+		for(var i=0;i<json.zaduzenje.length;i++){
+			doc.text(eval(i+1).toString()+".",7,yPos);
+			doc.text(getProizvodNameFromId(json.zaduzenje[i].productUniqueId),13,yPos);
+			doc.text(json.zaduzenje[i].quantity.toString(),80,yPos);
+			doc.text(json.zaduzenje[i].quantity2.toString(),110,yPos);
+			doc.rect(xPos, yPos+2, yEnd, 0.2, 'F');//Donja linija
+			yPos = yPos + 8;
+			if(yPos>285){
+				doc.addPage();
+				yPos = 5;
+			}
+		}
+		yPos = yPos + 7;
+		doc.setFontSize(12);
+		/*doc.setDrawColor(0);
+        doc.setFillColor(31,51,100);
+        doc.rect(xPos, yPos-5, 200, 7, 'F');
+		doc.setTextColor(255,255,255);*/
+
+		yPos = yPos + 20;
+		if(yPos>285){
+			doc.addPage();
+			yPos = 25;
+		}
+		doc.text("Magacioner",45,yPos,'center');
+		doc.rect(xPos, yPos-5, 80, 0.4, 'F');//Potpis linija
+		doc.text("Magacioner",170,yPos,'center');
+		doc.rect(210-85, yPos-5, 80, 0.4, 'F');//Potpis linija
+
+		yPos = yPos+20;
+		doc.text("Majstor",45,yPos,'center');
+		doc.rect(xPos, yPos-5, 80, 0.4, 'F');//Potpis linija
+		doc.text("Majstor",170,yPos,'center');
+		doc.rect(210-85, yPos-5, 80, 0.4, 'F');//Potpis linija
+
+		if(testCase==1){
+			doc.save("Specifikacija_"+datum+".pdf");
+		}else if(testCase==2){
+			//window.open(doc.output('bloburl'), '_blank');
+			window.open(URL.createObjectURL(doc.output("blob")),'_blank')
+		}
+
+	}
+</script>
+<%- include ("partials/footer") -%>

@@ -1,0 +1,345 @@
+<%- include ("partials/header") -%>
+	<div class="kancelarijaApp">
+		<script>
+			var weekdays	=	["Ponedeljak","Utorak","Sreda","Četvrtak","Petak","Subota","Nedelja"];
+			var monthNames	=	["Januar","Februar","Mart","April","Maj","Jun","Jul","Avgust","Septembar","Oktobar","Novembar","Decembar"];
+		</script>
+		<div>Zdravo <%=user.ime%></div>
+		<% if(typeof message!="undefined"){ %>
+			<div class="message">Poruka: <%=message%></div>
+			<% if(typeof dnevnica!="undefined"){ %>
+				<div class="welcome">
+					Pocetak radnog vremena: <span id="starttime"></span><br>Kraj radnog vremena: <span id="endtime"></span><br>Trajanje: <span id="duration"></span>
+				</div>
+				<script>
+					var dnevnica	=	<%-JSON.stringify(dnevnica)%>;
+					var startDate	=	new Date(Number(dnevnica.starttime));
+					var endDate		=	new Date(Number(dnevnica.endtime));
+					document.getElementById("starttime").innerHTML	=	startDate.getHours()+":"+startDate.getMinutes();
+					document.getElementById("endtime").innerHTML	=	endDate.getHours()+":"+endDate.getMinutes();
+					document.getElementById("duration").innerHTML	=	msToTime(Number(dnevnica.endtime)-Number(dnevnica.starttime))
+				</script>
+			<% }else { %>
+				<div>WTF2</div>
+			<% } %>
+		<% }else{ %>
+			<% if(typeof dnevnica!="undefined"){%>
+				<% if (dnevnica=="start") { %>
+					<!--Pocetak dana-->
+					<div class="welcome">
+						Zdravo <span id="ime"></span>,<br>Danasnji datum je <span id="weekday"></span>, <span id="datum"></span><br>Vaš radni ste započeli u <span id="starttime"></span>.<br><span class="srecan">Imajte veoma uspešan dan!</span>
+					</div>
+					<script>
+						var weekdays	=	["Ponedeljak","Utorak","Sreda","Četvrtak","Petak","Subota","Nedelja"];
+						var starttime	=	"<%- starttime %>";
+						var startDate	=	new Date(Number(starttime));
+						var weekDay 	=	startDate.getDay();
+						if(weekDay==0){
+							weekDay = 6;
+						}else{
+							weekDay = weekDay - 1;
+						}
+						document.getElementById("weekday").innerHTML	=	weekdays[weekDay];
+						document.getElementById("datum").innerHTML		=	getDateAsString(startDate);
+						document.getElementById("starttime").innerHTML	=	startDate.getHours()+":"+startDate.getMinutes();
+					</script>
+				<% }else if(dnevnica=="end"){ %>
+					<!--Kraj dana-->
+					<div class="welcome">
+						Zdravo <span id="ime"></span>,<br>Zavrsili ste radni dan za <span id="weekday"></span>, <span id="datum"></span> u <span id="endtime"></span> a započeli ste ga u <span id="starttime"></span>.<br>Vaš radni dan je ukupno trajao <span id="duration"></span>.<br><span class="srecan">Uživajte u ostatku dana!</span>
+					</div>
+					<script>
+						var starttime	=	"<%- starttime %>";
+						var endtime		=	"<%- endtime %>";
+						var startDate	=	new Date(Number(starttime));
+						var endDate		=	new Date(Number(endtime));
+						var weekDay 	=	endDate.getDay();
+						if(weekDay==0){
+							weekDay = 6;
+						}else{
+							weekDay = weekDay - 1;
+						}
+						document.getElementById("weekday").innerHTML	=	weekdays[weekDay];
+						document.getElementById("datum").innerHTML		=	getDateAsString(startDate);
+						document.getElementById("starttime").innerHTML	=	startDate.getHours()+":"+startDate.getMinutes();
+						document.getElementById("endtime").innerHTML	=	endDate.getHours()+":"+endDate.getMinutes();
+						document.getElementById("duration").innerHTML	=	msToTime(Number(endtime)-Number(starttime))
+					</script>
+				<% }else{ %>
+					<div>WTF</div>
+				<% } %>
+			<% }else{ %>
+				<script>
+					var today = new Date(Number(<%= today%>));
+					var dnevnice = <%-JSON.stringify(dnevnice)%>;
+				</script>
+				<div class="calendarTableWrap">
+					<div class="dailyInformation" id="total-info"></div>
+					<table id="calendar-table">
+						<tr>
+							<th>PON</th>
+							<th>UTO</th>
+							<th>SRE</th>
+							<th>ČET</th>
+							<th>PET</th>
+							<th>SUB</th>
+							<th>NED</th>
+						</tr>
+						<tr></tr>
+						<tr></tr>
+						<tr></tr>
+						<tr></tr>
+						<tr></tr>
+						<tr></tr>
+					</table>
+					<div class="dailyInformation" id="daily-information">
+						Kliknite na datum za deteljan prikaz o radnom danu.
+					</div>
+					<div style="text-align:center;margin-top:20px">
+						<div class="kancelarijaAppButton" onclick="loadGif();location.reload();">Osveži</div>
+					</div>
+					<script>
+						function isSameDate(datetime1,datetime2){
+							var date1	=	new Date(Number(datetime1));
+							var date2	=	new Date(Number(datetime2));
+							
+							if(date1.getFullYear()==date2.getFullYear() && date1.getMonth()==date2.getMonth() && date1.getDate()==date2.getDate()){
+								return true
+							}else{
+								return false
+							}
+						}
+
+						//Initialize table with TD's
+						var tableRows	=	document.getElementById("calendar-table").querySelectorAll("TR");
+						for(var i=1;i<tableRows.length;i++){
+							for(var j=0;j<7;j++){
+								var td	=	document.createElement("TD");
+									var div = document.createElement("DIV");
+									div.setAttribute("class","value");
+									td.appendChild(div)
+								tableRows[i].appendChild(td);
+							}
+						}
+
+
+						var year 			=	today.getFullYear();
+						var month 			=	today.getMonth()+1;
+						var date			=	new Date(year,month-1,1);
+						var daysInMonth		=	new Date(year,month,0).getDate();
+						var weekDay			=	(date.getDay()==0) ? 7:date.getDay();//Return week day as 1-7
+						for(var i=1;i<=daysInMonth;i++){
+							var tempDate			=	new Date(year,month-1,i);
+							var calendarElement		=	document.createElement("DIV");
+							calendarElement.setAttribute("class","calendarElement");
+							calendarElement.setAttribute("data-date",tempDate.getTime());
+
+								var dateTitle		=	document.createElement("DIV");
+								dateTitle.innerHTML	=	i+".";
+								dateTitle.setAttribute("class","calendarDateTitle");
+								calendarElement.appendChild(dateTitle);
+							if(i==1){
+								document.getElementById("calendar-table").querySelectorAll("TR")[1].querySelectorAll("TD")[weekDay-1].getElementsByClassName("value")[0].appendChild(calendarElement);
+							}else{
+								var elementPlaced	=	false;
+								for(var j=1;j<tableRows.length;j++){
+									if(elementPlaced){
+										break;
+									}
+									var rowTds	=	tableRows[j].querySelectorAll("TD");
+									var k		=	(j==1) ? weekDay-1:0;
+									for(k;k<rowTds.length;k++){
+										if(!rowTds[k].querySelectorAll(".calendarElement")[0]){
+											rowTds[k].getElementsByClassName("value")[0].appendChild(calendarElement);
+											elementPlaced	=	true;
+											break;
+										}
+									}
+								}
+							}
+						}
+
+						var ukupnoRadnihDana		=	dnevnice.length;
+						var ukupnoDanaSaKasnjenjem	=	0;
+						var ukupnoRadnogVremena		=	0;
+						var ukupnoPrekovremenogRada	=	0;
+						var ukupnoSkracenogRada		=	0;
+						for(var i=0;i<dnevnice.length;i++){
+							var dnevnica = JSON.parse(JSON.stringify(dnevnice[i]));
+							var calendarElements	=	document.getElementsByClassName("calendarElement");
+							for(var j=0;j<calendarElements.length;j++){
+
+								if(isSameDate(calendarElements[j].dataset.date,dnevnica.starttime)){
+
+									calendarElements[j].setAttribute("data-dnevnica",JSON.stringify(dnevnica));
+									calendarElements[j].setAttribute("onclick","showDailyInfo(this)")
+									var hourElem	=	document.createElement("DIV");
+									hourElem.setAttribute("class","hourElem");
+									if(dnevnica.endtime){
+										var timeDiff = Number(dnevnica.endtime)-Number(dnevnica.starttime);
+										if(timeDiff>=2.88e+7){
+											ukupnoPrekovremenogRada	+= timeDiff-2.88e+7;
+											hourElem.style.color = "rgb(0,190,0)";
+										}else{
+											ukupnoSkracenogRada	+= 2.88e+7-timeDiff;
+											hourElem.style.color = "rgb(220,0,0)";
+										}
+										ukupnoRadnogVremena	+=	Number(dnevnica.endtime)-Number(dnevnica.starttime);
+										hourElem.innerHTML	=	msToTime(Number(dnevnica.endtime)-Number(dnevnica.starttime));
+
+									}else{
+										if(!isSameDate(today.getTime(),dnevnica.starttime)){
+											ukupnoRadnogVremena	+= 2.16e+7;
+											ukupnoSkracenogRada	+= 7.2e+6;
+											hourElem.innerHTML	=	"06:00";
+											hourElem.style.color = "rgb(220,0,0)";
+										}else{
+
+										}
+										
+									}
+									calendarElements[j].appendChild(hourElem);
+									var statuses	=	document.createElement("DIV");
+									statuses.setAttribute("class","statuses");
+									var startDate 	=	new Date(Number(dnevnica.starttime));
+									var startHour	=	startDate.getHours();
+									var startMinute	=	startDate.getMinutes();
+									if(startHour>8 && startMinute>5){
+										ukupnoDanaSaKasnjenjem++;
+										var icon	=	document.createElement("DIV");
+										icon.setAttribute("class","icon");
+										icon.style.backgroundImage = "url(/images/late-icon3.png)";
+										statuses.appendChild(icon);
+									}
+									if(!dnevnica.endtime){
+										var icon	=	document.createElement("DIV");
+										icon.setAttribute("class","icon");
+										icon.style.backgroundImage = "url(/images/warning.png)";
+										statuses.appendChild(icon);
+									}
+									calendarElements[j].appendChild(statuses);
+								}
+							}
+						}
+
+						var topInformation = document.getElementById("total-info");
+						var title = document.createElement("DIV");
+						title.setAttribute("class","title");
+						title.innerHTML	=	"Informacije za mesec: " + monthNames[today.getMonth()]+"-"+startDate.getFullYear();
+						topInformation.appendChild(title);
+
+						var borderSeparator	=	document.createElement("DIV");
+						borderSeparator.setAttribute("class","borderSeparator");
+						topInformation.appendChild(borderSeparator);
+
+						var info 	=	document.createElement("DIV");
+						info.setAttribute("class","info");
+						info.innerHTML	=	"<b>Ukupno radnih dana: </b>" + ukupnoRadnihDana;
+						topInformation.appendChild(info);
+
+						var info 	=	document.createElement("DIV");
+						info.setAttribute("class","info");
+						info.innerHTML	=	"<b>Ukupno dana sa kašnjenjem: </b>" + ukupnoDanaSaKasnjenjem;
+						topInformation.appendChild(info);
+
+						var info 	=	document.createElement("DIV");
+						info.setAttribute("class","info");
+						info.innerHTML	=	"<b>Ukupno radnog vremena: </b>" + msToTime(ukupnoRadnogVremena);
+						topInformation.appendChild(info);
+
+						var info 	=	document.createElement("DIV");
+						info.setAttribute("class","info");
+						info.innerHTML	=	"<b>Ukupno prekovremenog rada: </b>" + msToTime(ukupnoPrekovremenogRada);
+						topInformation.appendChild(info);
+
+						var info 	=	document.createElement("DIV");
+						info.setAttribute("class","info");
+						info.innerHTML	=	"<b>Ukupno skracenog rada: </b>" + msToTime(ukupnoSkracenogRada);
+						topInformation.appendChild(info);
+
+						var info 	=	document.createElement("DIV");
+						info.setAttribute("class","info");
+						if(ukupnoPrekovremenogRada>=ukupnoSkracenogRada){
+							info.innerHTML	=	"<b>Razlika prekovremeno i skraceno: </b>" + msToTime(ukupnoPrekovremenogRada-ukupnoSkracenogRada);
+						}else{
+							info.innerHTML	=	"<b>Razlika prekovremeno i skraceno: </b>-" + msToTime(ukupnoSkracenogRada-ukupnoPrekovremenogRada);
+						}
+						topInformation.appendChild(info);
+
+						//Mark today
+						/*var todaysDate			=	new Date().getTime();
+						var calendarElements	=	document.getElementById("calendar-table").querySelectorAll(".calendarElement");
+						for(var i=0;i<calendarElements.length;i++){
+							if(isSameDate(todaysDate,calendarElements[i].dataset.date)){
+								calendarElements[i].classList.add("calendarElementToday");
+								break;
+							}
+						}*/
+						var informationWrap	=	document.getElementById("daily-information");
+						function showDailyInfo(elem){
+							informationWrap.innerHTML = "";
+							var dnevnica	=	JSON.parse(elem.dataset.dnevnica);
+							var startDate 	=	new Date(Number(dnevnica.starttime));
+							var weekDay			=	(startDate.getDay()==0) ? 7:startDate.getDay();//Return week day as 1-7
+							var title = document.createElement("DIV");
+							title.setAttribute("class","title");
+							title.innerHTML	=	"Informacije za radni dan: " + weekdays[weekDay-1] + ", " + startDate.getDate() + "."+monthNames[startDate.getMonth()]+"."+startDate.getFullYear();
+							informationWrap.appendChild(title);
+
+							var borderSeparator	=	document.createElement("DIV");
+							borderSeparator.setAttribute("class","borderSeparator");
+							informationWrap.appendChild(borderSeparator);
+
+							var info 	=	document.createElement("DIV");
+							info.setAttribute("class","info");
+							var startHour 		=	startDate.getHours()<10 ? "0"+startDate.getHours() : startDate.getHours();
+							var startMinute 	=	startDate.getMinutes()<10 ? "0"+startDate.getMinutes() : startDate.getMinutes();
+							info.innerHTML	=	"<b>Vreme dolaska: </b>" + startHour + ":" + startMinute;
+							if(startHour>8 && startMinute>5){
+								info.style.color = "rgb(220,0,0)";
+								info.innerHTML += " (<span><img src=\"/images/late-icon3.png\" style=\"width:12px\"></span>Kašnjenje)";
+							} 
+							informationWrap.appendChild(info);
+
+							var info 	=	document.createElement("DIV");
+							info.setAttribute("class","info");
+							var tempString = "undefined";
+							if(dnevnica.endtime){
+								var endDate 		=	new Date(Number(dnevnica.endtime));
+								var endHour 		=	endDate.getHours()<10 ? "0"+endDate.getHours() : endDate.getHours();
+								var endMinute 		=	endDate.getMinutes()<10 ? "0"+endDate.getMinutes() : endDate.getMinutes();
+								tempString			=	endHour + ":" + endMinute;
+							}else{
+								tempString			=	"Nije zabeleženo <span><img src=\"/images/warning.png\" style=\"width:12px\"></span>"
+								info.style.color = "rgb(220,0,0)";
+							}
+							info.innerHTML = "<b>Vreme odlaska: </b>" + tempString;
+							informationWrap.appendChild(info);
+
+							var info 	=	document.createElement("DIV");
+							info.setAttribute("class","info");
+							tempString = "";
+							if(dnevnica.endtime){
+								var radnoVreme	=	Number(dnevnica.endtime)-Number(dnevnica.starttime)
+								tempString	=	msToTime(radnoVreme);
+								if(radnoVreme>=2.88e+7){
+									info.style.color = "rgb(0,190,0)";
+								}else{
+									info.style.color = "rgb(220,0,0)"; 
+								}
+							}else{
+								tempString	=	"06:00";
+								info.style.color = "rgb(220,0,0)";
+							}
+							info.innerHTML	=	"<b>Radno vreme: </b>" + tempString;
+							informationWrap.appendChild(info);
+						}
+					</script>
+				</div>
+			<% } %>
+		<% } %>
+		
+	</div>
+	
+<%- include ("partials/kancelarijaAppFooter") -%>
+<%- include ("partials/footer") -%>

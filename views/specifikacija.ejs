@@ -1,0 +1,200 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+<style>
+	#site-content{
+		max-width: 1200px;
+	}
+</style>
+
+	<script>
+		var nalozi	=	<%- JSON.stringify(nalozi)%>;
+	</script>
+	<div class="pageTitle">Specifikacije</div>
+	<div class="specifikacija" id="spec">
+		<div class="colorCodes">
+			<div class="color fakturisan">Fakturisan</div>
+			<div class="color spremanZaFakturisanje">Spreman za fakturisanje</div>
+			<div class="color uStambenom">U Stambenom</div>
+			<div class="color zavrsen">Zavrsen</div>
+			<div class="color nestoDrugo">Nesto drugo</div>
+		</div>
+		<div class="header">
+			<div class="inline title" id="spec-title"></div>
+			<script>
+				document.getElementById("spec-title").innerHTML	=	"Specifikacija " + nalozi[0].brojSpecifikacije;
+			</script>
+			<div class="inline date">
+				<input type="date" id="datum">
+				<script>
+					document.getElementById("datum").value = getDateAsStringForInputObject(new Date());
+				</script>
+			</div>
+		</div>
+
+		<table id="spec-table"></table>
+		<div id="ukupno"></div>
+		<div class="button" onclick="stampajSpecifikaciju(document.getElementById('datum').value,nalozi,2)">
+			Štampaj
+		</div>
+	</div>
+
+	<script>
+		var tr = document.createElement("TR");
+			var td = document.createElement("TD");
+			td.innerHTML	=	"<div class=\"value\">R. BR.</div>";
+			tr.appendChild(td);
+
+			var td = document.createElement("TD");
+			td.innerHTML	=	"<div class=\"value\">BROJ FAKTURE</div>";
+			tr.appendChild(td);
+
+			var td = document.createElement("TD");
+			td.innerHTML	=	"<div class=\"value\">DATUM</div>";
+			tr.appendChild(td);
+
+			var td = document.createElement("TD");
+			td.innerHTML	=	"<div class=\"value\">NARUDŽBENICA</div>";
+			tr.appendChild(td);
+
+			var td = document.createElement("TD");
+			td.innerHTML	=	"<div class=\"value\">ADRESA</div>";
+			tr.appendChild(td);
+
+			var td = document.createElement("TD");
+			td.innerHTML	=	"<div class=\"value\">IZNOS</div>";
+			tr.appendChild(td);
+		document.getElementById("spec-table").appendChild(tr);
+		var ukupno = 0;
+		for(var i=0;i<nalozi.length;i++){
+			var tr 	=	document.createElement("TR");
+			if(nalozi[i].statusNaloga == "Fakturisan"){
+				tr.classList.add("fakturisan")
+			}else if(nalozi[i].statusNaloga == "Spreman za fakturisanje"){
+				tr.classList.add("spremanZaFakturisanje")
+			}else if(nalozi[i].statusNaloga == "Nalog u Stambenom"){
+				tr.classList.add("uStambenom")
+			}else if(nalozi[i].statusNaloga != "Završeno"){
+				tr.classList.add("nestoDrugo")
+			}
+			tr.setAttribute("onclick","window.open('/pdfView/"+nalozi[i].uniqueId+"','_blank')");
+				var td = document.createElement("TD");
+				td.innerHTML	=	"<div class=\"value\">"+eval(i+1)+".</div>"
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML	=	"<div class=\"value\">"+nalozi[i].brojFakture+"</div>"
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML	=	"<div class=\"value\">"+nalozi[i].datum.split('god.')[0]+"</div>"
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML	=	"<div class=\"value\">"+nalozi[i].broj+"</div>"
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML	=	"<div class=\"value\">"+nalozi[i].adresa.split(',')[0]+"</div>"
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML	=	"<div class=\"value\" style=\"text-align:right\">"+brojSaRazmacima(nalozi[i].ukupanIznos)+"</div>"
+				tr.appendChild(td);
+
+				ukupno = ukupno + parseFloat(nalozi[i].ukupanIznos)
+			document.getElementById("spec-table").appendChild(tr);
+		}
+		document.getElementById("ukupno").innerHTML	=	brojSaRazmacima(ukupno.toFixed(2))
+		
+	</script>
+	<script src="/js/pdf.js"></script>
+	<script src="/js/font.js"></script>
+	<script src="/js/font2.js"></script>
+	<script>var mm = 3.7795275591;</script>
+	<script>
+		function stampajSpecifikaciju(datum,nalozi,testCase){
+			doc = new jsPDF({
+				orientation: 'p',
+				unit: 'mm',
+				format: 'a4',
+				compress:true
+				//putOnlyUsedFonts:true
+			});
+			
+			pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+			pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+			var yPos = 5;
+			var xPos = 5;
+			var yEnd = 200;
+			doc.addFileToVFS("PTSans.ttf", PTSans);
+		    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+		    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+		    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+		    doc.setFont('PTSans'); // set font
+		    doc.getFontList("PTSans");
+		    doc.setDrawColor(0);
+	        doc.setFillColor(0,0,0);
+			doc.rect(xPos, yPos, yEnd, 0.4, 'F');
+	        doc.setFontType("bold");
+			doc.setFontSize(14);
+			var title = "SPECIFIKACIJA "+nalozi[0].brojSpecifikacije+" "+reshuffleDate3(datum);
+			yPos = yPos + 5
+	        doc.text(title,xPos+3,yPos);
+			doc.rect(xPos, yPos+3, yEnd, 0.4, 'F');
+			doc.rect(xPos, yPos-5, xPos-4.6, 8, 'F');//Leva margina
+			doc.rect(yEnd+4.6, yPos-5, xPos-4.6, 8, 'F');//desna margina
+
+			yPos = yPos + 8;
+			doc.text("R.BR.",xPos+2,yPos);
+			doc.rect(xPos, yPos+2, yEnd, 0.4, 'F');//Donja linija
+			doc.rect(xPos, yPos-7, xPos-4.6, 9, 'F');//Leva margina
+			doc.rect(yEnd+4.6, yPos-7, xPos-4.6, 9, 'F');//desna margina
+			doc.rect(xPos+15, yPos-5, xPos-4.6, 7, 'F');//desna margina broja
+			doc.text("DATUM",xPos+15+2,yPos);
+			doc.rect(xPos+15+27, yPos-5, xPos-4.6, 7, 'F');//desna margina datuma
+			doc.text("NARUDŽBENICA",xPos+15+27+2,yPos);
+			doc.rect(xPos+15+38+27, yPos-5, xPos-4.6, 7, 'F');//desna margina narudzbenice
+			doc.text("ADRESA",xPos+15+38+27+2,yPos);
+			doc.rect(xPos+15+38+27+80, yPos-5, xPos-4.6, 7, 'F');//desna margina adrese
+			doc.text("IZNOS",xPos+15+38+27+80+2,yPos);
+	        doc.setFontType("normal");
+
+	        var ukupanIznos = 0;
+			for(var i=0;i<nalozi.length;i++){
+				yPos = yPos + 8;
+				doc.text(eval(i+1).toString(),xPos+2,yPos);
+				doc.rect(xPos, yPos+2, yEnd, 0.4, 'F');//Donja linija
+				doc.rect(xPos, yPos-7, xPos-4.6, 9, 'F');//Leva margina
+				doc.rect(yEnd+4.6, yPos-7, xPos-4.6, 9, 'F');//desna margina
+				doc.rect(xPos+15, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina broja
+				doc.text(nalozi[i].datum.split("god.")[0].toString(),xPos+15+2,yPos);
+				doc.rect(xPos+15+27, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina datuma
+				doc.text(nalozi[i].broj.toString(),xPos+15+27+2,yPos);
+				doc.rect(xPos+15+27+38, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina narudzbenice
+				doc.text(nalozi[i].adresa.split(",")[0],xPos+15+27+38+2,yPos);
+				doc.rect(xPos+15+27+38+80, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina adrese
+				doc.text(brojSaRazmacima(nalozi[i].ukupanIznos),202,yPos,'right');//
+				
+				if(yPos>285){
+					doc.addPage()
+					yPos = 5;
+				}
+				ukupanIznos = ukupanIznos + parseFloat(nalozi[i].ukupanIznos);
+			}
+
+			yPos = yPos + 15;
+	        doc.setFontType("bold");
+			doc.setFontSize(20);
+			doc.text("UKUPNO: " + brojSaRazmacima(ukupanIznos.toFixed(2).toString()),202,yPos,'right');
+
+			if(testCase==1){
+				doc.save("Specifikacija_"+datum+".pdf");
+			}else if(testCase==2){
+				//window.open(doc.output('bloburl'), '_blank');
+				window.open(URL.createObjectURL(doc.output("blob")),'_blank')
+			}
+
+		}
+	</script>
+<%- include ("partials/footer") -%>

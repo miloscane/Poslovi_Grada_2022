@@ -1,0 +1,179 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+	<script>
+		var majstori = <%-JSON.stringify(majstori)%>;
+		var nalozi = <%-JSON.stringify(nalozi)%>;
+	</script>
+	<script src="/js/pdf.js"></script>
+	<script src="/js/font.js"></script>
+	<script src="/js/font2.js"></script>
+	<script>
+		var mm = 3.7795275591;
+		function stringArray(string,count){
+			return string.match(new RegExp('.{1,' + count + '}', 'g'));
+		}
+	</script>
+	<script>
+		function stampajListu(majstori,nalozi){
+			doc = new jsPDF({
+				orientation: 'p',
+				unit: 'mm',
+				format: 'a4',
+				compress: true
+				//putOnlyUsedFonts:true
+			});
+			pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+			pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+			doc.addFileToVFS("PTSans.ttf", PTSans);
+		    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+		    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+		    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+		    doc.setFont('PTSans'); // set font
+		    doc.getFontList("PTSans");
+
+			
+
+			for(var i=0;i<majstori.length;i++){
+				if(podizvodjaci.indexOf(majstori[i].uniqueId)<0 && Number(majstori[i].inactive)!=1){
+					var yPos 	=	7;
+					var xPos	=	5;
+					var ukupnoNaloga	=	0;
+					var ukupanIznos		=	0;
+					var naloziZaPrikaz	=	[];
+					for(var j=0;j<nalozi.length;j++){
+						if(nalozi[j].majstorNaloga==majstori[i].uniqueId){
+							ukupnoNaloga++;
+							ukupanIznos = ukupanIznos + parseFloat(nalozi[j].ukupanIznos);
+							naloziZaPrikaz.push(nalozi[j]);
+						}
+					}
+
+					doc.setFontType("bold");
+					doc.setFontSize(14);
+					doc.text(majstori[i].ime,xPos,yPos);
+					yPos 	=	yPos+4;
+					doc.setFontType("normal");
+					doc.setFontSize(10);
+					doc.text("Ukupno naloga: "+ukupnoNaloga,xPos,yPos);
+					yPos	=	yPos + 4;
+					doc.text("Ukupan Iznos: "+brojSaRazmacima(ukupanIznos),xPos,yPos);
+					yPos 	=	yPos + 6;
+					for(var j=0;j<naloziZaPrikaz.length;j++){
+						xPos = 5;
+						doc.text(naloziZaPrikaz[j].broj,xPos,yPos);
+						xPos = xPos + 15;
+						doc.text(stringArray(naloziZaPrikaz[j].radnaJedinica,30),xPos,yPos);
+						xPos = xPos + 30;
+						doc.text(stringArray(naloziZaPrikaz[j].adresa.split(",")[0],30),xPos,yPos);
+						xPos = xPos + 50;
+						doc.text(dateTimeToDate(naloziZaPrikaz[j].datumUcinka),xPos,yPos);
+						xPos = xPos + 30;
+						doc.text(brojSaRazmacima(naloziZaPrikaz[j].ukupanIznos),xPos,yPos);
+						yPos = yPos + 3;
+						doc.setFillColor(0,0,0);
+						doc.rect(5, yPos, 200, 0.2, 'F');
+						yPos = yPos + 5;
+					}
+					doc.addPage();
+
+				}
+				
+			}
+			//doc.save("Ucinak majstora za period od "+getDateAsString(new Date(Number(period.od))) + " do: " + getDateAsString(new Date(Number(period.do)))+".pdf");
+			window.open(URL.createObjectURL(doc.output("blob")),'_blank')
+		}
+		
+	</script>
+	<div class="pageTitle">Ucinak Po Majstoru</div>
+	<div class="pageSubTitle" id="period"></div>
+	<script>
+		var period = <%-JSON.stringify(period)%>;
+		document.getElementById("period").innerHTML = "Za period od: "+getDateAsString(new Date(Number(period.od))) + " do: " + getDateAsString(new Date(Number(period.do)));
+	</script>
+	<div style="text-align: center;margin:30px auto;">
+		<div class="button" onclick="stampajListu(majstori,nalozi)">STAMPAJ</div>
+	</div>
+	<div class="ucinakPoMajstoru" id="ucinak">
+			
+	</div>
+	<script>
+		for(var i=0;i<majstori.length;i++){
+			if(podizvodjaci.indexOf(majstori[i].uniqueId)<0 && Number(majstori[i].inactive)!=1){
+				var wrap = document.createElement("DIV");
+				wrap.setAttribute("class","wrap");
+					var title = document.createElement("DIV");
+					title.setAttribute("class","title");
+					title.innerHTML	=	majstori[i].ime;
+					wrap.appendChild(title);
+					var ukupnoNaloga	=	0;
+					var ukupanIznos		=	0;
+					var naloziZaPrikaz	=	[];
+					for(var j=0;j<nalozi.length;j++){
+						if(nalozi[j].majstorNaloga==majstori[i].uniqueId){
+							ukupnoNaloga++;
+							ukupanIznos = ukupanIznos + parseFloat(nalozi[j].ukupanIznos);
+							naloziZaPrikaz.push(nalozi[j]);
+						}
+					}
+					var div 	=	document.createElement("DIV");
+					div.setAttribute("class","note");
+					div.innerHTML	=	"<b>Ukupno naloga:</b> "+ ukupnoNaloga+"<br><b>Ukupan Iznos:</b> "+brojSaRazmacima(ukupanIznos);
+					wrap.appendChild(div);
+					var table 	=	document.createElement("TABLE");
+						var tr = document.createElement("TR");
+							var td = document.createElement("TD");
+							td.innerHTML	=	"<div class=\"value\">Broj Naloga</div>";
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML	=	"<div class=\"value\">Radna Jedinica</div>";
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML	=	"<div class=\"value\">Adresa</div>";
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML	=	"<div class=\"value\">Datum Ucinka</div>";
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML	=	"<div class=\"value\">Iznos</div>";
+							tr.appendChild(td);
+						table.appendChild(tr);
+
+					for(var j=0;j<naloziZaPrikaz.length;j++){
+						var tr = document.createElement("TR");
+						tr.setAttribute("onclick","window.open('/pdfView/"+naloziZaPrikaz[j].uniqueId+"','_blank');");
+						tr.setAttribute("style","cursor:pointer");
+
+							var td = document.createElement("TD");
+							td.innerHTML = "<div class=\"value\">"+naloziZaPrikaz[j].broj+"</div>";
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML = "<div class=\"value\">"+naloziZaPrikaz[j].radnaJedinica+"</div>";
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML = "<div class=\"value\">"+naloziZaPrikaz[j].adresa.split(",")[0]+"</div>";
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML = "<div class=\"value\">"+dateTimeToDate(naloziZaPrikaz[j].datumUcinka)+"</div>";
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML = "<div class=\"value\">"+brojSaRazmacima(naloziZaPrikaz[j].ukupanIznos)+"</div>";
+							tr.appendChild(td);
+						table.appendChild(tr);
+					}
+					wrap.appendChild(table);	
+					document.getElementById("ucinak").appendChild(wrap);
+			}
+			
+
+		}
+	</script>
+<%- include ("partials/footer") -%>

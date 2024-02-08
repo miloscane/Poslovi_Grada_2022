@@ -1,0 +1,207 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+	<script>
+		var majstori = <%-JSON.stringify(majstori)%>;
+		var nalozi = <%-JSON.stringify(nalozi)%>;
+	</script>
+	<div class="pageTitle">Ucinak Po Podizvodjacu</div>
+	<div class="pageSubTitle" id="period"></div>
+	<script>
+		var period = <%-JSON.stringify(period)%>;
+		document.getElementById("period").innerHTML = "Za period od: "+getDateAsString(new Date(Number(period.od))) + " do: " + getDateAsString(new Date(Number(period.do)));
+	</script>
+	<select id="status-naloga" oninput="generateTable()">
+		<option value="SVI" default="default">SVI</option>
+		<option value="Primljen">Primljen</option>
+		<option value="Dodeljen majstoru">Dodeljen majstoru</option>
+		<option value="Radovi u toku">Radovi u toku</option>
+		<option value="Potrebna WOMA">Potrebna WOMA</option>
+		<option value="Zamena">Zamena</option>
+		<option value="Završeno">Završeno</option>
+		<option value="Kopanje">Kopanje</option>
+		<option value="Finalizacija">Finalizacija</option>
+		<option value="Spreman za obračun">Spreman za obračun</option>
+		<option value="Storniran">Storniran</option>
+		<option value="Nalog u Stambenom">Nalog u Stambenom</option>
+		<option value="Spreman za fakturisanje">Spreman za fakturisanje</option>
+		<option value="Fakturisan">Fakturisan</option>
+	</select>
+	<div class="ucinakPoMajstoru" id="ucinak">
+			
+	</div>
+	<script>
+
+		function generateTable(){
+			document.getElementById("ucinak").innerHTML="";
+			for(var i=0;i<majstori.length;i++){
+				if(podizvodjaci.indexOf(majstori[i].uniqueId)>=0){
+					var wrap = document.createElement("DIV");
+					wrap.setAttribute("class","wrap");
+						var title = document.createElement("DIV");
+						title.setAttribute("class","title");
+						title.innerHTML	=	majstori[i].ime;
+						wrap.appendChild(title);
+
+						var table 	=	document.createElement("TABLE");
+							var tr = document.createElement("TR");
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">Ukupno Naloga</div>"
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">Obracunati</div>"
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">Neobracunati</div>"
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">Iznos</div>"
+								tr.appendChild(td);
+							table.appendChild(tr);
+
+							var ukupnoNaloga	=	0;
+							var obracunati		=	0;
+							var neobracunati	=	0;
+							var iznos			=	0;
+							var statusFilter	=	document.getElementById("status-naloga").value;
+							for(var j=0;j<nalozi.length;j++){
+								if(nalozi[j].majstorNaloga == majstori[i].uniqueId){
+									if(statusFilter=="SVI" || statusFilter==nalozi[j].statusNaloga){
+										ukupnoNaloga++;
+										if(isNaN(parseFloat(nalozi[j].ukupanIznos))){
+											neobracunati++;
+										}else if(parseFloat(nalozi[j].ukupanIznos)==0){
+											neobracunati++;
+										}else{
+											iznos = iznos + parseFloat(nalozi[j].ukupanIznos);
+											obracunati++;
+										}
+									}
+									
+								}
+							}
+
+							var tr = document.createElement("TR");
+								var td = document.createElement("TD");
+								td.innerHTML = "<div class=\"value\">"+ukupnoNaloga+"</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML = "<div class=\"value\">"+obracunati+"</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML = "<div class=\"value\">"+neobracunati+"</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML = "<div class=\"value\">"+brojSaRazmacima(iznos.toFixed(2))+"</div>";
+								tr.appendChild(td);
+							table.appendChild(tr);
+						wrap.appendChild(table);
+
+						var title = document.createElement("DIV");
+						title.setAttribute("class","ucinakTitle");
+						title.innerHTML = "Detaljan prikaz";
+						wrap.appendChild(title);
+
+						var table = document.createElement("TABLE");
+						table.setAttribute("class","ucinakDetaljan");
+							var tr = document.createElement("TR");
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">Br.</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">Nalog</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">Datum Naloga</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">Iznos</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">Status</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">Radna Jedinica</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">Adresa</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">Podizvodjac</div>";
+								tr.appendChild(td);
+							table.appendChild(tr);
+
+							var counter = 1;
+							for(var j=0;j<nalozi.length;j++){
+								if(nalozi[j].majstorNaloga == majstori[i].uniqueId){
+									if(statusFilter=="SVI" || statusFilter==nalozi[j].statusNaloga){
+										var tr = document.createElement("TR");
+										tr.setAttribute("onclick","window.open('/pdfView/"+nalozi[j].uniqueId+"','_blank');");
+										tr.setAttribute("style","cursor:pointer");
+											var td = document.createElement("TD");
+											td.innerHTML = "<div class=\"value\">"+counter+".</div>";
+											tr.appendChild(td);
+
+											var td = document.createElement("TD");
+											td.innerHTML = "<div class=\"value\">"+nalozi[j].broj+"</div>";
+											tr.appendChild(td);
+
+											var td = document.createElement("TD");
+											td.innerHTML = "<div class=\"value\">"+nalozi[j].datum.split("god.")[0]+"</div>";
+											tr.appendChild(td);
+
+											var td = document.createElement("TD");
+											td.innerHTML = "<div class=\"value\">"+nalozi[j].ukupanIznos+"</div>";
+											tr.appendChild(td);
+
+											var td = document.createElement("TD");
+											td.innerHTML = "<div class=\"value\">"+nalozi[j].statusNaloga+"</div>";
+											tr.appendChild(td);
+
+											var td = document.createElement("TD");
+											td.innerHTML = "<div class=\"value\">"+nalozi[j].radnaJedinica+"</div>";
+											tr.appendChild(td);
+
+											var td = document.createElement("TD");
+											td.innerHTML = "<div class=\"value\">"+nalozi[j].adresa.split(',')[0]+"</div>";
+											tr.appendChild(td);
+
+											for(var k=0;k<majstori.length;k++){
+												if(majstori[k].uniqueId==nalozi[j].majstorNaloga){
+													var td = document.createElement("TD");
+													td.innerHTML = "<div class=\"value\">"+majstori[k].ime+"</div>";
+													tr.appendChild(td);
+												}
+											}
+
+											
+										table.appendChild(tr);
+										counter++;	
+									}
+									
+								}
+							}
+						wrap.appendChild(table);
+
+					document.getElementById("ucinak").appendChild(wrap);
+				}
+				
+			}	
+		}
+
+		generateTable();
+		
+	</script>
+<%- include ("partials/footer") -%>

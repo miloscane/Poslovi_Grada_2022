@@ -1,0 +1,700 @@
+<%- include ("partials/header") -%>
+	<div class="pageTitle">Radni Nalog</div>
+	<script>
+		var nalog 				=	<%-JSON.stringify(nalog)%>;
+		var komentariStambeno	=	<%-JSON.stringify(komentariStambeno)%>;
+		var izvestaji	=	<%-JSON.stringify(izvestaji)%>;
+		console.log(komentariStambeno);
+		var nalogKeys	=	Object.keys(nalog);
+	</script>
+	<style>
+		.nazivArtiklaInput{
+			overflow:hidden;
+		}
+	</style>
+	<div class="nalogExtras">
+
+		<div class="inputWrap" id="datum-odlaganja-wrap">
+			<div class="title">Odložen za:</div>
+			<div class="inputWraper">
+				<div id="datum-odlaganja"></div>
+				<script>
+					if(nalog.datumOdlaganja){
+						document.getElementById("datum-odlaganja").innerHTML = nalog.datumOdlaganja;
+						if(nalog.razlogOdlaganja){
+							document.getElementById("datum-odlaganja").innerHTML += "<br>" + nalog.razlogOdlaganja;
+						}
+					}else{
+						document.getElementById("datum-odlaganja-wrap").style.display="none";
+					}
+				</script>
+			</div>
+		</div>
+		<div class="inputWrap">
+			<div class="title">Status Naloga:</div>
+			<div class="inputWraper">
+				<div id="status-naloga"></div>
+				<script>
+					if(nalog.statusNaloga){
+						document.getElementById("status-naloga").innerHTML = nalog.statusNaloga;
+					}else{
+						document.getElementById("status-naloga").innerHTML = "Primljen";
+					}
+				</script>
+			</div>
+		</div>
+		<div class="inputWrap">
+			<div class="title">Status od Majstora:</div>
+			<div class="inputWraper">
+				<div id="status-od-majstora"></div>
+				<script>
+					if(nalog.statusOdMajstora){
+						document.getElementById("status-od-majstora").innerHTML = nalog.statusOdMajstora;
+					}else{
+						document.getElementById("status-od-majstora").innerHTML = "Primljen";
+					}
+				</script>
+			</div>
+		</div>
+		<div class="inputWrap">
+			<div class="title"> </div>
+			<div class="inputWraper">
+				<div class="button" onclick="loadGif();setTimeout(function(){location.reload();},1500)">Osveži</div>
+			</div>
+		</div><br>
+		<div class="inputWrap opisKvara">
+			<div class="title">Opis kvara:</div>
+			<div class="inputWraper">
+				<div id="opis-kvara"  style="border:1px solid rgb(255,255,255);padding:3px;background-color:rgba(0,0,0,0.3);height:150px;margin-bottom:10px;color:rgb(255,255,255)"></div>
+				<script>
+					if(nalog.opisKvara){
+						document.getElementById("opis-kvara").innerHTML = nalog.opisKvara;
+					}
+				</script>
+			</div>
+		</div>
+		<div class="inputWrap opisRadova">
+			<div class="title">Opis radova:</div>
+			<div class="inputWraperer">
+				<div id="opis-radova" style="border:1px solid rgb(255,255,255);padding:3px;background-color:rgba(0,0,0,0.3);height:150px;margin-bottom:10px;color:rgb(255,255,255)"></div>
+				<script>
+					if(nalog.opisRadovaArr){
+						for(var i=0;i<nalog.opisRadovaArr.length;i++){
+							document.getElementById("opis-radova").innerHTML += nalog.opisRadovaArr[i]+"<br>";
+						}
+					}
+					if(nalog.opisRadova){
+						document.getElementById("opis-radova").innerHTML += nalog.opisRadova;
+					}
+				</script>
+			</div>
+		</div>
+		<div class="inputWrap komentariStambeno">
+			<div class="title">Komentari Stambeno:</div>
+			<div class="inputWraperer">
+				<div id="komentari-stambeno" style="margin-bottom:10px;"></div>
+				<script>
+					for(var i=0;i<komentariStambeno.length;i++){
+						var row = document.createElement("DIV");
+						row.setAttribute("class","row");
+							var datum = document.createElement("DIV");
+							datum.setAttribute("class","datum");
+							datum.innerHTML	=	vremePrijema(komentariStambeno[i].datetime);
+							row.appendChild(datum);
+
+							var komentar = document.createElement("DIV");
+							komentar.setAttribute("class","komentar");
+							komentar.innerHTML	=	komentariStambeno[i].komentar;
+							row.appendChild(komentar)
+						document.getElementById("komentari-stambeno").appendChild(row);
+					}
+				</script>
+				<form method="POST" action="/komentar-stambenog" id="komentar-form">
+					<input type="text" name="idnaloga" id="komentar-stambenog-id" style="display:none">
+					<script>
+						document.getElementById("komentar-stambenog-id").value = nalog.uniqueId;
+					</script>
+					<textarea name="komentar" id="komentar-stambenog" placeholder="Ukucajte novi komentar..."></textarea>
+					<div class="button" onclick="loadGif();document.getElementById('komentar-form').submit();">Postavi Komentar</div>
+				</form>
+			</div>
+		</div>
+		<div class="inputWrap izvestajiSaTerena">
+			<div class="title">Izveštaji sa terena</div>
+			<div class="inputWraperer">
+				<div id="izvestaji-sa-terena"></div>
+				<script>
+					for(var i=0;i<izvestaji.length;i++){
+
+						if(Number(izvestaji[i].deleted)!=1){
+							var row = document.createElement("DIV");
+							row.setAttribute("class","row");
+									var title = document.createElement("DIV");
+									title.setAttribute("class","datum");
+									title.innerHTML = vremePrijema(izvestaji[i].datetime);
+									row.appendChild(title);
+									var text = document.createElement("DIV");
+									text.setAttribute("class","text");
+									text.innerHTML = "Stavljena beleška";
+									if(izvestaji[i].status){
+										text.innerHTML	=	izvestaji[i].status;
+									}
+									
+									
+									row.appendChild(text);
+
+									if(izvestaji[i].photopath){
+										var imageWrap	=	document.createElement("DIV");
+										imageWrap.setAttribute("class","imageWrap");
+											var image = document.createElement("IMG");
+											image.setAttribute("src","https://portal.poslovigrada.rs"+izvestaji[i].photopath);
+											imageWrap.appendChild(image)
+										row.appendChild(imageWrap);
+										
+										var downloadButton	=	document.createElement("A");
+										downloadButton.setAttribute("class","button");
+										downloadButton.setAttribute("href","https://portal.poslovigrada.rs"+izvestaji[i].photopath);
+										downloadButton.setAttribute("target","_blank");
+										downloadButton.setAttribute("download",nalog.broj+"-Slika");
+										downloadButton.innerHTML	=	"Download";
+										row.appendChild(downloadButton);
+									}
+							document.getElementById("izvestaji-sa-terena").appendChild(row);
+
+						}
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+	<div id="nalog2">
+		<div class="topBox">
+			<div class="text">Na osnovu člana 152. Stav 6 Zakona o javnim nabavkama („Sl.glasnik RS", br. 91/2019) i u skladu sa Okvirnim sporazumom
+br. od , izdaje se:</div>
+			<div class="narudzbenicaWrap">
+				<div class="note">NARUDŽBENICA br.</div>
+				<div class="input"><div id="broj-narudzbenice"></div></div>
+				<script>document.getElementById("broj-narudzbenice").innerHTML = nalog["broj"]</script>
+			</div>
+		</div>
+		<div class="topTables">
+			<div class="inline">
+				<div class="tableWrap">
+					<div class="header">NARUČILAC</div>
+					<table>
+						<tr>
+							<td class="itemName">NAZIV:</td>
+							<td class="itemInput">
+								<div id="naziv-narucioca"></div>
+								<script>document.getElementById("naziv-narucioca").innerHTML = nalog["narucilac"].naziv</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">ADRESA:</td>
+							<td class="itemInput">
+								<div id="adresa-narucioca"></div>
+								<script>document.getElementById("adresa-narucioca").innerHTML = nalog["narucilac"].adresa</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">PIB:</td>
+							<td class="itemInput">
+								<div id="pib-narucioca"></div>
+								<script>document.getElementById("pib-narucioca").innerHTML = nalog["narucilac"].pib</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">MATIČNI BROJ:</td>
+							<td class="itemInput">
+								<div id="mb-narucioca"></div>
+								<script>document.getElementById("mb-narucioca").innerHTML = nalog["narucilac"].mb</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">BROJ RAČUNA I NAZIV BANKE:</td>
+							<td class="itemInput">
+								<div id="banka-narucioca"></div>
+								<script>document.getElementById("banka-narucioca").innerHTML = nalog["narucilac"].racun</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">OSOBA ZA KONTAKT:</td>
+							<td class="itemInput">
+								<div id="kontakt-narucioca"></div>
+								<script>document.getElementById("kontakt-narucioca").innerHTML = nalog["narucilac"].osobaZaKontakt</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">TEL./FAKS:</td>
+							<td class="itemInput">
+								<div id="tel-narucioca"></div>
+								<script>document.getElementById("tel-narucioca").innerHTML = nalog["narucilac"].telefon</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline">
+				<div class="tableWrap extended">
+					<div class="header">PRUŽALAC USLUGE</div>
+					<table>
+						<tr>
+							<td class="itemName">NAZIV:</td>
+							<td class="itemInput">
+								<div id="naziv-pruzaoca"></div>
+								<script>document.getElementById("naziv-pruzaoca").innerHTML = nalog["pruzalac"].naziv</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">ADRESA:</td>
+							<td class="itemInput">
+								<div id="adresa-pruzaoca"></div>
+								<script>document.getElementById("adresa-pruzaoca").innerHTML = nalog["pruzalac"].adresa</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">PIB:</td>
+							<td class="itemInput">
+								<div id="pib-pruzaoca"></div>
+								<script>document.getElementById("pib-pruzaoca").innerHTML = nalog["pruzalac"].pib</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">MATIČNI BROJ:</td>
+							<td class="itemInput">
+								<div id="mb-pruzaoca"></div>
+								<script>document.getElementById("mb-pruzaoca").innerHTML = nalog["pruzalac"].mb</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">BROJ RAČUNA I NAZIV BANKE:</td>
+							<td class="itemInput">
+								<div id="banka-pruzaoca"></div>
+								<script>document.getElementById("banka-pruzaoca").innerHTML = nalog["pruzalac"].racun</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">OSOBA ZA KONTAKT:</td>
+							<td class="itemInput">
+								<div id="kontakt-pruzaoca"></div>
+								<script>document.getElementById("kontakt-pruzaoca").innerHTML = nalog["pruzalac"].osobaZaKontakt</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">TEL./FAKS:</td>
+							<td class="itemInput">
+								<div id="tel-pruzaoca"></div>
+								<script>document.getElementById("tel-pruzaoca").innerHTML = nalog["pruzalac"].telefon</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="note1">
+			Molimo Vas da nam u skladu sa vašom prihvaćenom ponudom izvršite sledeće usluge:
+		</div>
+		<div class="middleTables">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Adresa:</td>
+							<td class="itemInput">
+								<div id="adresa"></div>
+								<script>document.getElementById("adresa").innerHTML = nalog.adresa</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Zahtevalac:</td>
+							<td class="itemInput">
+								<div id="zahtevalac"></div>
+								<script>document.getElementById("zahtevalac").innerHTML = nalog.zahtevalac</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">MiV rada:</td>
+							<td class="itemInput">
+								<div style="font-size:0">
+									<div style="display:inline-block;vertical-align:middle;border-right:1px solid rgb(0,0,0);width:35%;font-size:16px;">
+										<div id="miv-kod"></div>
+										<script>document.getElementById("miv-kod").innerHTML = nalog.mivrada.code</script>
+									</div>	
+									<div style="display:inline-block;vertical-align:middle;width:65%;font-size:16px;">
+										<div id="miv-opis"></div>
+										<script>document.getElementById("miv-opis").innerHTML = nalog.mivrada.desc</script>
+									</div>
+								</div>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Opis:</td>
+							<td class="itemInput">
+								<div id="opis"></div>
+								<script>document.getElementById("opis").innerHTML = nalog.opis</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline shortened">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Radna Jedinica:</td>
+							<td class="itemInput">
+								<div id="radna-jedinica"></div>
+								<script>document.getElementById("radna-jedinica").innerHTML = nalog.radnaJedinica</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Broj Zahteva:</td>
+							<td class="itemInput">
+								<div id="broj-zahteva"></div>
+								<script>document.getElementById("broj-zahteva").innerHTML = nalog.brojZahteva</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Datum:</td>
+							<td class="itemInput">
+								<div id="datum-zahteva"></div>
+								<script>document.getElementById("datum-zahteva").innerHTML = nalog.datum</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Vrsta rada:</td>
+							<td class="itemInput">
+								<div id="vrsta-rada"></div>
+								<script>document.getElementById("vrsta-rada").innerHTML = nalog.vrstaRada</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Garantni rok (meseci):</td>
+							<td class="itemInput">
+								<div id="garantni-rok"></div>
+								<script>document.getElementById("garantni-rok").innerHTML = nalog.garantniRok</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Rad u garantnom roku:</td>
+							<td class="itemInput">
+								<div id="rad-u-garantnom-roku"></div>
+								<script>document.getElementById("rad-u-garantnom-roku").innerHTML = nalog.radUGarantnomRoku</script>
+							</td>
+						</tr>
+
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="singleTable">
+			<table>
+				<tr>
+					<td>Nalog izdao</td>
+					<td>Kontrolni organ</td>
+					<td>Izvođač</td>
+					<td>Partija</td>
+					<td>Okvirni ugovor</td>
+				</tr>
+				<tr>
+					<td>
+						<div id="nalog-izdao"></div>
+						<script>document.getElementById("nalog-izdao").innerHTML = nalog.nalogIzdao</script>
+					</td>
+					<td>
+						<div id="kontrolni-organ"></div>
+						<script>document.getElementById("kontrolni-organ").innerHTML = nalog.kontrolniOrgan</script>
+					</td>
+					<td>
+						<div id="izvodjac"></div>
+						<script>document.getElementById("izvodjac").innerHTML = nalog.izvodjac</script>
+					</td>
+					<td>
+						<div id="partija"></div>
+						<script>document.getElementById("partija").innerHTML = nalog.partija</script>
+					</td>
+					<td>
+						<div id="okvirni-ugovor"></div>
+						<script>document.getElementById("okvirni-ugovor").innerHTML = nalog.okvirniUgovor</script>
+					</td>
+				</tr>
+			</table>
+			<div class="singleInput" style="text-align:right">
+				<div id="okvirni-ugovor2" style="margin-right:0;margin-left:auto"></div>
+				<script>document.getElementById("okvirni-ugovor2").innerHTML = nalog.okvirniUgovor2</script>
+			</div>
+		</div>
+		<div class="dualTables">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rok početka izvođenja radova:</td>
+							<td>
+								<div id="rok-pocetka-izvodjenja-radova"></div>
+								<script>document.getElementById("rok-pocetka-izvodjenja-radova").innerHTML = nalog.rokPocetkaIzvodjenjaRadova</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline" style="padding-left:60px">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rok izvođenja radova (dana):</td>
+							<td>
+								<div id="rok-izvodjenja-radova"></div>
+								<script>document.getElementById("rok-izvodjenja-radova").innerHTML = nalog.rokIzvodjenjaRadova</script>
+							</td>
+						</tr>
+					</table>	
+				</div>
+			</div>
+		</div>
+		<div class="fakturisanje">
+			<div class="calculatorWrap">
+				<div class="header">
+					<div class="inlineItem redniBroj">Red. Br.</div>
+					<div class="inlineItem sifraArtikla">Sifra Artikla</div>
+					<div class="inlineItem nazivArtikla">Naziv Artikla</div>
+					<div class="inlineItem jedinicaMere">Jed. mere</div>
+					<div class="inlineItem planiranaKolicina">Plan. kolic.</div>
+					<div class="inlineItem izvedenaKolicina">Izved. kolic.</div>
+					<div class="inlineItem jedinicnaCena">Jedinicna cena</div>
+					<div class="inlineItem iznos">Iznos</div>
+				</div>
+				<div class="inputsWrap" id="inputs-wrap"></div>
+				<script>
+					var rows	=	25;
+					var inputsWrap	=	document.getElementById("inputs-wrap")
+					for(var i=0;i<rows;i++){
+						var inputRow	=	document.createElement("DIV");
+						inputRow.setAttribute("class","inputRow");
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure redniBroj");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("disabled","disabled");
+								input.setAttribute("value",eval(i+1));
+								input.setAttribute("class","redniBrojInput");
+								inline.appendChild(input)
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure sifraArtikla");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("class","sifraArtiklaInput");
+								input.setAttribute("disabled","disabled");
+								input.setAttribute("oninput","codeInput(this)");
+								input.setAttribute("onfocus","codeInputFocused(this)");
+								//input.setAttribute("onfocusout","codeInputFocusedOut(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure nazivArtikla");
+								var input 	=	document.createElement("TEXTAREA");
+								//input.setAttribute("type","text");
+								input.setAttribute("class","nazivArtiklaInput");
+								input.setAttribute("disabled","disabled");
+								input.setAttribute("onfocus","codeInputFocused(this)");
+								input.setAttribute("oninput","nazivInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure jedinicaMere");
+								var input 	=	document.createElement("DIV");
+								//input.setAttribute("type","text");
+								input.setAttribute("class","jedinicaMereInput");
+								input.setAttribute("disabled","disabled");
+								input.innerHTML	=	"&nbsp";
+								//input.setAttribute("oninput","jedinicaMereInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure planiranaKolicina");
+								var input 	=	document.createElement("DIV");
+								//input.setAttribute("type","text");
+								input.setAttribute("disabled","disabled");
+								input.setAttribute("class","planiranaKolicinaInput");
+								input.innerHTML	=	"&nbsp";
+								//input.setAttribute("oninput","planiranaKolicinaInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure izvedenaKolicina");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("disabled","disabled");
+								input.setAttribute("class","izvedenaKolicinaInput");
+								input.setAttribute("oninput","izvedenaKolicinaInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure jedinicnaCena");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("disabled","disabled");
+								input.setAttribute("class","jedinicnaCenaInput");
+								input.setAttribute("oninput","jedinicnaCenaInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure iznos");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("disabled","disabled");
+								input.setAttribute("class","iznosInput");
+								input.setAttribute("oninput","iznosInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							
+						inputsWrap.appendChild(inputRow);
+					}
+
+					if(nalog.fakturisanje){
+						var fakturisanje	=	JSON.parse(JSON.stringify(nalog.fakturisanje));
+						for(var i=0;i<fakturisanje.length;i++){
+							var fakturaJson	=	JSON.parse(JSON.stringify(fakturisanje[i]));
+							var elemToFill	=	document.getElementById("inputs-wrap").getElementsByClassName("inputRow")[i];
+							elemToFill.getElementsByClassName("sifraArtiklaInput")[0].value = fakturaJson.sifraArtikla;
+							elemToFill.getElementsByClassName("nazivArtiklaInput")[0].value = fakturaJson.nazivArtikla;
+							elemToFill.getElementsByClassName("jedinicaMereInput")[0].innerHTML = fakturaJson.jedinicaMere;
+							//elemToFill.getElementsByClassName("planiranaKolicinaInput")[0].innerHTML = fakturaJson.planiranaKolicina;
+							elemToFill.getElementsByClassName("izvedenaKolicinaInput")[0].value = fakturaJson.izvedenaKolicina;
+							elemToFill.getElementsByClassName("jedinicnaCenaInput")[0].value = fakturaJson.jedinicnaCena;
+							elemToFill.getElementsByClassName("iznosInput")[0].value = fakturaJson.iznos;
+						}
+						if(elemToFill){
+							var rowElements	=	elemToFill.getElementsByClassName("inlineItemMeasure");
+							var maxHeight	=	19;
+							for(var i=0;i<rowElements.length;i++){
+								var elemHeight	=	rowElements[i].getBoundingClientRect().height;
+								//console.log(elemHeight)
+								if(elemHeight>maxHeight){
+									maxHeight=elemHeight;
+								}
+							}
+							for(var i=0;i<rowElements.length;i++){
+								rowElements[i].style.height = maxHeight+"px";
+								if(rowElements[i].getElementsByTagName("TEXTAREA")[0]){
+									rowElements[i].getElementsByTagName("TEXTAREA")[0].style.height = maxHeight-2+"px";
+								}
+							}	
+						}
+					}
+
+				</script>
+			</div>
+			<div class="totalWrap">
+				<div id="ukupno">Ukupna cena: <span id="total-price"></span></div>
+				<script>
+					if(nalog.ukupanIznos){
+						document.getElementById("total-price").innerHTML = parseFloat(nalog.ukupanIznos).toFixed(2);
+					}else{
+						document.getElementById("total-price").innerHTML = "0.00"
+					}
+				</script>
+			</div>
+			<div class="totalSlovima">
+				<table>
+					<td>Slovima:</td>
+					<td><div id="ukupno-slovima"></div></td>
+					<script>document.getElementById("ukupno-slovima").innerHTML = nalog.ukupanIznosSlovima</script>
+				</table>
+			</div>
+		</div>
+		<div class="dualTables" style="margin-top:20px">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rad izvršen:</td>
+							<td>
+								<div id="rad-izvrsen"></div>
+								<script>document.getElementById("rad-izvrsen").innerHTML = nalog.radIzvrsen</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline" style="padding-left:60px">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rad pregledan:</td>
+							<td>
+								<div id="rad-pregledan"></div>
+								<script>document.getElementById("rad-pregledan").innerHTML = nalog.radPregledan</script>
+							</td>
+						</tr>
+					</table>	
+				</div>
+			</div>
+		</div>
+		<div class="dualTables" style="margin-top:20px">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Izvrseni rad overava:</td>
+							<td>
+								<div id="izvrseni-rad-overava"></div>
+								<script>document.getElementById("izvrseni-rad-overava").innerHTML = nalog.izvrseniRadOverava</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline" style="padding-left:60px">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rad pregledao:</td>
+							<td>
+								<div id="rad-pregledao"></div>
+								<script>document.getElementById("rad-pregledao").innerHTML = nalog.radPregledao</script>
+							</td>
+						</tr>
+					</table>	
+				</div>
+			</div>
+		</div>
+		<div class="dualTables" style="margin-top:20px">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Datum ispostavljanja narudžbenice:</td>
+							<td>
+								<div id="datum-ispostavljanja-narudzbenice"></div>
+								<script>document.getElementById("datum-ispostavljanja-narudzbenice").innerHTML = nalog.datumIspostavljanjaNarudzbenice</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline" style="padding-left:60px">
+				<div class="tableWrap">
+	
+				</div>
+			</div>
+		</div>
+	</div>
+<%- include ("partials/footer") -%>

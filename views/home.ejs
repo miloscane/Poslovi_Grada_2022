@@ -1,0 +1,298 @@
+<%- include ("partials/header") -%>
+	<script>
+		var cenovnik	=	<%-JSON.stringify(cenovnik)%>;
+	</script>
+	<div style="margin-bottom:20px;text-align:left">
+		<div class="button"><a href="/pdfUpload">Dodaj Nalog</a></div>
+	</div>
+	<div class="pageTitle">Fakturisanje</div>
+	
+	<div class="calculatorWrap">
+		<div class="header">
+			<div class="inlineItem redniBroj">Red. Br.</div>
+			<div class="inlineItem sifraArtikla">Sifra Artikla</div>
+			<div class="inlineItem nazivArtikla">Naziv Artikla</div>
+			<div class="inlineItem jedinicaMere">Jed. mere</div>
+			<div class="inlineItem planiranaKolicina">Plan. kolic.</div>
+			<div class="inlineItem izvedenaKolicina">Izved. kolic.</div>
+			<div class="inlineItem jedinicnaCena">Jedinicna cena</div>
+			<div class="inlineItem iznos">Iznos</div>
+		</div>
+		<div class="inputsWrap" id="inputs-wrap"></div>
+		<script>
+			var rows	=	9;
+			var inputsWrap	=	document.getElementById("inputs-wrap")
+			for(var i=0;i<rows;i++){
+				var inputRow	=	document.createElement("DIV");
+				inputRow.setAttribute("class","inputRow");
+					var inline	=	document.createElement("DIV");
+					inline.setAttribute("class","inlineItem redniBroj");
+						var input 	=	document.createElement("INPUT");
+						input.setAttribute("type","text");
+						input.setAttribute("disabled","disabled");
+						input.setAttribute("value",eval(i+1));
+						input.setAttribute("class","redniBrojInput");
+						inline.appendChild(input)
+					inputRow.appendChild(inline);
+
+					var inline	=	document.createElement("DIV");
+					inline.setAttribute("class","inlineItem sifraArtikla");
+						var input 	=	document.createElement("INPUT");
+						input.setAttribute("type","text");
+						input.setAttribute("class","sifraArtiklaInput");
+						input.setAttribute("oninput","codeInput(this)");
+						input.setAttribute("onfocus","codeInputFocused(this)");
+						//input.setAttribute("onfocusout","codeInputFocusedOut(this)");
+						inline.appendChild(input)
+
+						var copy	=	document.createElement("DIV");
+						copy.setAttribute("class","copy button");
+						copy.setAttribute("onclick","copyInfo(this)");
+						copy.innerHTML	=	"Copy";
+						inline.appendChild(copy);
+					inputRow.appendChild(inline);
+
+					var inline	=	document.createElement("DIV");
+					inline.setAttribute("class","inlineItem nazivArtikla");
+						var input 	=	document.createElement("INPUT");
+						input.setAttribute("type","text");
+						input.setAttribute("class","nazivArtiklaInput");
+						input.setAttribute("oninput","nazivInput(this)");
+						inline.appendChild(input)
+
+						var copy	=	document.createElement("DIV");
+						copy.setAttribute("class","copy button");
+						copy.setAttribute("onclick","copyInfo(this)");
+						copy.innerHTML	=	"Copy";
+						inline.appendChild(copy);
+					inputRow.appendChild(inline);
+
+					var inline	=	document.createElement("DIV");
+					inline.setAttribute("class","inlineItem jedinicaMere");
+						var input 	=	document.createElement("INPUT");
+						input.setAttribute("type","text");
+						input.setAttribute("class","jedinicaMereInput");
+						input.setAttribute("oninput","jedinicaMereInput(this)");
+						inline.appendChild(input)
+
+						var copy	=	document.createElement("DIV");
+						copy.setAttribute("class","copy button");
+						copy.setAttribute("onclick","copyInfo(this)");
+						copy.innerHTML	=	"Copy";
+						inline.appendChild(copy);
+					inputRow.appendChild(inline);
+
+					var inline	=	document.createElement("DIV");
+					inline.setAttribute("class","inlineItem planiranaKolicina");
+						var input 	=	document.createElement("INPUT");
+						input.setAttribute("type","text");
+						input.setAttribute("class","planiranaKolicinaInput");
+						input.setAttribute("oninput","planiranaKolicinaInput(this)");
+						inline.appendChild(input)
+
+						var copy	=	document.createElement("DIV");
+						copy.setAttribute("class","copy button");
+						copy.setAttribute("onclick","copyInfo(this)");
+						copy.innerHTML	=	"Copy";
+						inline.appendChild(copy);
+					inputRow.appendChild(inline);
+
+					var inline	=	document.createElement("DIV");
+					inline.setAttribute("class","inlineItem izvedenaKolicina");
+						var input 	=	document.createElement("INPUT");
+						input.setAttribute("type","text");
+						input.setAttribute("class","izvedenaKolicinaInput");
+						input.setAttribute("oninput","izvedenaKolicinaInput(this)");
+						inline.appendChild(input)
+
+						var copy	=	document.createElement("DIV");
+						copy.setAttribute("class","copy button");
+						copy.setAttribute("onclick","copyInfo(this)");
+						copy.innerHTML	=	"Copy";
+						inline.appendChild(copy);
+					inputRow.appendChild(inline);
+
+					var inline	=	document.createElement("DIV");
+					inline.setAttribute("class","inlineItem jedinicnaCena");
+						var input 	=	document.createElement("INPUT");
+						input.setAttribute("type","text");
+						input.setAttribute("class","jedinicnaCenaInput");
+						input.setAttribute("oninput","jedinicnaCenaInput(this)");
+						inline.appendChild(input)
+
+						var copy	=	document.createElement("DIV");
+						copy.setAttribute("class","copy button");
+						copy.setAttribute("onclick","copyInfo(this)");
+						copy.innerHTML	=	"Copy";
+						inline.appendChild(copy);
+					inputRow.appendChild(inline);
+
+					var inline	=	document.createElement("DIV");
+					inline.setAttribute("class","inlineItem iznos");
+						var input 	=	document.createElement("INPUT");
+						input.setAttribute("type","text");
+						input.setAttribute("class","iznosInput");
+						input.setAttribute("oninput","iznosInput(this)");
+						inline.appendChild(input)
+
+						var copy	=	document.createElement("DIV");
+						copy.setAttribute("class","copy button");
+						copy.setAttribute("onclick","copyInfo(this)");
+						copy.innerHTML	=	"Copy";
+						inline.appendChild(copy);
+					inputRow.appendChild(inline);
+
+					var suggested	=	document.createElement("DIV");
+					suggested.setAttribute("class","suggested");
+						var relative	=	document.createElement("DIV");
+						relative.setAttribute("class","relative");
+							var close	=	document.createElement("DIV");
+							close.setAttribute("class","close");
+							close.setAttribute("onclick","this.parentElement.parentElement.style.display='none'")
+							close.innerHTML	=	"X";
+							relative.appendChild(close);
+
+						for(var j=0;j<cenovnik.length;j++){
+							var cenaJson	=	JSON.parse(JSON.stringify(cenovnik[j]));
+							var row 	=	document.createElement("DIV");
+							row.setAttribute("class","suggestedRow");
+							row.setAttribute("onclick","rowClick(this)");
+							row.setAttribute("data-cena",JSON.stringify(cenaJson));
+								var item 	=	document.createElement("DIV");
+								item.setAttribute("class","inlineItem sifraArtikla");
+								item.innerHTML	=	cenaJson.code;
+								row.appendChild(item);
+
+								var item 	=	document.createElement("DIV");
+								item.setAttribute("class","inlineItem nazivArtikla");
+								item.innerHTML	=	cenaJson.name.replace(/\$/g, "\"");
+								row.appendChild(item);
+
+								var item 	=	document.createElement("DIV");
+								item.setAttribute("class","inlineItem jedinicaMere");
+								item.innerHTML	=	cenaJson.unit;
+								row.appendChild(item);
+
+								var item 	=	document.createElement("DIV");
+								item.setAttribute("class","inlineItem planiranaKolicina");
+								item.innerHTML	=	cenaJson.quantity;
+								row.appendChild(item);
+
+								var item 	=	document.createElement("DIV");
+								item.setAttribute("class","inlineItem izvedenaKolicina");
+								item.innerHTML	=	cenaJson.quantity;
+								row.appendChild(item);
+
+								var item 	=	document.createElement("DIV");
+								item.setAttribute("class","inlineItem jedinicnaCena");
+								item.innerHTML	=	cenaJson.price;
+								row.appendChild(item);
+
+							relative.appendChild(row);
+						}
+						suggested.appendChild(relative);
+					inputRow.appendChild(suggested)
+
+				inputsWrap.appendChild(inputRow);
+			}
+
+			function codeInputFocused(elem){
+				elem.parentElement.parentElement.getElementsByClassName("suggested")[0].style.display	=	"block";
+			}
+
+			/*function codeInputFocusedOut(elem){
+				elem.parentElement.parentElement.getElementsByClassName("suggested")[0].style.display	=	"none";
+			}*/
+
+			function codeInput(elem){
+				var suggestedRows	=	elem.parentElement.parentElement.getElementsByClassName("suggestedRow");
+				var filterValue	=	elem.value;
+				for(var i=0;i<suggestedRows.length;i++){
+					suggestedRows[i].style.display="none";
+				}
+				for(var i=0;i<suggestedRows.length;i++){
+					var priceJson	=	JSON.parse(suggestedRows[i].dataset.cena);
+					if(priceJson.code.startsWith(filterValue)){
+						suggestedRows[i].style.display="block";
+					}
+				}
+			}
+
+			function rowClick(elem){
+				var priceJson = JSON.parse(elem.dataset.cena);
+				var inputRow 	=	elem.parentElement.parentElement.parentElement;
+				inputRow.getElementsByClassName("sifraArtiklaInput")[0].value = priceJson.code;
+				inputRow.getElementsByClassName("nazivArtiklaInput")[0].value = priceJson.name.replace(/\$/g, "\"");;
+				inputRow.getElementsByClassName("jedinicaMereInput")[0].value = priceJson.unit;
+				inputRow.getElementsByClassName("planiranaKolicinaInput")[0].value = priceJson.quantity;
+				inputRow.getElementsByClassName("izvedenaKolicinaInput")[0].value = priceJson.quantity;
+				inputRow.getElementsByClassName("jedinicnaCenaInput")[0].value = parseFloat(priceJson.price).toFixed(2);
+				var totalPrice = parseFloat(priceJson.price)*Number(priceJson.quantity);
+				inputRow.getElementsByClassName("iznosInput")[0].value = totalPrice.toFixed(2);
+				elem.parentElement.parentElement.style.display="none";
+				calculateTotalPrice();
+			}
+
+			function izvedenaKolicinaInput(elem){
+				var inputRow	=	elem.parentElement.parentElement;
+				var price 	=	parseFloat(inputRow.getElementsByClassName("izvedenaKolicinaInput")[0].value)*parseFloat(inputRow.getElementsByClassName("jedinicnaCenaInput")[0].value);
+				inputRow.getElementsByClassName("iznosInput")[0].value= price.toFixed(2);
+				calculateTotalPrice();
+			}
+
+			function jedinicnaCenaInput(elem){
+				var inputRow	=	elem.parentElement.parentElement;
+				var price = parseFloat(inputRow.getElementsByClassName("izvedenaKolicinaInput")[0].value).toFixed(2)*parseFloat(inputRow.getElementsByClassName("jedinicnaCenaInput")[0].value);
+				inputRow.getElementsByClassName("iznosInput")[0].value=price.toFixed(2);
+				calculateTotalPrice();
+			}
+
+			function iznosInput(elem){
+				calculateTotalPrice();
+			}
+
+			function copyInfo(elem){
+				document.getElementById("hidden-copy").value	=	elem.parentElement.getElementsByTagName("INPUT")[0].value;
+				document.getElementById("hidden-copy").select();
+				document.getElementById("hidden-copy").setSelectionRange(0, 99999); // For mobile devices
+  				navigator.clipboard.writeText(document.getElementById("hidden-copy").value);
+  				/*if (window.getSelection) {
+  					window.getSelection().removeAllRanges();
+  				}else if(document.selection){
+  					document.selection.empty();
+  				}*/
+			}
+
+			function copyTotal(){
+				document.getElementById("hidden-copy").value	=	document.getElementById("total-price").innerHTML;
+				document.getElementById("hidden-copy").select();
+				document.getElementById("hidden-copy").setSelectionRange(0, 99999); // For mobile devices
+  				navigator.clipboard.writeText(document.getElementById("hidden-copy").value);
+  				/*if (window.getSelection) {
+  					window.getSelection().removeAllRanges();
+  				}else if(document.selection){
+  					document.selection.empty();
+  				}*/
+			}
+
+		</script>
+	</div>
+	<div class="totalWrap">
+		<div id="ukupno">Ukupna cena: <span id="total-price"></span></div>
+		<div class="button" onclick="copyTotal()">Copy</div>
+		<script>
+			function calculateTotalPrice(){
+				var priceInputs	=	document.getElementsByClassName("iznosInput");
+				var totalPrice = 0;
+				for(var i=0;i<priceInputs.length;i++){
+					if(priceInputs[i].value){
+						totalPrice = totalPrice + parseFloat(priceInputs[i].value);
+					}
+				}	
+				document.getElementById("total-price").innerHTML	=	totalPrice.toFixed(2);
+			}
+		</script>
+	</div>
+	<div class="logOut"><a href="/logout">Izloguj se</a></div>
+	<input id="hidden-copy" type="text" style="display:none">
+<%- include ("partials/footer") -%>

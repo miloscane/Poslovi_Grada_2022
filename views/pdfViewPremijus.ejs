@@ -1,0 +1,1447 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/premijusmenu") -%>
+<%- include ("partials/pdfGenerate") -%>
+	<div class="pageTitle">Popunjavanje Naloga</div>
+	<style>
+		.nazivArtiklaInput{
+			overflow:hidden !important;
+		}
+	</style>
+	<script>
+		var nalog = <%-JSON.stringify(nalog)%>;
+		var nalogKeys	=	Object.keys(nalog);
+	</script>
+	<div class="nalogExtras">
+		<div class="inputWrap">
+			<div class="title">Status Naloga:</div>
+			<div class="inputWraper">
+				<select id="status-naloga">
+					<option value="Spreman za fakturisanje">Spreman za fakturisanje</option>
+					<option value="Fakturisan">Fakturisan</option>
+					<option value="Storniran na SEF-u">Storniran na SEF-u</option>
+				</select>
+				<script>
+					if(nalog.statusNaloga){
+						document.getElementById("status-naloga").value = nalog.statusNaloga;
+					}
+				</script>
+			</div>
+		</div>
+		<div class="inputWrap">
+			<div class="title">Broj fakture:</div>
+			<div class="inputWraper">
+				<input type="text" id="broj-fakture">
+				<script>
+					if(nalog.brojFakture){
+						document.getElementById("broj-fakture").value = nalog.brojFakture;
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+	<div id="nalog2">
+		<div class="topBox">
+			<div class="text">Na osnovu člana 152. Stav 6 Zakona o javnim nabavkama („Sl.glasnik RS", br. 91/2019) i u skladu sa Okvirnim sporazumom
+br. od , izdaje se:</div>
+			<div class="narudzbenicaWrap">
+				<div class="note">NARUDŽBENICA br.</div>
+				<div class="input"><input type="text" id="broj-narudzbenice" disabled></div>
+				<script>document.getElementById("broj-narudzbenice").value = nalog["broj"]</script>
+			</div>
+		</div>
+		<div class="topTables">
+			<div class="inline">
+				<div class="tableWrap">
+					<div class="header">NARUČILAC</div>
+					<table>
+						<tr>
+							<td class="itemName">NAZIV:</td>
+							<td class="itemInput">
+								<textarea id="naziv-narucioca" disabled></textarea>
+								<script>document.getElementById("naziv-narucioca").value = nalog["narucilac"].naziv</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">ADRESA:</td>
+							<td class="itemInput">
+								<textarea id="adresa-narucioca" disabled></textarea>
+								<script>document.getElementById("adresa-narucioca").value = nalog["narucilac"].adresa</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">PIB:</td>
+							<td class="itemInput">
+								<input type="number" id="pib-narucioca" disabled>
+								<script>document.getElementById("pib-narucioca").value = nalog["narucilac"].pib</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">MATIČNI BROJ:</td>
+							<td class="itemInput">
+								<input type="number" id="mb-narucioca" disabled>
+								<script>document.getElementById("mb-narucioca").value = nalog["narucilac"].mb</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">BROJ RAČUNA I NAZIV BANKE:</td>
+							<td class="itemInput">
+								<textarea id="banka-narucioca" disabled></textarea>
+								<script>document.getElementById("banka-narucioca").value = nalog["narucilac"].racun</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">OSOBA ZA KONTAKT:</td>
+							<td class="itemInput">
+								<input type="text" id="kontakt-narucioca" disabled>
+								<script>document.getElementById("kontakt-narucioca").value = nalog["narucilac"].osobaZaKontakt</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">TEL./FAKS:</td>
+							<td class="itemInput">
+								<input type="text" id="tel-narucioca" disabled>
+								<script>document.getElementById("tel-narucioca").value = nalog["narucilac"].telefon</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline">
+				<div class="tableWrap extended">
+					<div class="header">PRUŽALAC USLUGE</div>
+					<table>
+						<tr>
+							<td class="itemName">NAZIV:</td>
+							<td class="itemInput">
+								<textarea id="naziv-pruzaoca" disabled></textarea>
+								<script>document.getElementById("naziv-pruzaoca").value = nalog["pruzalac"].naziv</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">ADRESA:</td>
+							<td class="itemInput">
+								<textarea id="adresa-pruzaoca" disabled></textarea>
+								<script>document.getElementById("adresa-pruzaoca").value = nalog["pruzalac"].adresa</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">PIB:</td>
+							<td class="itemInput">
+								<input type="number" id="pib-pruzaoca" disabled>
+								<script>document.getElementById("pib-pruzaoca").value = nalog["pruzalac"].pib</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">MATIČNI BROJ:</td>
+							<td class="itemInput">
+								<input type="number" id="mb-pruzaoca" disabled>
+								<script>document.getElementById("mb-pruzaoca").value = nalog["pruzalac"].mb</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">BROJ RAČUNA I NAZIV BANKE:</td>
+							<td class="itemInput">
+								<textarea id="banka-pruzaoca" disabled></textarea>
+								<script>document.getElementById("banka-pruzaoca").value = nalog["pruzalac"].racun</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">OSOBA ZA KONTAKT:</td>
+							<td class="itemInput">
+								<input type="text" id="kontakt-pruzaoca" disabled>
+								<script>document.getElementById("kontakt-pruzaoca").value = nalog["pruzalac"].osobaZaKontakt</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">TEL./FAKS:</td>
+							<td class="itemInput">
+								<input type="text" id="tel-pruzaoca" disabled>
+								<script>document.getElementById("tel-pruzaoca").value = nalog["pruzalac"].telefon</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="note1">
+			Molimo Vas da nam u skladu sa vašom prihvaćenom ponudom izvršite sledeće usluge:
+		</div>
+		<div class="middleTables">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Adresa:</td>
+							<td class="itemInput">
+								<textarea id="adresa" disabled></textarea>
+								<script>document.getElementById("adresa").value = nalog.adresa</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Zahtevalac:</td>
+							<td class="itemInput">
+								<textarea id="zahtevalac" disabled></textarea>
+								<script>document.getElementById("zahtevalac").value = nalog.zahtevalac</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">MiV rada:</td>
+							<td class="itemInput">
+								<div style="font-size:0">
+									<div style="display:inline-block;vertical-align:middle;border-right:1px solid rgb(0,0,0);width:35%;font-size:16px;">
+										<textarea id="miv-kod" disabled></textarea>
+										<script>document.getElementById("miv-kod").value = nalog.mivrada.code</script>
+									</div>	
+									<div style="display:inline-block;vertical-align:middle;width:65%;font-size:16px;">
+										<textarea id="miv-opis" disabled></textarea>
+										<script>document.getElementById("miv-opis").value = nalog.mivrada.desc</script>
+									</div>
+								</div>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Opis:</td>
+							<td class="itemInput">
+								<textarea id="opis" disabled></textarea>
+								<script>document.getElementById("opis").value = nalog.opis</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline shortened">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Radna Jedinica:</td>
+							<td class="itemInput">
+								<input type="text" id="radna-jedinica" disabled>
+								<script>document.getElementById("radna-jedinica").value = nalog.radnaJedinica</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Broj Zahteva:</td>
+							<td class="itemInput">
+								<input type="text" id="broj-zahteva" disabled>
+								<script>document.getElementById("broj-zahteva").value = nalog.brojZahteva</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Datum:</td>
+							<td class="itemInput">
+								<input type="text" id="datum-zahteva" disabled>
+								<script>document.getElementById("datum-zahteva").value = nalog.datum</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Vrsta rada:</td>
+							<td class="itemInput">
+								<input type="text" id="vrsta-rada" disabled>
+								<script>document.getElementById("vrsta-rada").value = nalog.vrstaRada</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Garantni rok (meseci):</td>
+							<td class="itemInput">
+								<input type="text" id="garantni-rok" disabled>
+								<script>document.getElementById("garantni-rok").value = nalog.garantniRok</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Rad u garantnom roku:</td>
+							<td class="itemInput">
+								<input type="text" id="rad-u-garantnom-roku" disabled>
+								<script>document.getElementById("rad-u-garantnom-roku").value = nalog.radUGarantnomRoku</script>
+							</td>
+						</tr>
+
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="singleTable">
+			<table>
+				<tr>
+					<td>Nalog izdao</td>
+					<td>Kontrolni organ</td>
+					<td>Izvođač</td>
+					<td>Partija</td>
+					<td>Okvirni ugovor</td>
+				</tr>
+				<tr>
+					<td>
+						<input type="text" id="nalog-izdao" disabled>
+						<script>document.getElementById("nalog-izdao").value = nalog.nalogIzdao</script>
+					</td>
+					<td>
+						<input type="text" id="kontrolni-organ" disabled>
+						<script>document.getElementById("kontrolni-organ").value = nalog.kontrolniOrgan</script>
+					</td>
+					<td>
+						<input type="text" id="izvodjac" disabled>
+						<script>document.getElementById("izvodjac").value = nalog.izvodjac</script>
+					</td>
+					<td>
+						<input type="text" id="partija" disabled>
+						<script>document.getElementById("partija").value = nalog.partija</script>
+					</td>
+					<td>
+						<input type="text" id="okvirni-ugovor">
+						<script>document.getElementById("okvirni-ugovor").value = nalog.okvirniUgovor</script>
+					</td>
+				</tr>
+			</table>
+			<div class="singleInput" style="text-align:right">
+				<input type="text" id="okvirni-ugovor2">
+				<script>document.getElementById("okvirni-ugovor2").value = nalog.okvirniUgovor2</script>
+			</div>
+		</div>
+		<div class="dualTables">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rok početka izvođenja radova:</td>
+							<td>
+								<input type="text" id="rok-pocetka-izvodjenja-radova" disabled>
+								<script>document.getElementById("rok-pocetka-izvodjenja-radova").value = nalog.rokPocetkaIzvodjenjaRadova</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline" style="padding-left:60px">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rok izvođenja radova (dana):</td>
+							<td>
+								<input type="text" id="rok-izvodjenja-radova" disabled>
+								<script>document.getElementById("rok-izvodjenja-radova").value = nalog.rokIzvodjenjaRadova</script>
+							</td>
+						</tr>
+					</table>	
+				</div>
+			</div>
+		</div>
+		<div class="fakturisanje">
+			<script>
+				var cenovnik	=	<%-JSON.stringify(cenovnik)%>;
+			</script>
+			<div class="calculatorWrap">
+				<div class="header">
+					<div class="inlineItem redniBroj">Red. Br.</div>
+					<div class="inlineItem sifraArtikla">Sifra Artikla</div>
+					<div class="inlineItem nazivArtikla">Naziv Artikla</div>
+					<div class="inlineItem jedinicaMere">Jed. mere</div>
+					<div class="inlineItem planiranaKolicina">Plan. kolic.</div>
+					<div class="inlineItem izvedenaKolicina">Izved. kolic.</div>
+					<div class="inlineItem jedinicnaCena">Jedinicna cena</div>
+					<div class="inlineItem iznos">Iznos</div>
+				</div>
+				<div class="inputsWrap" id="inputs-wrap"></div>
+				<div style="text-align:center">
+					<div class="button" onclick="generateFaktRow()">Dodaj red</div>
+				</div>
+				<script>
+					var inputsWrap	=	document.getElementById("inputs-wrap")
+					function generateFaktRow(){
+						var i = inputsWrap.getElementsByClassName("inputRow").length;
+						var inputRow	=	document.createElement("DIV");
+						inputRow.setAttribute("class","inputRow");
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure redniBroj");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("disabled","disabled");
+								input.setAttribute("value",eval(i+1));
+								input.setAttribute("class","redniBrojInput");
+								inline.appendChild(input)
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure sifraArtikla");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("class","sifraArtiklaInput");
+								input.setAttribute("oninput","codeInput(this)");
+								input.setAttribute("onfocus","codeInputFocused(this)");
+								//input.setAttribute("onfocusout","codeInputFocusedOut(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure nazivArtikla");
+								var input 	=	document.createElement("TEXTAREA");
+								//input.setAttribute("type","text");
+								input.setAttribute("class","nazivArtiklaInput");
+								input.setAttribute("onfocus","codeInputFocused(this)");
+								input.setAttribute("oninput","nazivInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure jedinicaMere");
+								var input 	=	document.createElement("DIV");
+								//input.setAttribute("type","text");
+								input.setAttribute("class","jedinicaMereInput");
+								input.innerHTML	=	"&nbsp";
+								//input.setAttribute("oninput","jedinicaMereInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure planiranaKolicina");
+								var input 	=	document.createElement("DIV");
+								//input.setAttribute("type","text");
+								input.setAttribute("class","planiranaKolicinaInput");
+								input.innerHTML	=	"&nbsp";
+								//input.setAttribute("oninput","planiranaKolicinaInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure izvedenaKolicina");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("class","izvedenaKolicinaInput");
+								input.setAttribute("oninput","izvedenaKolicinaInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure jedinicnaCena");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("class","jedinicnaCenaInput");
+								input.setAttribute("oninput","jedinicnaCenaInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure iznos");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("class","iznosInput");
+								input.setAttribute("oninput","iznosInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var suggested	=	document.createElement("DIV");
+							suggested.setAttribute("class","suggested");
+								var relative	=	document.createElement("DIV");
+								relative.setAttribute("class","relative");
+									var close	=	document.createElement("DIV");
+									close.setAttribute("class","close");
+									close.setAttribute("onclick","this.parentElement.parentElement.style.display='none'")
+									close.innerHTML	=	"X";
+									relative.appendChild(close);
+
+								for(var j=0;j<cenovnik.length;j++){
+									var cenaJson	=	JSON.parse(JSON.stringify(cenovnik[j]));
+									var row 	=	document.createElement("DIV");
+									row.setAttribute("class","suggestedRow");
+									row.setAttribute("onclick","rowClick(this)");
+									row.setAttribute("data-cena",JSON.stringify(cenaJson));
+										var item 	=	document.createElement("DIV");
+										item.setAttribute("class","inlineItem sifraArtikla");
+										item.innerHTML	=	cenaJson.code;
+										row.appendChild(item);
+
+										var item 	=	document.createElement("DIV");
+										item.setAttribute("class","inlineItem nazivArtikla");
+										item.innerHTML	=	cenaJson.name.replace(/\$/g, "\"");
+										row.appendChild(item);
+
+										var item 	=	document.createElement("DIV");
+										item.setAttribute("class","inlineItem jedinicaMere");
+										item.innerHTML	=	cenaJson.unit;
+										row.appendChild(item);
+
+										var item 	=	document.createElement("DIV");
+										item.setAttribute("class","inlineItem planiranaKolicina");
+										item.innerHTML	=	cenaJson.quantity;
+										row.appendChild(item);
+
+										var item 	=	document.createElement("DIV");
+										item.setAttribute("class","inlineItem izvedenaKolicina");
+										item.innerHTML	=	cenaJson.quantity;
+										row.appendChild(item);
+
+										var item 	=	document.createElement("DIV");
+										item.setAttribute("class","inlineItem jedinicnaCena");
+										item.innerHTML	=	cenaJson.price;
+										row.appendChild(item);
+
+									relative.appendChild(row);
+								}
+								suggested.appendChild(relative);
+							inputRow.appendChild(suggested)
+
+						inputsWrap.appendChild(inputRow);
+					}
+					generateFaktRow()
+
+					function codeInputFocused(elem){
+						elem.parentElement.parentElement.getElementsByClassName("suggested")[0].style.display	=	"block";
+					}
+
+					function nazivInputFocused(elem){
+						elem.parentElement.parentElement.getElementsByClassName("suggested")[0].style.display	=	"block";
+					}
+
+					/*function codeInputFocusedOut(elem){
+						elem.parentElement.parentElement.getElementsByClassName("suggested")[0].style.display	=	"none";
+					}*/
+
+					function codeInput(elem){
+						var suggestedRows	=	elem.parentElement.parentElement.getElementsByClassName("suggestedRow");
+						var filterValue	=	elem.value;
+						for(var i=0;i<suggestedRows.length;i++){
+							suggestedRows[i].style.display="none";
+						}
+						for(var i=0;i<suggestedRows.length;i++){
+							var priceJson	=	JSON.parse(suggestedRows[i].dataset.cena);
+							if(priceJson.code.startsWith(filterValue)){
+								suggestedRows[i].style.display="block";
+							}
+						}
+					}
+
+					function nazivInput(elem){
+						var suggestedRows	=	elem.parentElement.parentElement.getElementsByClassName("suggestedRow");
+						var filterValue	=	elem.value.toLowerCase();
+						for(var i=0;i<suggestedRows.length;i++){
+							suggestedRows[i].style.display="none";
+						}
+						for(var i=0;i<suggestedRows.length;i++){
+							var priceJson	=	JSON.parse(suggestedRows[i].dataset.cena);
+							if(priceJson.name.toLowerCase().includes(filterValue)){
+								suggestedRows[i].style.display="block";
+							}
+						}
+					}
+
+					function rowClick(elem){
+						var priceJson = JSON.parse(elem.dataset.cena);
+						var inputRow 	=	elem.parentElement.parentElement.parentElement;
+						inputRow.getElementsByClassName("sifraArtiklaInput")[0].value = priceJson.code;
+						inputRow.getElementsByClassName("nazivArtiklaInput")[0].value = priceJson.name.replace(/\$/g, "\"");;
+						inputRow.getElementsByClassName("jedinicaMereInput")[0].innerHTML = priceJson.unit;
+						inputRow.getElementsByClassName("planiranaKolicinaInput")[0].innerHTML = priceJson.quantity;
+						inputRow.getElementsByClassName("izvedenaKolicinaInput")[0].value = priceJson.quantity;
+						inputRow.getElementsByClassName("jedinicnaCenaInput")[0].value = parseFloat(priceJson.price).toFixed(2);
+						var totalPrice = parseFloat(priceJson.price)*Number(priceJson.quantity);
+						inputRow.getElementsByClassName("iznosInput")[0].value = totalPrice.toFixed(2);
+						//Equalize row height
+						var rowElements	=	inputRow.getElementsByClassName("inlineItemMeasure");
+						var maxHeight	=	19;
+						for(var i=0;i<rowElements.length;i++){
+							var elemHeight	=	rowElements[i].getBoundingClientRect().height;
+							//console.log(elemHeight)
+							if(elemHeight>maxHeight){
+								maxHeight=elemHeight;
+							}
+						}
+						for(var i=0;i<rowElements.length;i++){
+							rowElements[i].style.height = maxHeight+"px";
+							if(rowElements[i].getElementsByTagName("TEXTAREA")[0]){
+								rowElements[i].getElementsByTagName("TEXTAREA")[0].style.height = maxHeight-2+"px";
+							}
+						}
+
+						elem.parentElement.parentElement.style.display="none";
+						calculateTotalPrice();
+					}
+
+					function izvedenaKolicinaInput(elem){
+						var inputRow	=	elem.parentElement.parentElement;
+						var price 	=	parseFloat(inputRow.getElementsByClassName("izvedenaKolicinaInput")[0].value)*parseFloat(inputRow.getElementsByClassName("jedinicnaCenaInput")[0].value);
+						inputRow.getElementsByClassName("iznosInput")[0].value= price.toFixed(2);
+						calculateTotalPrice();
+					}
+
+					function jedinicnaCenaInput(elem){
+						var inputRow	=	elem.parentElement.parentElement;
+						var price = parseFloat(inputRow.getElementsByClassName("izvedenaKolicinaInput")[0].value).toFixed(2)*parseFloat(inputRow.getElementsByClassName("jedinicnaCenaInput")[0].value);
+						inputRow.getElementsByClassName("iznosInput")[0].value=price.toFixed(2);
+						calculateTotalPrice();
+					}
+
+					function iznosInput(elem){
+						calculateTotalPrice();
+					}
+
+					if(nalog.fakturisanje){
+						var fakturisanje	=	JSON.parse(JSON.stringify(nalog.fakturisanje));
+						for(var i=0;i<fakturisanje.length;i++){
+							if(i!=0){
+								generateFaktRow()
+							}
+							var fakturaJson	=	JSON.parse(JSON.stringify(fakturisanje[i]));
+							var elemToFill	=	document.getElementById("inputs-wrap").getElementsByClassName("inputRow")[i];
+							elemToFill.getElementsByClassName("sifraArtiklaInput")[0].value = fakturaJson.sifraArtikla;
+							elemToFill.getElementsByClassName("nazivArtiklaInput")[0].value = fakturaJson.nazivArtikla;
+							elemToFill.getElementsByClassName("jedinicaMereInput")[0].innerHTML = fakturaJson.jedinicaMere;
+							elemToFill.getElementsByClassName("planiranaKolicinaInput")[0].innerHTML = fakturaJson.planiranaKolicina;
+							elemToFill.getElementsByClassName("izvedenaKolicinaInput")[0].value = fakturaJson.izvedenaKolicina;
+							elemToFill.getElementsByClassName("jedinicnaCenaInput")[0].value = fakturaJson.jedinicnaCena;
+							elemToFill.getElementsByClassName("iznosInput")[0].value = fakturaJson.iznos;
+						}
+						if(elemToFill){
+							var rowElements	=	elemToFill.getElementsByClassName("inlineItemMeasure");
+							var maxHeight	=	19;
+							for(var i=0;i<rowElements.length;i++){
+								var elemHeight	=	rowElements[i].getBoundingClientRect().height;
+								//console.log(elemHeight)
+								if(elemHeight>maxHeight){
+									maxHeight=elemHeight;
+								}
+							}
+							for(var i=0;i<rowElements.length;i++){
+								rowElements[i].style.height = maxHeight+"px";
+								if(rowElements[i].getElementsByTagName("TEXTAREA")[0]){
+									rowElements[i].getElementsByTagName("TEXTAREA")[0].style.height = maxHeight-2+"px";
+								}
+							}	
+						}
+					}
+
+				</script>
+			</div>
+			<div class="totalWrap">
+				<div id="ukupno">Ukupna cena: <span id="total-price"></span></div>
+				<script>
+					if(nalog.ukupanIznos){
+						document.getElementById("total-price").innerHTML = parseFloat(nalog.ukupanIznos).toFixed(2);
+					}else{
+						document.getElementById("total-price").innerHTML = "0.00"
+					}
+				</script>
+				<script>
+					function calculateTotalPrice(){
+						var priceInputs	=	document.getElementsByClassName("iznosInput");
+						var totalPrice = 0;
+						for(var i=0;i<priceInputs.length;i++){
+							if(priceInputs[i].value){
+								totalPrice = totalPrice + parseFloat(priceInputs[i].value);
+							}
+						}
+						if(totalPrice==0){
+							totalPrice 	=	parseFloat(document.getElementById("total-price").innerHTML)
+						}
+						document.getElementById("total-price").innerHTML	=	totalPrice.toFixed(2);
+						var penal 	=	document.getElementById("penal").value;
+						if(parseFloat(penal)>0){
+							document.getElementById("iznos-sa-penalom").innerHTML=brojSaRazmacima(parseFloat(totalPrice)*parseFloat(penal)/100);
+						}
+					}
+				</script>
+			</div>
+			<div class="totalWrap">
+				<div style="display:inline-block;vertical-align: middle;">
+					Penal:
+				</div>
+				<div style="display:inline-block;vertical-align: middle;">
+					<input oninput="calculateTotalPrice()" id="penal" style="width:150px" type="number" min="0" max="100">
+				</div>
+				<div></div>
+				<div style="display:inline-block;vertical-align: middle;">
+					Iznos sa penalom:
+				</div>
+				<div style="display:inline-block;vertical-align: middle;">
+					<div id="iznos-sa-penalom" style="width:150px"></div>
+				</div>
+				<script>
+					if(nalog.penal){
+						document.getElementById("penal").value = nalog.penal;
+						document.getElementById("iznos-sa-penalom").innerHTML=brojSaRazmacima(parseFloat(nalog.ukupanIznos)*parseFloat(nalog.penal)/100)
+					}else{
+						document.getElementById("penal").value = "0";
+					}
+				</script>
+			</div>
+			<div class="totalSlovima">
+				<table>
+					<td>Slovima:</td>
+					<td><textarea id="ukupno-slovima"></textarea></td>
+					<script>document.getElementById("ukupno-slovima").value = nalog.ukupanIznosSlovima</script>
+				</table>
+			</div>
+		</div>
+		<div class="dualTables" style="margin-top:20px">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rad izvršen:</td>
+							<td>
+								<input type="text" id="rad-izvrsen">
+								<script>document.getElementById("rad-izvrsen").value = nalog.radIzvrsen</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline" style="padding-left:60px">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rad pregledan:</td>
+							<td>
+								<input type="text" id="rad-pregledan">
+								<script>document.getElementById("rad-pregledan").value = nalog.radPregledan</script>
+							</td>
+						</tr>
+					</table>	
+				</div>
+			</div>
+		</div>
+		<div class="dualTables" style="margin-top:20px">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Izvrseni rad overava:</td>
+							<td>
+								<input type="text" id="izvrseni-rad-overava">
+								<script>document.getElementById("izvrseni-rad-overava").value = nalog.izvrseniRadOverava</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline" style="padding-left:60px">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rad pregledao:</td>
+							<td>
+								<input type="text" id="rad-pregledao">
+								<script>document.getElementById("rad-pregledao").value = nalog.radPregledao</script>
+							</td>
+						</tr>
+					</table>	
+				</div>
+			</div>
+		</div>
+		<div class="dualTables" style="margin-top:20px">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Datum ispostavljanja narudžbenice:</td>
+							<td>
+								<input type="text" id="datum-ispostavljanja-narudzbenice">
+								<script>document.getElementById("datum-ispostavljanja-narudzbenice").value = nalog.datumIspostavljanjaNarudzbenice</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="dualTables" style="margin-top:20px">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Datum obracuna PDV-a</td>
+							<td>
+								<select id="datum-obracuna-pdv">
+									<option value="35" selected="selected">Datum prometa</option>
+									<option value="3">Datum slanja</option>
+								</select>
+								<script>
+									if(nalog.pdv){
+										document.getElementById("datum-obracuna-pdv").value = nalog.pdv
+									}
+								</script>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div style="text-align:center;margin-top:25px;">
+		<div class="button" onclick="saveNalog()">Sačuvaj Izmene</div>
+		<div class="button" onclick="premijusFaktura(getNalogFromForm(),2)">Pregledaj Fakturu</div>
+		<div class="button" onclick="premijusFaktura(getNalogFromForm(),1)">Skini Fakturu</div>
+		<div class="button" onclick="eFaktura()">Okaci na eFakturu</div>
+	</div>
+	<script>
+
+		function getNalogFromForm(){
+			var nalogJson	=	{
+				rawText: nalog.rawText ? nalog.rawText.toString():"none", 
+				uniqueId: nalog.uniqueId.toString(),
+				broj: document.getElementById("broj-narudzbenice").value,
+				narucilac: {
+					naziv: document.getElementById("naziv-narucioca").value,
+					adresa: document.getElementById("adresa-narucioca").value,
+					pib: document.getElementById("pib-narucioca").value,
+					mb: document.getElementById("mb-narucioca").value,
+					racun: document.getElementById("banka-narucioca").value,
+					osobaZaKontakt: document.getElementById("kontakt-narucioca").value,
+					telefon: document.getElementById("tel-narucioca").value
+				},
+				pruzalac: {
+					naziv: document.getElementById("naziv-pruzaoca").value,
+					adresa: document.getElementById("adresa-pruzaoca").value,
+					pib: document.getElementById("pib-pruzaoca").value,
+					mb: document.getElementById("mb-pruzaoca").value,
+					racun: document.getElementById("banka-pruzaoca").value,
+					osobaZaKontakt: document.getElementById("kontakt-pruzaoca").value,
+					telefon: document.getElementById("tel-pruzaoca").value
+				},
+				adresa: document.getElementById("adresa").value,
+				zahtevalac: document.getElementById("zahtevalac").value,
+				mivrada: {
+					code:document.getElementById("miv-kod").value,
+					desc:document.getElementById("miv-opis").value
+				},
+				opis: document.getElementById("opis").value,
+				radnaJedinica: document.getElementById("radna-jedinica").value,
+				brojZahteva: document.getElementById("broj-zahteva").value,
+				datum: document.getElementById("datum-zahteva").value,
+				vrstaRada: document.getElementById("vrsta-rada").value,
+				garantniRok: document.getElementById("garantni-rok").value,
+				radUGarantnomRoku: document.getElementById("rad-u-garantnom-roku").value,
+				nalogIzdao: document.getElementById("nalog-izdao").value,
+				kontrolniOrgan: document.getElementById("kontrolni-organ").value,
+				izvodjac: document.getElementById("izvodjac").value,
+				partija: document.getElementById("partija").value,
+				okvirniUgovor: document.getElementById("okvirni-ugovor").value,
+				okvirniUgovor2: document.getElementById("okvirni-ugovor2").value,
+				rokIzvodjenjaRadova: document.getElementById("rok-izvodjenja-radova").value,
+				rokPocetkaIzvodjenjaRadova: document.getElementById("rok-pocetka-izvodjenja-radova").value,
+				fakturisanje:[],
+				ukupanIznos: document.getElementById("total-price").innerHTML,
+				ukupanIznosSlovima: document.getElementById("ukupno-slovima").value,
+				radIzvrsen: document.getElementById("rad-izvrsen").value,
+				radPregledan: document.getElementById("rad-pregledan").value,
+				izvrseniRadOverava: document.getElementById("izvrseni-rad-overava").value,
+				radPregledao: document.getElementById("rad-pregledao").value,
+				datumIspostavljanjaNarudzbenice: document.getElementById("datum-ispostavljanja-narudzbenice").value,
+				statusNaloga: document.getElementById("status-naloga").value,
+				brojFakture: document.getElementById("broj-fakture").value,
+				pdv: document.getElementById("datum-obracuna-pdv").value,
+				penal: document.getElementById("penal").value
+			}
+			var fakturaElems	=	document.getElementById("inputs-wrap").getElementsByClassName("inputRow");
+			for(var i=0;i<fakturaElems.length;i++){
+				if(fakturaElems[i].getElementsByClassName("sifraArtiklaInput")[0].value){
+					var fakturaJson	=	{};
+					fakturaJson.redniBroj			=	eval(i+1);
+					fakturaJson.sifraArtikla		=	fakturaElems[i].getElementsByClassName("sifraArtiklaInput")[0].value;
+					fakturaJson.nazivArtikla		=	fakturaElems[i].getElementsByClassName("nazivArtiklaInput")[0].value;
+					fakturaJson.jedinicaMere		=	fakturaElems[i].getElementsByClassName("jedinicaMereInput")[0].innerHTML;
+					fakturaJson.planiranaKolicina	=	fakturaElems[i].getElementsByClassName("planiranaKolicinaInput")[0].innerHTML;
+					fakturaJson.izvedenaKolicina	=	fakturaElems[i].getElementsByClassName("izvedenaKolicinaInput")[0].value;
+					fakturaJson.jedinicnaCena		=	fakturaElems[i].getElementsByClassName("jedinicnaCenaInput")[0].value;
+					fakturaJson.iznos				=	fakturaElems[i].getElementsByClassName("iznosInput")[0].value;
+					nalogJson.fakturisanje.push(fakturaJson)
+				}
+			}
+
+			//Opis Radova array
+			var checkboxes	=	document.getElementsByClassName("opisKvaraCheckbox");
+			for(var i=0;i<checkboxes.length;i++){
+				if(checkboxes[i].checked){
+					nalogJson.opisRadovaArr.push(checkboxes[i].value)
+				}
+			}
+			return nalogJson;
+		}
+		function saveNalog(){
+			var nalogJson	= getNalogFromForm();		
+			document.getElementById("edit-nalog-json").value = JSON.stringify(nalogJson);
+			loadGif();
+			document.getElementById("edit-nalog-form").submit();
+		}
+
+		function eFaktura(){
+			var nalogJson	= getNalogFromForm();
+			console.log(nalogJson.brojFakture)
+			if(nalogJson.brojFakture && nalogJson.radPregledan){
+				document.getElementById("efaktura-nalog-json").value = JSON.stringify(nalogJson);
+				loadGif();
+				document.getElementById("efakutra-form").submit();
+			}else{
+				alert("Morate uneti broj fakture i polje \"Rad Prelgedan\"");
+			}
+		}
+	</script>
+	<form id="edit-nalog-form" style="display:none" method="POST" action="/editNalogPremijus">
+		<input type="text" name="nalogjson" id="edit-nalog-json">
+	</form>
+	<form id="efakutra-form" style="display:none" method="POST" action="/fakturaPremijus">
+		<input type="text" name="nalogjson" id="efaktura-nalog-json">
+	</form>
+	<script>
+		function premijusFaktura(nalogJson,testCase){
+		doc = new jsPDF({
+			orientation: 'p',
+			unit: 'mm',
+			format: 'a4',
+			compress: true
+			//putOnlyUsedFonts:true
+		});
+
+		
+		pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+		pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+		var yPos = 12;
+
+		//doc.getFontList("Helvetica");
+	    doc.addFileToVFS("PTSans.ttf", PTSans);
+	    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+	    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+	    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+	    doc.setFont('PTSans'); // set font
+	    doc.getFontList("PTSans");
+        doc.addImage(headerLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+        doc.setFontType("bold");
+		doc.setFontSize(12);
+        doc.text(nalogJson.broj,123,23.5,'left');
+        doc.setFontType("normal");
+		doc.setFontSize(10);
+		var xOffset = 32;
+        doc.text(nalogJson.narucilac.naziv,xOffset,40.5);
+        doc.text(nalogJson.narucilac.adresa,xOffset,48);
+        doc.text(nalogJson.narucilac.pib,xOffset,53.65);
+        doc.text(nalogJson.narucilac.mb,xOffset,59);
+        doc.text(nalogJson.narucilac.osobaZaKontakt,xOffset,75);
+        doc.text(nalogJson.narucilac.telefon,xOffset,81);
+
+		var xOffset = 156;
+        doc.text(nalogJson.pruzalac.naziv,xOffset,40.5);
+        doc.text(nalogJson.pruzalac.adresa,xOffset,48);
+        doc.text(nalogJson.pruzalac.pib,xOffset,53.65);
+        doc.text(nalogJson.pruzalac.mb,xOffset,59);
+		doc.setFontSize(9);
+		doc.text(stringArray(nalogJson.pruzalac.racun,30), xOffset, 65.3);
+		doc.setFontSize(10);
+        doc.text(nalogJson.pruzalac.osobaZaKontakt,xOffset,75);
+        doc.text(nalogJson.pruzalac.telefon,xOffset,81);
+
+        var xOffset = 38;
+		doc.setFontSize(9);
+        doc.text(stringArray(nalogJson.adresa,40),xOffset,96);
+		doc.setFontSize(10);
+        doc.text(stringArray(nalogJson.zahtevalac,36),xOffset,105);
+        doc.text(nalogJson.mivrada.code,xOffset,124);
+        doc.text(stringArray(nalogJson.mivrada.desc,26),xOffset+21.5,122);
+		doc.setFontSize(9);
+        doc.text(stringArray(nalogJson.opis,36),xOffset,132);
+		doc.setFontSize(10);
+
+        var xOffset = 173;
+        doc.text(nalogJson.radnaJedinica,xOffset,98);
+        doc.text(nalogJson.brojZahteva,xOffset,105);
+        doc.text(nalogJson.datum,xOffset,111);
+        doc.text(nalogJson.vrstaRada,xOffset,117);
+        doc.text(nalogJson.garantniRok,xOffset,124);
+        doc.text(nalogJson.radUGarantnomRoku,xOffset,134);
+
+        var yOffset = 154;
+        doc.text(nalogJson.nalogIzdao,5,yOffset);
+        doc.text(nalogJson.kontrolniOrgan,39,yOffset);
+        doc.text(nalogJson.izvodjac,80,yOffset);
+        doc.text(nalogJson.partija,137,yOffset);
+        doc.text(nalogJson.okvirniUgovor,160,yOffset);
+        doc.text(nalogJson.okvirniUgovor2,160,yOffset+6.8);
+
+        var yOffset = 171;
+        doc.text(nalogJson.rokPocetkaIzvodjenjaRadova,73,yOffset);
+        doc.text(nalogJson.rokIzvodjenjaRadova,180,yOffset);
+
+        doc.setDrawColor(0);
+        doc.setFillColor(255,255,255);
+		doc.rect(3.6, 184.5, 202.1, 36.15, 'F');
+        doc.setFillColor(0,0,0);
+		doc.rect(16.15, 184, 0.2, 36.65, 'F');
+		doc.rect(40.1, 184, 0.2, 36.65, 'F');
+		doc.rect(107.5, 184, 0.2, 36.65, 'F');
+		doc.rect(123.1, 184, 0.2, 36.65, 'F');
+		doc.rect(141.9, 184, 0.2, 36.65, 'F');
+		doc.rect(160.75, 184, 0.2, 36.65, 'F');
+		doc.rect(180.8, 184, 0.2, 36.65, 'F');
+
+		var yOffset = 187.5;
+		doc.setFontSize(8);
+        doc.setFillColor(0,0,0);
+        var fakturiasnjeArray	=	JSON.parse(JSON.stringify(nalogJson.fakturisanje));
+		for(var i=0;i<9;i++){
+			var maxRows	=	1;
+			if(fakturiasnjeArray[i]){
+				doc.text(fakturiasnjeArray[i].redniBroj.toString()+".",5,yOffset);
+				doc.text(fakturiasnjeArray[i].sifraArtikla,17,yOffset);
+				var splitString	=	stringArray(fakturiasnjeArray[i].nazivArtikla,50);
+				if(splitString){
+					doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+				}
+				if(splitString){
+					if(splitString.length>maxRows){
+						maxRows = splitString.length;
+					}
+				}
+				
+				
+				if(fakturiasnjeArray[i].jedinicaMere!="&nbsp;"){
+					var splitString	=	stringArray(fakturiasnjeArray[i].jedinicaMere,8);
+					if(splitString){
+						doc.text(splitString,109,yOffset);
+					}
+					
+				}
+				if(splitString){
+					if(splitString.length>maxRows){
+						maxRows = splitString.length;
+					}
+				}
+				
+				
+				if(fakturiasnjeArray[i].planiranaKolicina!="&nbsp;"){
+					//doc.text(fakturiasnjeArray[i].planiranaKolicina,125,yOffset);
+					doc.text(" ",125,yOffset);
+				}
+				
+				doc.text(fakturiasnjeArray[i].izvedenaKolicina,145,yOffset);
+				doc.text(fakturiasnjeArray[i].jedinicnaCena,163,yOffset);
+				doc.text(fakturiasnjeArray[i].iznos,183,yOffset);
+				fakturiasnjeArray[i].done = 1;
+			}
+			var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+			if(yTest>215){
+				break;
+			}
+			doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 202.1, 0.2, 'F');
+			if(maxRows>1){
+				yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+			}else{
+				yOffset = yOffset + 4.1*maxRows;
+			}
+		}
+
+		doc.setFontSize(11);
+		doc.text(nalogJson.radIzvrsen,55,225);
+		doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);
+
+        doc.addPage();
+        doc.addImage(ipsLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+
+		doc.setFontSize(8);
+		var yOffset = 39;
+        doc.setDrawColor(0);
+        doc.setFillColor(255,255,255);
+		doc.rect(3.6, yOffset+0.5, 201.6, 68, 'F');
+        doc.setFillColor(0,0,0);
+		doc.rect(16, yOffset, 0.2, 68, 'F');
+		doc.rect(40, yOffset, 0.2, 68, 'F');
+		doc.rect(107.2, yOffset, 0.2, 68, 'F');
+		doc.rect(122.8, yOffset, 0.2, 68, 'F');
+		doc.rect(141.5, yOffset, 0.2, 68, 'F');
+		doc.rect(160.25, yOffset, 0.2, 68, 'F');
+		doc.rect(180.2, yOffset, 0.2, 68, 'F');
+
+		var yOffset = 42;
+		var firstInput	=	0;
+		for(var i=0;i<fakturiasnjeArray.length;i++){
+			if(!fakturiasnjeArray[i].done){
+				firstInput	=	eval(i);
+				break;
+			}
+		}
+		if(firstInput==0){
+			firstInput = fakturiasnjeArray.length;
+		}
+		for(var i=0;i<16;i++){
+			var maxRows	=	1;
+			if(fakturiasnjeArray[firstInput]){
+				doc.text(fakturiasnjeArray[firstInput].redniBroj.toString()+".",5,yOffset);
+				doc.text(fakturiasnjeArray[firstInput].sifraArtikla,17,yOffset);
+				var splitString	=	stringArray(fakturiasnjeArray[firstInput].nazivArtikla,50);
+				if(splitString){
+					doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+				}
+				if(splitString){
+					if(splitString.length>maxRows){
+						maxRows = splitString.length;
+					}
+				}
+				
+				if(fakturiasnjeArray[firstInput].jedinicaMere!="&nbsp;"){
+					var splitString	=	stringArray(fakturiasnjeArray[firstInput].jedinicaMere,8);
+					if(splitString){
+						doc.text(splitString,109,yOffset);
+					}
+				}
+
+				if(splitString){
+					if(splitString.length>maxRows){
+						maxRows = splitString.length;
+					}
+				}
+				
+				
+				if(fakturiasnjeArray[firstInput].planiranaKolicina!="&nbsp;"){
+					//doc.text(fakturiasnjeArray[firstInput].planiranaKolicina,125,yOffset);
+					doc.text(" ",125,yOffset);
+				}
+				
+				doc.text(fakturiasnjeArray[firstInput].izvedenaKolicina,145,yOffset);
+				doc.text(fakturiasnjeArray[firstInput].jedinicnaCena,163,yOffset);
+				doc.text(fakturiasnjeArray[firstInput].iznos,183,yOffset);
+				fakturiasnjeArray[firstInput].done = 1;
+				firstInput++;
+			}
+			var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+			if(yTest>100){
+				break;
+			}
+			doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 201.6, 0.2, 'F');
+			if(maxRows>1){
+				yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+			}else{
+				yOffset = yOffset + 4.1*maxRows;
+			}
+		}
+
+		var firstInput = 0;
+		for(var i=0;i<fakturiasnjeArray.length;i++){
+			if(!fakturiasnjeArray[i].done){
+				firstInput	=	eval(i);
+				break;
+			}
+		}
+		if(firstInput==0){
+			doc.setFontType("bold");
+			doc.setFontSize(12);
+	        doc.text(nalogJson.broj,123,23.5,'left');
+			doc.text(nalogJson.ukupanIznos,175,116);
+	       	doc.setFontType("normal");
+			doc.setFontSize(11);
+			doc.text(nalogJson.ukupanIznosSlovima,32,124);
+
+			doc.setFontSize(11);
+			doc.text(nalogJson.radIzvrsen,55,225);
+			doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);
+		}else{
+			doc.addPage();
+	        doc.addImage(ipsLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+
+			doc.setFontSize(8);
+			var yOffset = 42;
+	        doc.setDrawColor(0);
+	        doc.setFillColor(255,255,255);
+			doc.rect(3.6, yOffset+0.5, 201.6, 68, 'F');
+	        doc.setFillColor(0,0,0);
+			doc.rect(16, yOffset, 0.2, 68, 'F');
+			doc.rect(40, yOffset, 0.2, 68, 'F');
+			doc.rect(107.2, yOffset, 0.2, 68, 'F');
+			doc.rect(122.8, yOffset, 0.2, 68, 'F');
+			doc.rect(141.5, yOffset, 0.2, 68, 'F');
+			doc.rect(160.25, yOffset, 0.2, 68, 'F');
+			doc.rect(180.2, yOffset, 0.2, 68, 'F');
+			for(var i=0;i<16;i++){
+				var maxRows	=	1;
+				if(fakturiasnjeArray[firstInput]){
+					doc.text(fakturiasnjeArray[firstInput].redniBroj.toString()+".",5,yOffset);
+					doc.text(fakturiasnjeArray[firstInput].sifraArtikla,17,yOffset);
+					var splitString	=	stringArray(fakturiasnjeArray[firstInput].nazivArtikla,50);
+					if(splitString){
+						doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+					}
+					
+					if(splitString){
+						if(splitString.length>maxRows){
+							maxRows = splitString.length;
+						}
+					}
+					
+					if(fakturiasnjeArray[firstInput].jedinicaMere!="&nbsp;"){
+						var splitString	=	stringArray(fakturiasnjeArray[firstInput].jedinicaMere,8);
+						if(splitString){
+							doc.text(splitString,109,yOffset);
+						}
+						
+					}
+					
+					if(splitString){
+						if(splitString.length>maxRows){
+							maxRows = splitString.length;
+						}
+					}
+					
+					if(fakturiasnjeArray[firstInput].planiranaKolicina!="&nbsp;"){
+						//doc.text(fakturiasnjeArray[firstInput].planiranaKolicina,125,yOffset);
+						doc.text(" ",125,yOffset);
+					}
+					
+					doc.text(fakturiasnjeArray[firstInput].izvedenaKolicina,145,yOffset);
+					doc.text(fakturiasnjeArray[firstInput].jedinicnaCena,163,yOffset);
+					doc.text(fakturiasnjeArray[firstInput].iznos,183,yOffset);
+					fakturiasnjeArray[firstInput].done = 1;
+					firstInput++;
+				}
+				var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+				if(yTest>100){
+					break;
+				}
+				doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 201.6, 0.2, 'F');
+				if(maxRows>1){
+					yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+				}else{
+					yOffset = yOffset + 4.1*maxRows;
+				}
+			}
+
+
+			doc.setFontType("bold");
+			doc.setFontSize(12);
+	        doc.text(nalogJson.broj,123,23.5,'left');
+			doc.text(nalogJson.ukupanIznos,175,116);
+	       	doc.setFontType("normal");
+			doc.setFontSize(11);
+			doc.text(nalogJson.ukupanIznosSlovima,32,124);
+
+			doc.setFontSize(11);
+			doc.text(nalogJson.radIzvrsen,55,225);
+			doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);
+
+		}
+
+
+			doc.addPage();
+
+			var brojFakture = nalogJson.brojFakture;
+			var dateNow		=	new Date();
+			var datumIzdavanja = reshuffleDate3(getDateAsStringForInputObject(dateNow));
+			dateNow.setDate(dateNow.getDate() - 1);
+			var datumPrometa = nalogJson.radPregledan;
+			dateNow.setDate(dateNow.getDate() + 30);
+			var valutaPlacanja = reshuffleDate3(getDateAsStringForInputObject(dateNow));
+
+			
+			pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+			pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+			var yPos = 8;
+			var xPos = 5;
+
+			doc.getFontList("Helvetica");
+			doc.setFontSize(20);
+			doc.text("PREMIJUS D00",xPos,yPos);//
+			yPos = yPos + 7;
+	        doc.setFontType("normal");
+			doc.setFontSize(16);
+			doc.text("11273 Batajnica, Stanka Tisme 31 dj",xPos,yPos);
+			yPos = yPos + 7;
+			doc.text("MBR:21309192 PIB:110164390",xPos,yPos);
+			yPos = yPos + 5;
+			doc.setFontSize(9);
+			doc.text("Racun: 170-30033914000-97 Unicredit banka a.d, 330-4022120-44 Credit Agicole a.d, 205-248554-65 NLB Komercijalna banka a.d",xPos,yPos);//
+			yPos = yPos + 4;
+			doc.text("       325-9500700197034-17 OTP banka a.d, 250-1160002315770-47 Eurobank  a.d, 285-2291000001454-71 AIK banka a.d",xPos,yPos);
+			yPos = yPos + 5;
+			doc.setFontSize(12);
+			doc.text("e-mail: premijusdoo@gmail.com",xPos,yPos);
+			doc.setFontType("bold");
+			doc.setFontSize(18);
+			yPos = yPos + 10;
+			doc.text("FAKTURA BR: "+brojFakture,pageWidth/2,yPos,'center');
+			doc.setFontType("normal");
+			doc.setFontSize(11);
+			yPos = yPos + 10;
+			var ySet = yPos;
+			doc.text("Datum izdavanja fakture: "+datumIzdavanja,xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Mesto izdavanja fakture: Batajnica",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Datum prometa i dobara i usluga: "+datumPrometa,xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Mesto prometa dobara i usluga: Beograd",xPos,yPos);//
+			yPos = yPos + 5;
+			doc.text("Valuta placanja: "+valutaPlacanja,xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Po dokumentu: Okvirni sporazum br.OP-00042/22-",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("OS od 05.12.2022",xPos,yPos);
+			var ySet2 = yPos + 10;
+
+			xPos = pageWidth/2;
+			yPos = ySet;
+			doc.setFontType("bold");
+			doc.setFontSize(14);
+			doc.text("Javno preduzece ,, Gradsko stambeno,,",xPos,yPos);
+			yPos = yPos + 6;
+			doc.setFontSize(12);
+			doc.text("Danijelova 33",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("11000 Beograd",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("PIB:100373090",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("MBR:07486251",xPos,yPos);
+
+			xPos = 5;
+			yPos = ySet2;
+			doc.setFontType("bold");
+			doc.setFontSize(11);
+			doc.text(["R.","Br."],xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("Opis dobara i usluga",xPos,yPos);
+			xPos = xPos + 57;
+			doc.text("J.M.",xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("Kol.",xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("Cena",xPos,yPos);
+			xPos = xPos + 20;
+			doc.text("Osnovica",xPos,yPos);
+			xPos = xPos + 20;
+			doc.text(["PDV","%"],xPos,yPos);
+			xPos = xPos + 10;
+			doc.text(["Iznos","PDV-a"],xPos,yPos);
+			xPos = xPos + 20;
+			doc.text("Ukupna naknada",xPos,yPos);
+
+			xPos = 5;
+			yPos = yPos + 10;
+			doc.setFontType("normal");
+			doc.setFontSize(10);
+			doc.text("1",xPos,yPos);
+			xPos = xPos + 10;
+			doc.setFontSize(8);
+			var writeArray	=	["HITNI I NEODLOŽNI RADOVI I TEKUĆE","POPRAVKE-VIK RADOVI-"];
+			var adresaArray	=	nalogJson.adresa.split(",");
+			for(var k=0;k<adresaArray.length;k++){
+				writeArray.push(adresaArray[k]);
+			}
+			writeArray.push("NARUDŽBENICA BR."+nalogJson.broj);
+			doc.text(writeArray,xPos,yPos);
+
+			doc.setFontSize(9);
+			xPos = xPos + 57;
+			doc.text("kom",xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("1",xPos,yPos);
+			xPos = xPos + 10;
+			var ukupnaSuma 	=	parseFloat(nalogJson.ukupanIznos);
+			doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			xPos = xPos + 20;
+			doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			xPos = xPos + 20;
+			if(ukupnaSuma>500000){
+				doc.text("0",xPos,yPos);	
+			}else{
+				doc.text("20",xPos,yPos);
+			}
+			xPos = xPos + 10;
+			if(ukupnaSuma>500000){
+				doc.text("0.00",xPos,yPos);	
+			}else{
+				doc.text(brojSaRazmacima(eval(ukupnaSuma*0.2).toFixed(2)),xPos,yPos);
+			}
+			//
+			xPos = xPos + 20;
+			if(ukupnaSuma>500000){
+				doc.text(brojSaRazmacima(ukupnaSuma),xPos,yPos);
+			}else{
+				doc.text(brojSaRazmacima(eval(ukupnaSuma*1.2).toFixed(2)),xPos,yPos);
+			}
+
+			yPos = yPos + 40;
+			ySet = yPos;
+			xPos = 100;
+			doc.setFontType("normal");
+			doc.setFontSize(12);
+			doc.text("Vrednost dobara-usluga: ",xPos,yPos);
+			yPos = yPos + 7;
+			if(ukupnaSuma>500000){
+				doc.text("Osnovica za PDV 0%: ",xPos,yPos);
+			}else{
+				doc.text("Osnovica za PDV 20%: ",xPos,yPos);
+			}
+			
+			yPos = yPos + 7;
+			if(ukupnaSuma>500000){
+				doc.text("Obracunati PDV 0%:",xPos,yPos);
+			}else{
+				doc.text("Obracunati PDV 20%:",xPos,yPos);
+			}
+			
+			yPos = yPos + 7;
+			doc.setFontType("bold");
+			doc.text("Ukupna vrednost:",xPos,yPos);
+
+			xPos = 150;
+			yPos = ySet
+			doc.setFontType("normal");
+			doc.setFontSize(12);
+			doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			yPos = yPos + 7;
+			if(ukupnaSuma>500000){
+				doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			}else{
+				doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			}
+			
+			yPos = yPos + 7;
+			if(ukupnaSuma>500000){
+				doc.text("0,00",xPos,yPos);
+			}else{
+				doc.text(brojSaRazmacima(eval(ukupnaSuma*0.2).toFixed(2)),xPos,yPos);
+			}
+			yPos = yPos + 7;
+			doc.setFontType("bold");
+			if(ukupnaSuma>500000){
+				doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			}else{
+				doc.text(brojSaRazmacima(eval(ukupnaSuma*1.2).toFixed(2)),xPos,yPos);
+			}
+
+			doc.setDrawColor(0);
+	        doc.setFillColor(0,0,0);
+			doc.rect(3.6, 102.2, 200, 0.2, 'F');
+			doc.rect(3.6, 140, 200, 0.2, 'F');
+
+			yPos = yPos +20;
+			doc.setFontType("normal");
+			doc.setFontSize(12);
+			xPos = 5;
+			if(ukupnaSuma>500000){
+				doc.text("Napomena o poreskom oslobodjenju: Clan 10 zakona o PDV-u",xPos,yPos);
+			}else{
+				doc.text("Napomena o poreskom oslobodjenju: Nema",xPos,yPos);
+			}
+			yPos = yPos + 7;
+			
+			doc.text("Poziv na broj prilikom uplate: "+brojFakture,xPos,yPos);
+			yPos = yPos + 7;
+			doc.text("Za neblagovremeno placanje obracunava se zakonska zatezna kamata.",xPos,yPos);
+			yPos = yPos +20;
+			doc.text("Racun izdao",xPos,yPos);
+			doc.rect(3.6, 215, 60, 0.4, 'F');
+		
+
+
+
+		if(testCase==1){
+			doc.save("Radni Nalog-"+nalogJson.broj+"-Popunjen.pdf");
+		}else if(testCase==2){
+			//window.open(doc.output('bloburl'), '_blank');
+			window.open(URL.createObjectURL(doc.output("blob")),'_blank')
+		}
+	}
+	</script>
+<%- include ("partials/footer") -%>

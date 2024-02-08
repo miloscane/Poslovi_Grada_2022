@@ -1,0 +1,350 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+	<style>
+		#site-content{
+			max-width:1200px;
+		}
+	</style>
+	<script>
+		var nalozi	=	<%- JSON.stringify(nalozi)%>;
+		var radnaJedinica	=	"<%=radnaJedinica%>";
+		for(var i=0;i<nalozi.length;i++){
+			nalozi[i].datetime = new Date(reshuffleDate2(nalozi[i].datum)).getTime();
+			nalozi[i].display = 1;
+		}
+		nalozi = nalozi.sort((a, b) => {
+		  if (a.datetime < b.datetime) {
+		    return -1;
+		  }
+		});
+	</script>
+	<div class="pageTitle">Specifikacije</div>
+	<div class="specifikacija" id="spec">
+		<div class="dateFilters">
+			<div>Od:</div>
+			<input type="date" id="start-date" oninput="generateTable()">
+			<div>Do</div>
+			<input type="date" id="end-date" oninput="generateTable()">
+		</div>
+		<div class="colorCodes">
+			<div class="color fakturisan" onclick="generateTable(1,1,'Fakturisan')">Fakturisan</div>
+			<div class="color spremanZaFakturisanje" onclick="generateTable(1,1,'Spreman za fakturisanje')">Spreman za fakturisanje</div>
+			<div class="color uStambenom" onclick="generateTable(1,1,'Nalog u Stambenom')">U Stambenom</div>
+			<div class="color zavrsen" onclick="generateTable(1,1,'Završeno')">Završen</div>
+			<div class="color nestoDrugo" onclick="generateTable(1,1,'Special')">Nesto drugo</div>
+		</div>
+		<div class="header">
+			<div class="inline title" id="spec-title"></div>
+			<script>
+				document.getElementById("spec-title").innerHTML	=	"Specifikacija "+ radnaJedinica;
+			</script>
+		</div>
+
+		<table id="spec-table"></table>
+		<div id="ukupno"></div>
+		<div class="button" onclick="stampajSpecifikaciju(nalozi,2)">
+			Štampaj
+		</div>
+	</div>
+
+	<script>
+
+		function generateTable(specDir,dateDir,filter){
+			document.getElementById("spec-table").innerHTML = "";
+
+			if(filter){
+				for(var i=0;i<nalozi.length;i++){
+					if(filter!="Special"){
+						if(nalozi[i].statusNaloga!=filter){
+							nalozi[i].display = 0;
+						}else{
+							nalozi[i].display = 1;
+						}
+					}else{
+						var cases = ["Fakturisan","Spreman za fakturisanje","Nalog u Stambenom","Završeno"]
+						if(cases.indexOf(nalozi[i].statusNaloga)<0){
+							nalozi[i].display = 1;
+						}else{
+							nalozi[i].display = 0;
+						}
+					}
+					
+				}
+			}
+
+			var startDate = document.getElementById("start-date").value;
+			var endDate = document.getElementById("end-date").value;
+			if(startDate && endDate){
+				var startTime = new Date(startDate).getTime();
+				var endTime = new Date(endDate).getTime();
+				for(var i=0;i<nalozi.length;i++){
+					var nalogTime = new Date(reshuffleDate2(nalozi[i].datum)).getTime();
+					if(nalogTime>=startTime && nalogTime<=endTime && nalozi[i].display==1){
+						nalozi[i].display = 1;
+					}else{
+						nalozi[i].display = 0;
+					}
+				}
+			}
+
+			var tr = document.createElement("TR");
+				var td = document.createElement("TD");
+				td.innerHTML	=	"<div class=\"value\">R. BR.</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.setAttribute("data-sort",specDir);
+				td.setAttribute("onclick","sortBySpec(this)")
+				td.innerHTML	=	"<div class=\"value\">Specifikacija</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML	=	"<div class=\"value\">Broj Fakture</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.setAttribute("data-sort",dateDir);
+				td.setAttribute("onclick","sortByDate(this)")
+				td.innerHTML	=	"<div class=\"value\">DATUM</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML	=	"<div class=\"value\">NARUDŽBENICA</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML	=	"<div class=\"value\">ADRESA</div>";
+				tr.appendChild(td);
+
+				var td = document.createElement("TD");
+				td.innerHTML	=	"<div class=\"value\">IZNOS</div>";
+				tr.appendChild(td);
+			document.getElementById("spec-table").appendChild(tr);
+			var ukupno = 0;
+			var redniBroj = 1;
+			for(var i=0;i<nalozi.length;i++){
+				if(nalozi[i].display == 1){
+					var tr 	=	document.createElement("TR");
+					if(nalozi[i].statusNaloga == "Fakturisan"){
+						tr.classList.add("fakturisan")
+					}else if(nalozi[i].statusNaloga == "Spreman za fakturisanje"){
+						tr.classList.add("spremanZaFakturisanje")
+					}else if(nalozi[i].statusNaloga == "Nalog u Stambenom"){
+						tr.classList.add("uStambenom")
+					}else if(nalozi[i].statusNaloga != "Završeno"){
+						tr.classList.add("nestoDrugo")
+					}
+					tr.setAttribute("onclick","window.open('/pdfView/"+nalozi[i].uniqueId+"','_blank')");
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\">"+redniBroj+".</div>";
+						redniBroj++;
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						var imeSpecifikacije	=	nalozi[i].brojSpecifikacije ? nalozi[i].brojSpecifikacije : "";
+						td.innerHTML	=	"<div class=\"value\">"+imeSpecifikacije+"</div>"
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\">"+nalozi[i].brojFakture+"</div>"
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\">"+nalozi[i].datum.split('god.')[0]+"</div>"
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\">"+nalozi[i].broj+"</div>"
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\">"+nalozi[i].adresa.split(',')[0]+"</div>"
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\" style=\"text-align:right\">"+brojSaRazmacima(nalozi[i].ukupanIznos)+"</div>"
+						tr.appendChild(td);
+
+						if(!isNaN(parseFloat(nalozi[i].ukupanIznos))){
+							ukupno = ukupno + parseFloat(nalozi[i].ukupanIznos)
+						}
+						
+					document.getElementById("spec-table").appendChild(tr);	
+				}
+			}
+			document.getElementById("ukupno").innerHTML	=	brojSaRazmacima(ukupno.toFixed(2))
+		}
+		
+		generateTable()
+
+		function sortByDate(elem){
+			var direction = Number(elem.dataset.sort);
+			//0 - ascending     1 - descending
+
+		}
+		
+	</script>
+	<script src="/js/pdf.js"></script>
+	<script src="/js/font.js"></script>
+	<script src="/js/font2.js"></script>
+	<script>var mm = 3.7795275591;</script>
+	<script>
+		function stampajSpecifikaciju(nalozi,testCase){
+			doc = new jsPDF({
+				orientation: 'p',
+				unit: 'mm',
+				format: 'a4',
+				compress:true
+				//putOnlyUsedFonts:true
+			});
+			
+			pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+			pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+			var yPos = 5;
+			var xPos = 5;
+			var yEnd = 200;
+			doc.addFileToVFS("PTSans.ttf", PTSans);
+		    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+		    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+		    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+		    doc.setFont('PTSans'); // set font
+		    doc.getFontList("PTSans");
+		    doc.setDrawColor(0);
+	        doc.setFillColor(0,0,0);
+			doc.rect(xPos, yPos, yEnd, 0.4, 'F');
+	        doc.setFontType("bold");
+			doc.setFontSize(10);
+			var rowHeight = 6;
+			var title = "GRUPNA SPECIFIKACIJA "+radnaJedinica;
+			yPos = yPos + 5;
+	        doc.text(title,xPos+3,yPos);
+			doc.rect(xPos, yPos+3, yEnd, 0.4, 'F');
+			doc.rect(xPos, yPos-5, xPos-4.6, 8, 'F');//Leva margina
+			doc.rect(yEnd+4.6, yPos-5, xPos-4.6, 8, 'F');//desna margina
+
+			yPos = yPos + rowHeight+3;
+			doc.rect(xPos, yPos+2, yEnd, 0.4, 'F');//Donja linija
+			doc.rect(xPos, yPos-7, xPos-4.6, 9, 'F');//Leva margina
+
+			var brojPosition = xPos + 2;
+			var brojMargin	=	xPos + 10;
+			doc.text("BR.",brojPosition,yPos);
+			doc.rect(yEnd+4.6, yPos-7, xPos-4.6, 9, 'F');//desna margina
+			doc.rect(brojMargin, yPos-5, xPos-4.6, 7, 'F');//desna margina broja
+
+			var specPosition = brojMargin + 2;
+			var specMargin	=	brojMargin + 45;
+			doc.text("SPECIFIKACIJA",specPosition,yPos);
+			doc.rect(yEnd+4.6, yPos-7, xPos-4.6, 9, 'F');//desna margina
+			doc.rect(specMargin, yPos-5, xPos-4.6, 7, 'F');//desna margina specifikacije
+
+			var datumPosition = specMargin + 2;
+			var datumMargin	=	specMargin + 16;
+			doc.text("DATUM",datumPosition,yPos);
+			doc.rect(yEnd+4.6, yPos-7, xPos-4.6, 9, 'F');//desna margina
+			doc.rect(datumMargin, yPos-5, xPos-4.6, 7, 'F');//desna margina datum
+
+			var bfPosition = datumMargin + 2;
+			var bfMargin	=	datumMargin + 25;
+			doc.text("B. Fak.",bfPosition,yPos);
+			doc.rect(yEnd+4.6, yPos-7, xPos-4.6, 9, 'F');//desna margina
+			doc.rect(bfMargin, yPos-5, xPos-4.6, 7, 'F');//desna margina datum
+
+			var brojNalogaPosition	=	bfMargin + 2;
+			var brojNalogaMargin	=	bfMargin + 18;
+			doc.text("Br. Nar.",brojNalogaPosition,yPos);
+			doc.rect(brojNalogaMargin, yPos-5, xPos-4.6, 7, 'F');//desna margina narudzbenice
+
+			var adresaPosition	=	brojNalogaMargin + 2;
+			var adresaMargin	=	brojNalogaMargin + 50;
+			doc.text("ADRESA",adresaPosition,yPos);
+			doc.rect(adresaMargin, yPos-5, xPos-4.6, 7, 'F');//desna margina adrese
+
+			var statusPosition	=	adresaMargin + 2;
+			var statusMargin	=	adresaMargin + 15;
+			doc.text("STATUS",statusPosition,yPos);
+			doc.rect(statusMargin, yPos-5, xPos-4.6, 7, 'F');//desna margina statusa
+
+			var iznosPosition = statusMargin + 2;
+			doc.text("IZNOS",iznosPosition,yPos);
+	        doc.setFontType("normal");
+
+	        var ukupanIznos = 0;
+	        var redniBroj = 1;
+			for(var i=0;i<nalozi.length;i++){
+				if(nalozi[i].display==1){
+					yPos = yPos + rowHeight;
+					doc.rect(xPos, yPos+2, yEnd, 0.4, 'F');//Donja linija
+					doc.rect(xPos, yPos-7, xPos-4.6, 9, 'F');//Leva margina
+					doc.rect(yEnd+4.6, yPos-7, xPos-4.6, 9, 'F');//desna margina
+
+					
+					doc.text(redniBroj.toString(),brojPosition,yPos);
+					redniBroj++;
+					doc.rect(brojMargin, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina broja
+
+
+					var imeSpecifikacije = nalozi[i].brojSpecifikacije ? nalozi[i].brojSpecifikacije : "";
+					doc.text(imeSpecifikacije,specPosition,yPos);
+					doc.rect(specMargin, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina specifikacije
+
+					var datumArray 	=	nalozi[i].datum.split("god.")[0].split(".");
+					var datum 		=	datumArray[0]+"."+datumArray[1]+"."+datumArray[2][3];
+					doc.text(datum,datumPosition,yPos);
+					doc.rect(datumMargin, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina datuma
+
+					var brojFakture	=	nalozi[i].brojFakture ? nalozi[i].brojFakture : "?";
+					doc.text(brojFakture,bfPosition,yPos);
+					doc.rect(bfMargin, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina datuma
+
+					doc.text(nalozi[i].broj.toString(),brojNalogaPosition,yPos);
+					doc.rect(brojNalogaMargin, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina narudzbenice
+
+
+					doc.text(nalozi[i].adresa.split(",")[0],adresaPosition,yPos);
+					doc.rect(adresaMargin, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina adrese
+
+					var statusString = "";
+					if(nalozi[i].statusNaloga == "Fakturisan"){
+						statusString = "Fakt.";
+					}else if(nalozi[i].statusNaloga == "Spreman za fakturisanje"){
+						statusString = "Spr.";
+					}else if(nalozi[i].statusNaloga == "Nalog u Stambenom"){
+						statusString = "Stam.";
+					}else if(nalozi[i].statusNaloga != "Završeno"){
+						statusString = "!!!!!!!!!"
+					}else{
+						statusString = "Zavr."
+					}
+					doc.text(statusString,statusPosition,yPos);
+					doc.rect(statusMargin, yPos-5.5, xPos-4.6, 7.5, 'F');//desna margina statusa
+
+					//doc.text(brojSaRazmacima(nalozi[i].ukupanIznos),xPos+15+38+90+2,yPos,'right');
+					doc.text(brojSaRazmacima(nalozi[i].ukupanIznos),202,yPos,'right');
+					if(yPos>285){
+						doc.addPage()
+						yPos = 5;
+					}
+					if(!isNaN(parseFloat(nalozi[i].ukupanIznos))){
+						ukupanIznos = ukupanIznos + parseFloat(nalozi[i].ukupanIznos);
+					}	
+				}
+				
+			}
+
+			yPos = yPos + 15;
+	        doc.setFontType("bold");
+			doc.setFontSize(20);
+			doc.text("UKUPNO: " + brojSaRazmacima(ukupanIznos.toFixed(2).toString()),202,yPos,'right');
+
+			if(testCase==1){
+				doc.save("Grupna Specifikacija_"+radnaJedinica+".pdf");
+			}else if(testCase==2){
+				//window.open(doc.output('bloburl'), '_blank');
+				window.open(URL.createObjectURL(doc.output("blob")),'_blank')
+			}
+
+		}
+	</script>
+<%- include ("partials/footer") -%>

@@ -1,0 +1,103 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+<style>
+	#site-content{
+		max-width: 1200px;
+	}
+</style>
+	<script>
+		var nalozi		=	<%- JSON.stringify(nalozi)%>;
+		var majstori	=	<%- JSON.stringify(majstori)%>;
+		var izvestaji	=	<%- JSON.stringify(izvestaji)%>;
+	</script>
+	<div class="pageTitle">Nalozi Po Majstoru</div>
+	<div class="naloziPoMajstoru" id="nalozi-po-majstoru"></div>
+	<script>
+		for(var i=0;i<majstori.length;i++){
+			var wrap = document.createElement("DIV");
+			wrap.setAttribute("class","wrap");
+				var title = document.createElement("DIV");
+				title.setAttribute("class","title");
+				title.innerHTML	=	majstori[i].ime;
+				wrap.appendChild(title);
+
+				var table 	=	document.createElement("TABLE");
+					var tr 	=	document.createElement("TR");
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\">Datum Naloga</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\">Broj Naloga</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\">Opstina</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\">Adresa</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\">Status</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\">Opis Radova (kanc.)</div>";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"<div class=\"value\">Izvestaj sa terena</div>";
+						tr.appendChild(td);
+
+					table.appendChild(tr);
+					for(var j=0;j<nalozi.length;j++){
+						if(nalozi[j].majstorNaloga==majstori[i].uniqueId){
+							var tr = document.createElement("TR");
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">"+nalozi[j].datum.split('god.')[0]+"</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">"+nalozi[j].broj+"</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">"+nalozi[j].radnaJedinica+"</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">"+nalozi[j].adresa.split(',')[0]+"</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">"+nalozi[j].statusNaloga+"</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+								td.innerHTML	=	"<div class=\"value\">"+nalozi[j].opisRadova+"</div>";
+								tr.appendChild(td);
+
+								var td = document.createElement("TD");
+									var value = document.createElement("DIV");
+									value.setAttribute("class","value");
+										for(var k=0;k<izvestaji.length;k++){
+											if(nalozi[j].uniqueId == izvestaji[k].uniqueId){
+												value.innerHTML += "<div class=\"izvestaj\">"+izvestaji[k].izvestaj + "</div>"
+												if(izvestaji[k].photopath){
+													value.innerHTML += "<div class=\"izvestajPhoto\"><img src=\"https://poslovigrada.azurewebsites.net/"+izvestaji[k].photopath+"\"></div>";
+												}
+											}
+										}
+									td.appendChild(value);
+								
+								tr.appendChild(td);
+							table.appendChild(tr);
+						}
+					}
+				wrap.appendChild(table);
+			document.getElementById("nalozi-po-majstoru").appendChild(wrap);
+		}
+	</script>
+<%- include ("partials/footer") -%>

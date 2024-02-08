@@ -1,0 +1,138 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+	<script>
+		var nalozi	=	<%- JSON.stringify(nalozi)%>;
+		for(var i=0;i<nalozi.length;i++){
+			var brojTemp = nalozi[i].brojFakture.toLowerCase().split("/2")[0].split("s-")[1].replace(/\//g,"");
+			nalozi[i].brojFaktureTemp = Number(brojTemp);
+		}
+		nalozi.sort(function(a, b) {
+		    return b.brojFaktureTemp - a.brojFaktureTemp;
+		});
+	</script>
+	<div class="pageTitle">Fakturisani nalozi</div>
+	<div class="fakturisaniFilterWrap">
+		<div class="inputWrapper" style="border-right:1px solid rgb(200,200,200)">
+			<div class="label">Od broja:</div>
+			<div class="inputWrap">
+				<input type="number" id="od-broja">
+			</div>
+		</div>
+		<div class="inputWrapper">
+			<div class="label">Do broja:</div>
+			<div class="inputWrap">
+				<input type="number" id="do-broja">
+			</div>
+		</div>
+	</div>
+	<div class="buttonWrap" style="margin:30px auto">
+		<div class="button" onclick="generateTable()">Primeni Filter</div>
+	</div>
+	<div id="info" class="fakturisaniInfo"></div>
+	<div id="table" class="fakturisaniTable">
+
+	</div>
+	<script>
+		var naloziToShow = [];
+		function generateTable(){
+			document.getElementById("info").innerHTML = "";
+			document.getElementById("table").innerHTML = "";
+			naloziToShow	=	[];
+			var odBroja = parseFloat(document.getElementById("od-broja").value);
+			var doBroja = parseFloat(document.getElementById("do-broja").value);
+			var table = document.createElement("TABLE");
+			var tr = document.createElement("TR");
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class='value'>Broj Fakture</div>";
+				tr.appendChild(td); 
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class='value'>Broj Naloga</div>";
+				tr.appendChild(td); 
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class='value'>Datum Naloga</div>";
+				tr.appendChild(td); 
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class='value'>Iznos</div>";
+				tr.appendChild(td); 
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class='value'>PDV</div>";
+				tr.appendChild(td); 
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class='value'>Penal [%]</div>";
+				tr.appendChild(td); 
+
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class='value'>Datum PDV</div>";
+				tr.appendChild(td); 
+			table.appendChild(tr);
+			if(!isNaN(odBroja) && !isNaN(doBroja) && doBroja>odBroja){
+				for(var i=0;i<nalozi.length;i++){
+					if(nalozi[i].brojFaktureTemp>=odBroja && nalozi[i].brojFaktureTemp<=doBroja){
+						naloziToShow.push(nalozi[i])
+					}
+				}
+			}else{
+				naloziToShow = JSON.parse(JSON.stringify(nalozi));
+			}
+			var ukupanIznos = 0;
+			var ukupnoNaloga = 0;
+			var ukupanPdv = 0;
+			var ukupnaOsnovica = 0;
+			for(var i=0;i<naloziToShow.length;i++){
+				var tr = document.createElement("TR");
+				tr.setAttribute("onclick","window.open('/pdfView/"+naloziToShow[i].uniqueId+"','_blank')");
+					var td = document.createElement("TD");
+					td.innerHTML = "<div class='value'>"+naloziToShow[i].brojFaktureTemp+"</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					td.innerHTML = "<div class='value'>"+naloziToShow[i].broj+"</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					var datum = naloziToShow[i].datum.split("00:").length>1 ? naloziToShow[i].datum.split("00:")[0] : naloziToShow[i].datum.split("go")[0];
+					td.innerHTML = "<div class='value'>"+datum+"</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					var iznosNaloga = isNaN(parseFloat(naloziToShow[i].ukupanIznos)) ? 0 : parseFloat(naloziToShow[i].ukupanIznos);
+					ukupanIznos = ukupanIznos + iznosNaloga;
+					var osnovica = iznosNaloga>=500000 ? 0 : iznosNaloga;
+					ukupnaOsnovica = ukupnaOsnovica + osnovica;
+					ukupnoNaloga++;
+					td.innerHTML = "<div class='value'>"+brojSaRazmacima(iznosNaloga)+"</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					var pdv = iznosNaloga>=500000 ? 0 : iznosNaloga*0.2;
+					ukupanPdv = ukupanPdv + pdv;
+					td.innerHTML = "<div class='value'>"+brojSaRazmacima(pdv)+"</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					var penal = isNaN(parseFloat(naloziToShow[i].penal)) ? 0 : parseFloat(naloziToShow[i].penal);
+					td.innerHTML = "<div class='value'>"+penal+"</div>";
+					tr.appendChild(td);
+
+					var td = document.createElement("TD");
+					var datumPdv = Number(naloziToShow[i].pdv)==3 ? "Datum slanja" : naloziToShow[i].radPregledan;
+					td.innerHTML = "<div class='value'>"+datumPdv+"</div>";
+					tr.appendChild(td);
+				table.appendChild(tr);
+				
+			}
+			document.getElementById("table").appendChild(table);
+			document.getElementById("info").innerHTML = "Ukupno prikazanih naloga: <span>"+ukupnoNaloga+"</span><br>";
+			document.getElementById("info").innerHTML += "Ukupan iznos: <span>"+brojSaRazmacima(ukupanIznos)+"</span><br>";
+			document.getElementById("info").innerHTML += "Osnovica za PDV: <span>"+brojSaRazmacima(ukupnaOsnovica)+"</span><br>";
+			document.getElementById("info").innerHTML += "Ukupan PDV: <span>"+brojSaRazmacima(ukupanPdv)+"</span><br>";
+		}
+
+		generateTable();
+	</script>
+<%- include ("partials/footer") -%>

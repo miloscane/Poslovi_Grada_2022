@@ -1,0 +1,51 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+	<script>
+		var nalozi	=	<%- JSON.stringify(nalozi)%>;
+		var specifikacije	=	[];
+		for(var i=0;i<nalozi.length;i++){
+			if(specifikacije.indexOf(nalozi[i].brojSpecifikacije)<0){
+				specifikacije.push(nalozi[i].brojSpecifikacije)
+			}
+		}
+	</script>
+	<div class="pageTitle" style="margin-bottom:5px">Specifikacije</div>
+	<div class="pageSubTitle">Grupne Specifikacije</div>
+	<div id="links" style="margin-bottom:20px"></div>
+	<script>
+		for(var i=0;i<radneJedinice.length;i++){
+			var button = document.createElement("DIV");
+			button.setAttribute("class","button");
+			button.setAttribute("onclick","window.location.href=\"/specifikacije/"+encodeURIComponent(radneJedinice[i])+"\"");
+			button.innerHTML	=	radneJedinice[i];
+			document.getElementById("links").appendChild(button)
+		}
+	</script>
+	<div class="pageSubTitle">Pojedinacne Specifikacije</div>
+	<input type="text" placeholder="Filter" oninput="filter(this)">
+	<div class="specifikacije" id="specs"></div>
+	<script>
+		for(var i=0;i<specifikacije.length;i++){
+			var button	=	document.createElement("DIV");
+			button.setAttribute("class","button");
+				var a = document.createElement("A");
+				a.setAttribute("onclick","loadGif()");
+				a.setAttribute("href","/specifikacija/"+encodeURIComponent(specifikacije[i]));
+				a.innerHTML	=	specifikacije[i];
+				button.appendChild(a);
+			document.getElementById("specs").appendChild(button);
+		}
+
+		function filter(elem){
+			var filterString	=	elem.value;
+			var specifikacije = document.getElementById("specs").getElementsByClassName("button");
+			for(var i=0;i<specifikacije.length;i++){
+				if(specifikacije[i].innerHTML.toLowerCase().includes(filterString.toLowerCase())){
+					specifikacije[i].style.display="inline-block";
+				}else{
+					specifikacije[i].style.display="none"
+				}
+			}
+		}
+	</script>
+<%- include ("partials/footer") -%>

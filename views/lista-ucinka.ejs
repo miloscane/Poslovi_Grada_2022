@@ -1,0 +1,48 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+<div class="pageTitle">Pronađeni učinci</div>
+<div id="lista-ucinka"></div>
+<script>
+	var ucinci	=	<%-JSON.stringify(ucinci)%>;
+	var table = document.createElement("TABLE");
+		var tr = document.createElement("TR");
+			var td = document.createElement("TD");
+			td.innerHTML = "<div class=\"value\">Broj naloga</div>"
+			tr.appendChild(td);
+
+			var td = document.createElement("TD");
+			td.innerHTML = "<div class=\"value\">Datum ucinka</div>"
+			tr.appendChild(td);
+
+			var td = document.createElement("TD");
+			td.innerHTML = "<div class=\"value\">Majstor</div>";
+			tr.appendChild(td);
+
+			var td = document.createElement("TD");
+			td.innerHTML = "<div class=\"value\">Iznos</div>"
+			tr.appendChild(td);
+		table.appendChild(tr);
+	
+	for(var i=0;i<ucinci.length;i++){
+		var tr = document.createElement("TR");
+		tr.setAttribute("onclick","window.location.href=\"/obracunavanje/"+ucinci[i].uniqueId+"\"");
+			var td = document.createElement("TD");
+			td.innerHTML = "<div class=\"value\">"+ucinci[i].brojNaloga+"</div>"
+			tr.appendChild(td);
+
+			var td = document.createElement("TD");
+			td.innerHTML = "<div class=\"value\">"+reshuffleDate(ucinci[i].datum)+"</div>"
+			tr.appendChild(td);
+
+			var td = document.createElement("TD");
+			td.innerHTML = "<div class=\"value\">"+ucinci[i].majstorName+"</div>";
+			tr.appendChild(td);
+
+			var td = document.createElement("TD");
+			td.innerHTML = "<div class=\"value\">"+brojSaRazmacima(ucinci[i].ukupanIznos)+"</div>"
+			tr.appendChild(td);
+		table.appendChild(tr);
+	}
+	document.getElementById("lista-ucinka").appendChild(table);
+</script>
+<%- include ("partials/footer") -%>

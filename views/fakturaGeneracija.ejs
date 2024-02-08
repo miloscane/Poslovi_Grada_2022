@@ -1,0 +1,517 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/pdfGenerate") -%>
+<script>
+	var nalozi 				=	<%-JSON.stringify(nalozi)%>;
+	var naloziArray			=	<%-JSON.stringify(naloziArray)%>;
+	console.log(naloziArray);
+	console.log(nalozi);
+</script>
+<div class="pageTitle">Fakturisanje</div>
+<div id="greske" style="color:rgb(255,0,0)"></div>
+<div id="nalozi" style="text-align:left"></div>
+<script>
+	for(var i=0;i<naloziArray.length;i++){
+		var nalogFound	=	false;
+		for(var j=0;j<nalozi.length;j++){
+			if(naloziArray[i]==nalozi[j].broj){
+				nalogFound = true;
+			}
+		}
+		if(!nalogFound){
+			document.getElementById("greske").innerHTML += "Nalog broj "+nalozi[i].broj+" nije pronadjen<br>&nbsp;<br>";
+		}
+	}
+	var ukupnaSuma = 0;
+	for(var i=0;i<nalozi.length;i++){
+		var iznos = parseFloat(nalozi[i].ukupanIznos);
+		if(iznos==0 || isNaN(iznos)){
+			document.getElementById("greske").innerHTML += "Nalog broj "+nalozi[i].broj+" nema iznos<br>&nbsp;<br>";
+		}else{
+			document.getElementById("nalozi").innerHTML += eval(i+1)+". \t\t"+nalozi[i].broj+"\t\t"+iznos.toFixed(2)+"<br>";
+			ukupnaSuma = ukupnaSuma + iznos;
+		}
+	}
+	document.getElementById("nalozi").innerHTML += "<b>UKUPNO:</b> " + ukupnaSuma.toFixed(2)+"<br>";
+	if(ukupnaSuma>500000){
+		document.getElementById("nalozi").innerHTML += "<b>PDV:</b> " + 0 + "<br>";
+	}else{
+		document.getElementById("nalozi").innerHTML += "<b>PDV:</b> " + eval(ukupnaSuma*0.2).toFixed(2) + "<br>";
+	}
+	if(ukupnaSuma>500000){
+		document.getElementById("nalozi").innerHTML += "<b>UKUPNO SA PDV:</b> " + ukupnaSuma + "<br>";
+	}else{
+		document.getElementById("nalozi").innerHTML += "<b>UKUPNO SA PDV:</b> " + eval(ukupnaSuma*1.2).toFixed(2) + "<br>";
+	}
+</script>
+<div class="faktura" style="margin-top:20px;">
+	<div>Broj fakture i specifikacije (SAMO BROJ UNETI, broj mora biti isti za obe stavke):</div>
+	<input type="text" id="broj"><br>
+	<div>RADNA JEDINICA:</div>
+	<input type="text" id="radnajedinica">
+	<script>
+		document.getElementById("radnajedinica").value = nalozi[0].radnaJedinica;
+	</script>
+	<div class="button" onclick="generisiFakturu()">Generisi fakturu</div>
+	<script>
+		function generisiFakturu(){
+			doc = new jsPDF({
+				orientation: 'p',
+				unit: 'mm',
+				format: 'a4',
+				compress: true
+				//putOnlyUsedFonts:true
+			});
+			var brojFakture = document.getElementById("broj").value;
+			var radnaJedinica = document.getElementById("radnajedinica").value;
+			var dateNow		=	new Date();
+			var datumIzdavanja = reshuffleDate3(getDateAsStringForInputObject(dateNow));
+			dateNow.setDate(dateNow.getDate() - 1);
+			var datumPrometa = reshuffleDate3(getDateAsStringForInputObject(dateNow));
+			dateNow.setDate(dateNow.getDate() + 31);
+			var valutaPlacanja = reshuffleDate3(getDateAsStringForInputObject(dateNow));
+
+			
+			pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+			pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+			var yPos = 8;
+			var xPos = 5;
+
+			doc.getFontList("Helvetica");
+		    //doc.addFileToVFS("PTSans.ttf", PTSans);
+		    //doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+		    //doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+		    //doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+		    //doc.setFont('PTSans'); // set font
+		    //doc.getFontList("PTSans");
+	        //doc.setFontType("bold");
+			doc.setFontSize(20);
+			doc.text("PREMIJUS D00",xPos,yPos);//
+			yPos = yPos + 7;
+	        doc.setFontType("normal");
+			doc.setFontSize(16);
+			doc.text("11273 Batajnica, Stanka Tisme 31 dj",xPos,yPos);
+			yPos = yPos + 7;
+			doc.text("MBR:21309192 PIB:110164390",xPos,yPos);
+			yPos = yPos + 5;//Ž.R: 170-30033914000-97 Unicredit banka a.d, 330-4022120-44 Credit Agicole a.d, 205-248554-65 NLB Komercijalna banka a.d
+			doc.setFontSize(9);
+			doc.text("Racun: 170-30033914000-97 Unicredit banka a.d, 330-4022120-44 Credit Agicole a.d, 205-248554-65 NLB Komercijalna banka a.d",xPos,yPos);//
+			yPos = yPos + 4;
+			doc.text("       325-9500700197034-17 OTP banka a.d, 250-1160002315770-47 Eurobank  a.d, 285-2291000001454-71 AIK banka a.d",xPos,yPos);
+			yPos = yPos + 5;
+			doc.setFontSize(12);
+			doc.text("e-mail: premijusdoo@gmail.com",xPos,yPos);//RAČUN BR. GS-1/2022
+			doc.setFontType("bold");
+			doc.setFontSize(18);
+			yPos = yPos + 10;
+			doc.text("FAKTURA BR. GS-"+brojFakture+"/2022",pageWidth/2,yPos,'center');
+			doc.setFontType("normal");
+			doc.setFontSize(11);
+			yPos = yPos + 10;
+			var ySet = yPos;
+			doc.text("Datum izdavanja fakture: "+datumIzdavanja,xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Mesto izdavanja fakture: Batajnica",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Datum prometa i dobara i usluga: "+datumPrometa,xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Mesto prometa dobara i usluga: Beograd",xPos,yPos);//
+			yPos = yPos + 5;
+			doc.text("Valuta placanja: "+valutaPlacanja,xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Po dokumentu: Okvirni sporazum br.OP-00042/22-",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("OS od 05.12.2022",xPos,yPos);
+			var ySet2 = yPos + 10;
+
+			xPos = pageWidth/2;
+			yPos = ySet;
+			doc.setFontType("bold");
+			doc.setFontSize(14);
+			doc.text("Javno preduzece ,, Gradsko stambeno,,",xPos,yPos);
+			yPos = yPos + 6;
+			doc.setFontSize(12);
+			doc.text("Danijelova 33",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("11000 Beograd",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("PIB:100373090",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("MBR:07486251",xPos,yPos);
+
+			xPos = 5;
+			yPos = ySet2;
+			doc.setFontType("bold");
+			doc.setFontSize(11);
+			doc.text(["R.","Br."],xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("Opis dobara i usluga",xPos,yPos);
+			xPos = xPos + 57;
+			doc.text("J.M.",xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("Kol.",xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("Cena",xPos,yPos);
+			xPos = xPos + 20;
+			doc.text("Osnovica",xPos,yPos);
+			xPos = xPos + 20;
+			doc.text(["PDV","%"],xPos,yPos);
+			xPos = xPos + 10;
+			doc.text(["Iznos","PDV-a"],xPos,yPos);
+			xPos = xPos + 20;
+			doc.text("Ukupna naknada",xPos,yPos);
+
+			xPos = 5;
+			yPos = yPos + 10;
+			doc.setFontType("normal");
+			doc.setFontSize(10);
+			doc.text("1",xPos,yPos);
+			xPos = xPos + 10;
+			doc.setFontSize(8);
+			doc.text(["Hitni i neodlozni radovi i tekuce popravke","-VIK radovi u stambenim zgradama i drugim","objektima koje odrzava JP Gradsko stambeno,","izvrsene usluge radova na teritoriji Beograda","po specifikaciji "+brojFakture+" za radnu jedinicu " + radnaJedinica],xPos,yPos);
+
+			doc.setFontSize(9);
+			xPos = xPos + 57;
+			doc.text("kom",xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("1",xPos,yPos);
+			xPos = xPos + 10;
+			doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			xPos = xPos + 20;
+			doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			xPos = xPos + 20;
+			if(ukupnaSuma>500000){
+				doc.text("0",xPos,yPos);	
+			}else{
+				doc.text("20",xPos,yPos);
+			}
+			xPos = xPos + 10;
+			if(ukupnaSuma>500000){
+				doc.text("0.00",xPos,yPos);	
+			}else{
+				doc.text(brojSaRazmacima(eval(ukupnaSuma*0.2).toFixed(2)),xPos,yPos);
+			}
+			//
+			xPos = xPos + 20;
+			if(ukupnaSuma>500000){
+				doc.text(brojSaRazmacima(ukupnaSuma),xPos,yPos);
+			}else{
+				doc.text(brojSaRazmacima(eval(ukupnaSuma*1.2).toFixed(2)),xPos,yPos);
+			}
+
+			yPos = yPos + 20;
+			ySet = yPos;
+			xPos = 100;
+			doc.setFontType("normal");
+			doc.setFontSize(12);
+			doc.text("Vrednost dobara-usluga: ",xPos,yPos);
+			yPos = yPos + 7;
+			if(ukupnaSuma>500000){
+				doc.text("Osnovica za PDV 0%: ",xPos,yPos);
+			}else{
+				doc.text("Osnovica za PDV 20%: ",xPos,yPos);
+			}
+			
+			yPos = yPos + 7;
+			if(ukupnaSuma>500000){
+				doc.text("Obracunati PDV 0%:",xPos,yPos);
+			}else{
+				doc.text("Obracunati PDV 20%:",xPos,yPos);
+			}
+			
+			yPos = yPos + 7;
+			doc.setFontType("bold");
+			doc.text("Ukupna vrednost:",xPos,yPos);
+
+			xPos = 150;
+			yPos = ySet
+			doc.setFontType("normal");
+			doc.setFontSize(12);
+			doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			yPos = yPos + 7;
+			if(ukupnaSuma>500000){
+				doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			}else{
+				doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			}
+			
+			yPos = yPos + 7;
+			if(ukupnaSuma>500000){
+				doc.text("0,00",xPos,yPos);
+			}else{
+				doc.text(brojSaRazmacima(eval(ukupnaSuma*0.2).toFixed(2)),xPos,yPos);
+			}
+			yPos = yPos + 7;
+			doc.setFontType("bold");
+			if(ukupnaSuma>500000){
+				doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			}else{
+				doc.text(brojSaRazmacima(eval(ukupnaSuma*1.2).toFixed(2)),xPos,yPos);
+			}
+
+			doc.setDrawColor(0);
+	        doc.setFillColor(0,0,0);
+			doc.rect(3.6, 102.2, 200, 0.2, 'F');
+			doc.rect(3.6, 120, 200, 0.2, 'F');
+
+			yPos = yPos +20;
+			doc.setFontType("normal");
+			doc.setFontSize(12);
+			xPos = 5;
+			if(ukupnaSuma>500000){
+				doc.text("Napomena o poreskom oslobodjenju: Clan 10 zakona o PDV-u",xPos,yPos);
+			}else{
+				doc.text("Napomena o poreskom oslobodjenju: Nema",xPos,yPos);
+			}
+			yPos = yPos + 7;
+			
+			doc.text("Poziv na broj prilikom uplate: R GS-"+brojFakture+"/2022",xPos,yPos);
+			yPos = yPos + 7;
+			doc.text("Za neblagovremeno placanje obracunava se zakonska zatezna kamata.",xPos,yPos);
+			yPos = yPos +20;
+			doc.text("Racun izdao",xPos,yPos);
+			doc.rect(3.6, 215, 60, 0.4, 'F');
+
+			doc.addPage();
+			
+
+
+
+
+			var yPos = 10;
+			var xPos = 5;
+			doc.setFontType("bold");
+			doc.setFontSize(20);
+			doc.text("POSLOVI GRADA D00",xPos,yPos);//
+			yPos = yPos + 7;
+	        doc.setFontType("normal");
+			doc.setFontSize(16);
+			doc.text("11000 Beograd, Bulevar kralja Aleksandra 20",xPos,yPos);
+			yPos = yPos + 7;
+			doc.text("MBR: 21348660 PIB: 110424762",xPos,yPos);
+			yPos = yPos + 5;
+			doc.setFontSize(10);
+			doc.text("Racun: 150-0000000043532-07 DIREKTNA banka a.d ",xPos,yPos);//
+			yPos = yPos + 5;
+			doc.setFontSize(12);
+			doc.text("e-mail: knjigovodstvo@poslovigrada.rs",xPos,yPos);//RAČUN BR. GS-1/2022
+			doc.setFontType("bold");
+			doc.setFontSize(18);
+			yPos = yPos + 10;
+			doc.text("FAKTURA BR. GS-"+brojFakture+"/2022",pageWidth/2,yPos,'center');
+			doc.setFontType("normal");
+			doc.setFontSize(12);
+			yPos = yPos + 10;
+			var ySet = yPos;
+			doc.text("Datum izdavanja racuna: "+datumIzdavanja,xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Mesto izdavanja racuna: Beograd",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Datum prometa i dobara i usluga: "+datumPrometa,xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Mesto prometa dobara i usluga: Beograd",xPos,yPos);//
+			yPos = yPos + 5;
+			doc.text("Valuta placanja: "+valutaPlacanja,xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Po dokumentu: Okvirni sporazum br.OP-00042/22-",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("OS od 05.12.2022",xPos,yPos);
+			var ySet2 = yPos + 10;
+
+			xPos = pageWidth/2;
+			yPos = ySet;
+			doc.setFontType("bold");
+			doc.setFontSize(14);
+			doc.text("PREMIJUS DOO",xPos,yPos);
+			yPos = yPos + 6;
+			doc.setFontSize(12);
+			doc.text("Stanka Tisme 31 dj,",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("11273 Batajnica,",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("PIB: 110164390",xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("MBR: 21309192",xPos,yPos);
+
+			xPos = 5;
+			yPos = ySet2;
+			doc.setFontType("bold");
+			doc.setFontSize(11);
+			doc.text(["R.","Br."],xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("Opis dobara i usluga",xPos,yPos);
+			xPos = xPos + 57;
+			doc.text("J.M.",xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("Kol.",xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("Cena",xPos,yPos);
+			xPos = xPos + 20;
+			doc.text("Osnovica",xPos,yPos);
+			xPos = xPos + 20;
+			doc.text(["PDV","%"],xPos,yPos);
+			xPos = xPos + 10;
+			doc.text(["Iznos","PDV-a"],xPos,yPos);
+			xPos = xPos + 20;
+			doc.text("Ukupna naknada",xPos,yPos);
+
+			xPos = 5;
+			yPos = yPos + 10;
+			doc.setFontType("normal");
+			doc.setFontSize(10);
+			doc.text("1",xPos,yPos);
+			xPos = xPos + 10;
+			doc.setFontSize(8);
+			doc.text(["Hitni i neodlozni radovi i tekuce popravke","-VIK radovi u stambenim zgradama i drugim","objektima koje odrzava JP Gradsko stambeno,","izvrsene usluge radova na teritoriji Beograda","po specifikaciji"+brojFakture+" za radnu jedinicu " + radnaJedinica],xPos,yPos);
+
+			doc.setFontSize(9);
+			xPos = xPos + 57;
+			doc.text("kom",xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("1",xPos,yPos);
+			xPos = xPos + 10;
+			doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			xPos = xPos + 20;
+			doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			xPos = xPos + 20;
+			if(ukupnaSuma>500000){
+				doc.text("0",xPos,yPos);	
+			}else{
+				doc.text("20",xPos,yPos);
+			}
+			xPos = xPos + 10;
+			if(ukupnaSuma>500000){
+				doc.text("0.00",xPos,yPos);	
+			}else{
+				doc.text(brojSaRazmacima(eval(ukupnaSuma*0.2).toFixed(2)),xPos,yPos);
+			}
+			//
+			xPos = xPos + 20;
+			if(ukupnaSuma>500000){
+				doc.text(brojSaRazmacima(ukupnaSuma),xPos,yPos);
+			}else{
+				doc.text(brojSaRazmacima(eval(ukupnaSuma*1.2).toFixed(2)),xPos,yPos);
+			}
+
+			yPos = yPos + 20;
+			ySet = yPos;
+			xPos = 100;
+			doc.setFontType("normal");
+			doc.setFontSize(12);
+			doc.text("Vrednost dobara-usluga: ",xPos,yPos);
+			yPos = yPos + 7;
+			if(ukupnaSuma>500000){
+				doc.text("Osnovica za PDV 0%: ",xPos,yPos);
+			}else{
+				doc.text("Osnovica za PDV 20%: ",xPos,yPos);
+			}
+			
+			yPos = yPos + 7;
+			if(ukupnaSuma>500000){
+				doc.text("Obracunati PDV 0%:",xPos,yPos);
+			}else{
+				doc.text("Obracunati PDV 20%:",xPos,yPos);
+			}
+			
+			yPos = yPos + 7;
+			doc.setFontType("bold");
+			doc.text("Ukupna vrednost:",xPos,yPos);
+
+			xPos = 150;
+			yPos = ySet
+			doc.setFontType("normal");
+			doc.setFontSize(12);
+			doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			yPos = yPos + 7;
+			if(ukupnaSuma>500000){
+				doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			}else{
+				doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			}
+			
+			yPos = yPos + 7;
+			if(ukupnaSuma>500000){
+				doc.text("0,00",xPos,yPos);
+			}else{
+				doc.text(brojSaRazmacima(eval(ukupnaSuma*0.2).toFixed(2)),xPos,yPos);
+			}
+			yPos = yPos + 7;
+			doc.setFontType("bold");
+			if(ukupnaSuma>500000){
+				doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+			}else{
+				doc.text(brojSaRazmacima(eval(ukupnaSuma*1.2).toFixed(2)),xPos,yPos);
+			}
+
+			doc.setDrawColor(0);
+	        doc.setFillColor(0,0,0);
+			doc.rect(3.6, 100, 200, 0.2, 'F');
+			doc.rect(3.6, 118, 200, 0.2, 'F');
+
+			yPos = yPos +20;
+			doc.setFontType("normal");
+			doc.setFontSize(10);
+			xPos = 5;
+			if(ukupnaSuma>500000){
+				doc.text("Napomena o poreskom oslobodjenju: Clan 10 zakona o PDV-u",xPos,yPos);
+			}else{
+				doc.text("Napomena o poreskom oslobodjenju: Nema",xPos,yPos);
+			}
+			yPos = yPos + 7;
+			
+			doc.text("Poziv na broj prilikom uplate: R GS-"+brojFakture+"/2022",xPos,yPos);
+			yPos = yPos + 7;
+			doc.text("Za neblagovremeno placanje obracunava se zakonska zatezna kamata.",xPos,yPos);
+			yPos = yPos +20;
+			doc.text("Racun izdao",xPos,yPos);
+			doc.rect(3.6, 215, 60, 0.4, 'F');
+
+			doc.addPage();
+
+
+
+
+			var yPos = 10;
+			var xPos = 5;
+			doc.setFontType("bold");
+			doc.setFontSize(10);
+			doc.text("Specifikacija "+brojFakture+" - " + radnaJedinica,xPos,yPos);
+			yPos = yPos + 5;
+			doc.text("Br.",xPos,yPos);
+			xPos = xPos + 10;
+			doc.text("Br. Naloga",xPos,yPos);
+			xPos = xPos + 20;
+			doc.text("Iznos",xPos,yPos);
+			yPos = yPos + 5;
+			doc.setFontType("normal");
+			for(var i=0;i<nalozi.length;i++){
+				xPos = 5;
+				doc.text(eval(i+1).toString()+".",xPos,yPos);
+				xPos = xPos + 10;
+				doc.text(nalozi[i].broj,xPos,yPos);
+				xPos = xPos + 20;
+				doc.text(brojSaRazmacima(nalozi[i].ukupanIznos),xPos,yPos);
+				yPos = yPos + 5;
+			}
+			yPos = yPos + 1;
+			doc.setFontType("bold");
+			xPos = 5;
+			doc.text("Ukupno: "+brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+
+
+
+
+
+
+	        
+
+
+			window.open(URL.createObjectURL(doc.output("blob")),'_blank')
+		
+		}
+	</script>
+</div>
+<script>
+
+</script>
+<%- include ("partials/footer") -%>

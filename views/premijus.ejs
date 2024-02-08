@@ -1,0 +1,1049 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/premijusmenu") -%>
+<%- include ("partials/pdfGenerate") -%>
+	<style>
+		#site-content{
+			max-width:1200px;
+		}
+
+		.mojiNalozi .status{
+			width:225px;
+		}
+
+		.ukupno{
+			text-align: left !important;
+			font-size: 12px !important;
+			font-weight:300 !important;
+
+		}
+
+		.ukupno span{
+			font-weight: 600 !important;
+		}
+	</style>
+	<div class="pageTitle"><%= vrsta %></div>
+	<div class="button" style="margin:20px auto;" onclick="loadGif();location.reload()">Osveži</div>
+	<script>
+		var nalozi = <%-JSON.stringify(nalozi)%>;
+		for(var i=0;i<nalozi.length;i++){
+			nalozi[i].vremePrijemaNaloga	=	Number(nalozi[i].uniqueId.split("--")[1]);
+			if(nalozi[i].brojFakture){
+				if(nalozi[i].brojFakture.includes("2024")){
+					var temp 	=	nalozi[i].brojFakture.split('.').join('');
+					var temp2 	=	temp.toLowerCase();
+					var temp3 	=	temp2.split("/")[0];
+					var temp4 	=	Number(temp3.split("gs-")[1]);
+					nalozi[i].samoBrojFakture	=	temp4;
+				}
+				
+			}
+		}
+		nalozi.sort(function(a, b) {
+		    return parseFloat(b.vremePrijemaNaloga) - parseFloat(a.vremePrijemaNaloga);
+		});
+		var naloziToShow = JSON.parse(JSON.stringify(nalozi));
+	</script>
+	<div class="ukupno" id="ukupno"></div>
+	<div class="sviNalozi mojiNalozi premijusLista">
+		<div id="broj-filter">
+			<div style="display:inline-block;vertical-align: top;margin:20px;margin-bottom:5px">
+				<div>Od broja fakture</div>
+				<input type="number" min="0" id="odbroja" oninput="generateTable()">
+			</div>
+			<div style="display:inline-block;vertical-align: top;margin:20px;margin-bottom:5px">
+				<div>Do broja fakture</div>
+				<input type="number" min="0" id="dobroja" oninput="generateTable()">
+			</div>
+			<div style="margin-bottom:20px">
+				Brojevi koji fale u nizu: <span id="brojevi-koji-fale"></span>
+			</div>
+			<div class="buttonsWrap">
+				<div class="button" onclick="generateExcel()">Izvezi u eksel</div>
+			</div>
+			<script>
+				function generateExcel(){
+					var csvString = "Broj Naloga,Broj Fakture,Iznos,PDV,Iznos PDVa,Datum PDV\r\n";
+					for(var i=0;i<naloziToShow.length;i++){
+						var pdv = parseFloat(naloziToShow[i].ukupanIznos)>=500000 ? 0 : 20; 
+						var iznosPdv = parseFloat(naloziToShow[i].ukupanIznos)*pdv/100;
+						var datumPdv = naloziToShow[i].pdv == "35" ? naloziToShow[i].radPregledan : "Datum Slanja"
+						csvString += naloziToShow[i].brojNaloga+","+naloziToShow[i].brojFakture+","+naloziToShow[i].ukupanIznos+","+pdv+","+iznosPdv+","+datumPdv+"\r\n"
+					}
+					var blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+					var url = URL.createObjectURL(blob);
+
+					// Create a link to download it
+					var pom = document.createElement('a');
+					pom.href = url;
+					pom.setAttribute('download', "Izvezeni Nalozi");
+					pom.click();
+				}
+			</script>
+		</div>
+		<div class="filters">
+			<div class="numberFilter broj" style="margin-left:5px">
+				<input type="text" id="faktura-filter" placeholder="Filter Fakture" oninput="generateTable()">
+			</div>
+			<div class="numberFilter broj" style="margin-left:150px">
+				<input type="text" id="number-filter" placeholder="Filter Broja" oninput="generateTable()">
+			</div>
+			<div class="statusFilter" style="margin-left:0px">
+				<select id="opstina-filter" oninput="filter()">
+					<option value="SVE" default="default">SVE OPŠTINE</option>
+					<option value="ČUKARICA">ČUKARICA</option>
+					<option value="RAKOVICA">RAKOVICA</option>
+					<option value="NOVI BEOGRAD">NOVI BEOGRAD</option>
+					<option value="ZEMUN">ZEMUN</option>
+					<option value="ZVEZDARA">ZVEZDARA</option>
+					<option value="VRAČAR">VRAČAR</option>
+					<option value="VOŽDOVAC">VOŽDOVAC</option>
+					<option value="STARI GRAD">STARI GRAD</option>
+					<option value="PALILULA">PALILULA</option>
+					<option value="SAVSKI VENAC">SAVSKI VENAC</option>
+				</select>
+			</div>
+			<div class="numberFilter adresa" style="margin-left:0px">
+				<input type="text" id="adresa-filter" placeholder="Filter Adrese" oninput="generateTable()">
+			</div>
+			<!--<div class="statusFilter" style="margin-left:0px">
+				<select id="status-filter" oninput="generateTable()">
+					<option value="SVI" default="default">SVI STATUSI</option>
+					<option value="Spreman za fakturisanje">Spreman za fakturisanje</option>
+					<option value="Fakturisan">Fakturisan</option>
+				</select>
+			</div>-->
+
+			<div class="penalFilter" style="margin-left:0px">
+				<select id="penal-filter" oninput="generateTable()">
+					<option value="SVI" default="default">Sa i bez penala</option>
+					<option value="0">Bez Penala</option>
+					<option value="1">Sa Penalom</option>
+				</select>
+			</div>
+		</div>
+		<script>
+			if(document.getElementsByClassName("pageTitle")[0].innerHTML=="Nalozi Spremni za fakturisanje"){
+				document.getElementById("broj-filter").style.display="none";
+				document.getElementById("faktura-filter").style.display="none";
+			}
+		</script>
+		<div class="header">
+			<div class="inline redniBroj">Redni Broj</div>
+			<div class="inline vremePrijema">Broj Fakture:</div>
+			<div class="inline datumNaloga">Datum<br>Naloga:</div>
+			<div class="inline broj">Broj:</div>
+			<div class="inline opstina">Opština:</div>
+			<div class="inline iznos">Iznos:</div>
+			<div class="inline status">Status:</div>
+		</div>
+		<div id="table-wrap" style="height:500px;overflow:scroll">
+			<div id="table-height" style="height:10000px">
+				<div id="table-content" style="position:sticky;top:0;border:1px solid rgb(0,0,0)"></div>
+			</div>
+		</div>
+		<script>
+			var rowHeight			=	50;
+			var scrollableElement 	=	document.getElementById("table-wrap");
+			scrollableElement.addEventListener("scroll", (event) => {
+				generateTable();
+			});
+			
+			function generateTable(){
+				document.getElementById("brojevi-koji-fale").innerHTML = "";
+				document.getElementById("table-content").innerHTML	=	"";
+				var numberOfElements	=	500/rowHeight;
+				var scrollValue			=	scrollableElement.scrollTop;
+				//Reset filters
+				for(var i=0;i<nalozi.length;i++){
+					nalozi[i].display = 1;
+				}
+
+				//Filter out elements
+				//filter elements
+				var broj = document.getElementById("number-filter").value;
+				var adresa = document.getElementById("adresa-filter").value;
+				//var status = document.getElementById("status-filter").value;
+				var penal = document.getElementById("penal-filter").value;
+				var opstina = document.getElementById("opstina-filter").value;
+				var faktura = document.getElementById("faktura-filter").value;
+				var odBroja	=	document.getElementById("odbroja").value;
+				var doBroja	=	document.getElementById("dobroja").value;
+				for(var i=0;i<nalozi.length;i++){
+					
+
+					if(broj!=""){
+						if(!nalozi[i].broj.toString().includes(broj.toString())){
+							nalozi[i].display = 0;
+						}
+					}
+
+					if(faktura!=""){
+						if(nalozi[i].brojFakture){
+							if(!nalozi[i].brojFakture.includes(faktura)){
+								nalozi[i].display = 0;
+							}
+						}else{
+							nalozi[i].display = 0;
+						}
+						
+					}
+
+					if(adresa!=""){
+						if(!nalozi[i].adresa.split(",")[0].toString().toLowerCase().includes(adresa.toString().toLowerCase())){
+							nalozi[i].display = 0;
+						}
+					}
+
+					/*if(status!="SVI"){
+						if(nalozi[i].statusNaloga!=status){
+							nalozi[i].display = 0;
+						}
+					}*/
+
+					if(penal!="SVI"){
+						penalValue = Number(penal);
+						iznosPenala = parseFloat(nalozi[i].penal);
+						if(penalValue == 1){
+							if(isNaN(iznosPenala) || iznosPenala==0){
+								nalozi[i].display = 0;
+							}
+						}else if(penalValue == 0){
+							if(iznosPenala>0){
+								nalozi[i].display = 0;
+							}
+						}
+					}
+
+					if(opstina!="SVE"){
+						if(nalozi[i].radnaJedinica!=opstina){
+							nalozi[i].display = 0;
+						}
+					}
+
+					
+					if(odBroja && doBroja){
+						if(!nalozi[i].samoBrojFakture){
+							nalozi[i].display = 0;
+						}else{
+							if(Number(nalozi[i].samoBrojFakture)<odBroja || Number(nalozi[i].samoBrojFakture)>doBroja){
+								nalozi[i].display = 0;
+							}
+						}
+						
+					}
+				}
+				if(odBroja && doBroja && doBroja>odBroja){
+					var trazeniBrojevi	=	[];
+					for(var i=Number(odBroja);i<=Number(doBroja);i++){
+						trazeniBrojevi.push(i);
+					}
+					var nenadjeniBrojevi	=	[];
+					for(var i=0;i<trazeniBrojevi.length;i++){
+						var brojFound	=	false;
+						for(var j=0;j<nalozi.length;j++){
+							if(nalozi[j].display==1 && Number(nalozi[j].samoBrojFakture)==trazeniBrojevi[i]){
+								brojFound = true
+							}
+						}
+						if(!brojFound){
+							nenadjeniBrojevi.push(trazeniBrojevi[i])
+						}
+					}
+
+					for(var i=0;i<nenadjeniBrojevi.length;i++){
+						if(i!=nenadjeniBrojevi.length-1){
+							document.getElementById("brojevi-koji-fale").innerHTML += nenadjeniBrojevi[i] + ", ";	
+						}else{
+							document.getElementById("brojevi-koji-fale").innerHTML += nenadjeniBrojevi[i]
+						}
+						
+					}	
+				}
+				
+
+				
+
+				//calculate needed scroll height and total sum of prices
+				var totalPrice 	=	0;
+				var totalVATPrice = 0;
+				var totalNaloga	=	0;
+				naloziToShow	=	[];
+				for(var i=0;i<nalozi.length;i++){
+					if(nalozi[i].display==1){
+						naloziToShow.push(nalozi[i]);
+						if(!isNaN(parseFloat(nalozi[i].ukupanIznos))){
+							totalPrice = eval(totalPrice + Number(nalozi[i].ukupanIznos));
+							if(parseFloat(nalozi[i].ukupanIznos)<500000){
+								totalVATPrice = eval(totalVATPrice+parseFloat(nalozi[i].ukupanIznos)*0.2);
+							}
+							totalNaloga++;
+						}
+					}
+				}
+				document.getElementById("ukupno").innerHTML	= "Ukupan broj prikazanih naloga: <span>"+totalNaloga+"</span><br>";
+				document.getElementById("ukupno").innerHTML	+= "Ukupan iznos od prikazanih naloga: <span>"+brojSaRazmacima(totalPrice)+"</span><br>";
+				document.getElementById("ukupno").innerHTML	+= "Ukupan PDV za prikazane naloga: <span>"+brojSaRazmacima(totalVATPrice)+"</span><i> nalozi preko 500 000 ne ulaze u PDV obracun</i><br>";
+				document.getElementById("ukupno").innerHTML	+= "Ukupno za prikazane naloga: <span>"+brojSaRazmacima(eval(totalPrice+totalVATPrice))+"</span>";
+
+				if(odBroja && doBroja){
+					naloziToShow.sort(function(a, b) {
+					    return Number(a.samoBrojFakture) - Number(b.samoBrojFakture);
+					});
+				}
+
+
+				var scrollHeight	=	naloziToShow.length*rowHeight;
+				document.getElementById("table-height").scrollTop	=	0;
+				document.getElementById("table-height").style.height	=	scrollHeight + "px";
+				var startIndex		=	Math.floor(scrollValue / rowHeight);
+				var endIndex		=	startIndex + numberOfElements;
+				var highlightNext	=	false;
+
+				for(var i = startIndex;i<endIndex;i++){
+					if(naloziToShow[i]){
+						var row = document.createElement("DIV");
+						row.setAttribute("class","row");
+						row.setAttribute("data-json",JSON.stringify(naloziToShow[i]));
+						if(naloziToShow[i].statusNaloga=="Fakturisan"){
+							row.setAttribute("style","background-color:rgb(0,200,0);color:rgb(255,255,255)")
+						}
+						if(highlightNext){
+							highlightNext	=	false;
+						}else{
+							row.classList.add("rowHighlight");
+							highlightNext	=	true;
+						}
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline redniBroj");
+							elem.innerHTML	=	eval(i+1);
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline vremePrijema");
+							elem.innerHTML	=	naloziToShow[i].brojFakture ? naloziToShow[i].brojFakture : " ";
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline datumNaloga");
+							elem.innerHTML	=	naloziToShow[i].datum.split("god.")[0];
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline broj");
+							elem.innerHTML	=	naloziToShow[i].broj;
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline opstina");
+							elem.innerHTML	=	naloziToShow[i].radnaJedinica;
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline iznos");
+							elem.innerHTML	=	brojSaRazmacima(naloziToShow[i].ukupanIznos);
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","inline status");
+							elem.innerHTML	=	naloziToShow[i].statusNaloga;
+
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","button pogledajNalog");
+								var a = document.createElement("div");
+								a.setAttribute("onclick","window.open(\"/pdfView/premijus/"+naloziToShow[i].uniqueId+"\",\"_blank\")");
+								a.innerHTML = "Pogledaj Nalog"
+								elem.appendChild(a);
+							row.appendChild(elem);
+
+							var elem 	=	document.createElement("DIV");
+							elem.setAttribute("class","button skiniNalog");
+							elem.setAttribute("onclick","premijusFaktura(this,1)")
+							elem.innerHTML	=	"Skini Fakturu";
+							row.appendChild(elem);
+
+						document.getElementById("table-content").appendChild(row);
+					}
+					
+				}
+
+			}
+			generateTable();
+			
+		function premijusFaktura(elem,testCase){
+			var nalogJson	=	JSON.parse(elem.parentElement.dataset.json);
+			doc = new jsPDF({
+				orientation: 'p',
+				unit: 'mm',
+				format: 'a4',
+				compress: true
+				//putOnlyUsedFonts:true
+			});
+
+			
+			pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+			pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+			var yPos = 12;
+
+			//doc.getFontList("Helvetica");
+		    doc.addFileToVFS("PTSans.ttf", PTSans);
+		    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+		    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+		    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+		    doc.setFont('PTSans'); // set font
+		    doc.getFontList("PTSans");
+	        doc.addImage(headerLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+	        doc.setFontType("bold");
+			doc.setFontSize(12);
+			if(nalogJson.broj){
+				doc.text(nalogJson.broj,123,23.5,'left');
+			}
+	        
+	        doc.setFontType("normal");
+			doc.setFontSize(10);
+			var xOffset = 32;
+			if(nalogJson.narucilac.naziv){
+				doc.text(nalogJson.narucilac.naziv,xOffset,40.5);
+			}
+	        if(nalogJson.narucilac.adresa){
+	        	doc.text(nalogJson.narucilac.adresa,xOffset,48);
+	        }
+	        
+	        if(nalogJson.narucilac.pib){
+	        	doc.text(nalogJson.narucilac.pib,xOffset,53.65);	
+	        }
+	        
+	        if(nalogJson.narucilac.mb){
+	        	doc.text(nalogJson.narucilac.mb,xOffset,59);	
+	        }
+	        
+	        if(nalogJson.narucilac.osobaZaKontakt){
+	        	doc.text(nalogJson.narucilac.osobaZaKontakt,xOffset,75);
+	        }
+
+	        if(nalogJson.narucilac.telefon){
+	        	doc.text(nalogJson.narucilac.telefon,xOffset,81);
+	        }
+	        
+	        
+
+			var xOffset = 156;
+			if(nalogJson.pruzalac.naziv){
+				doc.text(nalogJson.pruzalac.naziv,xOffset,40.5);
+			}
+	        
+	        if(nalogJson.pruzalac.adresa){
+	        	doc.text(nalogJson.pruzalac.adresa,xOffset,48);
+	        }
+	        
+	        if(nalogJson.pruzalac.pib){
+	        	doc.text(nalogJson.pruzalac.pib,xOffset,53.65);
+	        }
+
+	        if(nalogJson.pruzalac.mb){
+	        	doc.text(nalogJson.pruzalac.mb,xOffset,59);
+	        }
+	        
+	        
+			doc.setFontSize(9);
+			if(nalogJson.pruzalac.racun){
+				doc.text(stringArray(nalogJson.pruzalac.racun,30), xOffset, 65.3);	
+			}
+			
+			doc.setFontSize(10);
+			if(nalogJson.pruzalac.osobaZaKontakt){
+				doc.text(nalogJson.pruzalac.osobaZaKontakt,xOffset,75);	
+			}
+	        
+	        if(nalogJson.pruzalac.telefon){
+	        	doc.text(nalogJson.pruzalac.telefon,xOffset,81);	
+	        }
+	        
+
+	        var xOffset = 38;
+			doc.setFontSize(9);
+			if(nalogJson.adresa){
+				doc.text(stringArray(nalogJson.adresa,40),xOffset,96);	
+			}
+	        
+			doc.setFontSize(10);
+			if(nalogJson.zahtevalac){
+				doc.text(stringArray(nalogJson.zahtevalac,36),xOffset,105);	
+			}
+	        
+	        if(nalogJson.mivrada.code){
+	        	doc.text(nalogJson.mivrada.code,xOffset,124);	
+	        }
+	        
+	        if(nalogJson.mivrada.desc){
+	        	doc.text(stringArray(nalogJson.mivrada.desc,26),xOffset+21.5,122);
+	        }
+	        
+			doc.setFontSize(9);
+			if(nalogJson.opis){
+				doc.text(stringArray(nalogJson.opis,36),xOffset,132);	
+			}
+	        
+			doc.setFontSize(10);
+
+	        var xOffset = 173;
+	        if(nalogJson.radnaJedinica){
+	        	doc.text(nalogJson.radnaJedinica,xOffset,98);	
+	        }
+	        
+	        if(nalogJson.brojZahteva){
+	        	doc.text(nalogJson.brojZahteva,xOffset,105);
+	        }
+	        
+	        if(nalogJson.datum){
+	        	doc.text(nalogJson.datum,xOffset,111);	
+	        }
+	        
+	        if(nalogJson.vrstaRada){
+	        	doc.text(nalogJson.vrstaRada,xOffset,117);	
+	        }
+
+	        if(nalogJson.garantniRok){
+	        	doc.text(nalogJson.garantniRok,xOffset,124);	
+	        }
+	        
+	        if(nalogJson.radUGarantnomRoku){
+	        	doc.text(nalogJson.radUGarantnomRoku,xOffset,134);
+	        }
+	        
+
+	        var yOffset = 154;
+	        if(nalogJson.nalogIzdao){
+	        	doc.text(nalogJson.nalogIzdao,5,yOffset);	
+	        }
+	        
+	        if(nalogJson.kontrolniOrgan){
+	        	doc.text(nalogJson.kontrolniOrgan,39,yOffset);
+	        }
+	        
+	        if(nalogJson.izvodjac){
+	        	doc.text(nalogJson.izvodjac,80,yOffset);	
+	        }
+	        
+	        if(nalogJson.partija){
+	        	doc.text(nalogJson.partija,137,yOffset);	
+	        }
+	        
+	        if(nalogJson.okvirniUgovor){
+	        	doc.text(nalogJson.okvirniUgovor,160,yOffset);
+	        }
+	        
+	        if(nalogJson.okvirniUgovor2){
+	        	doc.text(nalogJson.okvirniUgovor2,160,yOffset+6.8);	
+	        }
+	        
+
+	        var yOffset = 171;
+	        if(nalogJson.rokPocetkaIzvodjenjaRadova){
+	        	doc.text(nalogJson.rokPocetkaIzvodjenjaRadova,73,yOffset);	
+	        }
+	        
+	        if(nalogJson.rokIzvodjenjaRadova){
+	        	doc.text(nalogJson.rokIzvodjenjaRadova,180,yOffset);
+	        }
+	        
+
+	        doc.setDrawColor(0);
+	        doc.setFillColor(255,255,255);
+			doc.rect(3.6, 184.5, 202.1, 36.15, 'F');
+	        doc.setFillColor(0,0,0);
+			doc.rect(16.15, 184, 0.2, 36.65, 'F');
+			doc.rect(40.1, 184, 0.2, 36.65, 'F');
+			doc.rect(107.5, 184, 0.2, 36.65, 'F');
+			doc.rect(123.1, 184, 0.2, 36.65, 'F');
+			doc.rect(141.9, 184, 0.2, 36.65, 'F');
+			doc.rect(160.75, 184, 0.2, 36.65, 'F');
+			doc.rect(180.8, 184, 0.2, 36.65, 'F');
+
+			var yOffset = 187.5;
+			doc.setFontSize(8);
+	        doc.setFillColor(0,0,0);
+	        var fakturiasnjeArray	=	JSON.parse(JSON.stringify(nalogJson.fakturisanje));
+			for(var i=0;i<9;i++){
+				var maxRows	=	1;
+				if(fakturiasnjeArray[i]){
+					doc.text(fakturiasnjeArray[i].redniBroj.toString()+".",5,yOffset);
+					doc.text(fakturiasnjeArray[i].sifraArtikla,17,yOffset);
+					var splitString	=	stringArray(fakturiasnjeArray[i].nazivArtikla,50);
+					if(splitString){
+						doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+					}
+					if(splitString){
+						if(splitString.length>maxRows){
+							maxRows = splitString.length;
+						}
+					}
+					
+					
+					if(fakturiasnjeArray[i].jedinicaMere!="&nbsp;"){
+						var splitString	=	stringArray(fakturiasnjeArray[i].jedinicaMere,8);
+						if(splitString){
+							doc.text(splitString,109,yOffset);
+						}
+						
+					}
+					if(splitString){
+						if(splitString.length>maxRows){
+							maxRows = splitString.length;
+						}
+					}
+					
+					
+					if(fakturiasnjeArray[i].planiranaKolicina!="&nbsp;"){
+						//doc.text(fakturiasnjeArray[i].planiranaKolicina,125,yOffset);
+						doc.text(" ",125,yOffset);
+					}
+					
+					doc.text(fakturiasnjeArray[i].izvedenaKolicina,145,yOffset);
+					doc.text(fakturiasnjeArray[i].jedinicnaCena,163,yOffset);
+					doc.text(fakturiasnjeArray[i].iznos,183,yOffset);
+					fakturiasnjeArray[i].done = 1;
+				}
+				var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+				if(yTest>215){
+					break;
+				}
+				doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 202.1, 0.2, 'F');
+				if(maxRows>1){
+					yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+				}else{
+					yOffset = yOffset + 4.1*maxRows;
+				}
+			}
+
+			doc.setFontSize(11);
+			if(nalogJson.radIzvrsen){
+				doc.text(nalogJson.radIzvrsen,55,225);	
+			}
+			
+			if(nalogJson.datumIspostavljanjaNarudzbenice){
+				doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);	
+			}
+			
+
+	        doc.addPage();
+	        doc.addImage(ipsLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+
+			doc.setFontSize(8);
+			var yOffset = 39;
+	        doc.setDrawColor(0);
+	        doc.setFillColor(255,255,255);
+			doc.rect(3.6, yOffset+0.5, 201.6, 68, 'F');
+	        doc.setFillColor(0,0,0);
+			doc.rect(16, yOffset, 0.2, 68, 'F');
+			doc.rect(40, yOffset, 0.2, 68, 'F');
+			doc.rect(107.2, yOffset, 0.2, 68, 'F');
+			doc.rect(122.8, yOffset, 0.2, 68, 'F');
+			doc.rect(141.5, yOffset, 0.2, 68, 'F');
+			doc.rect(160.25, yOffset, 0.2, 68, 'F');
+			doc.rect(180.2, yOffset, 0.2, 68, 'F');
+
+			var yOffset = 42;
+			var firstInput	=	0;
+			for(var i=0;i<fakturiasnjeArray.length;i++){
+				if(!fakturiasnjeArray[i].done){
+					firstInput	=	eval(i);
+					break;
+				}
+			}
+			if(firstInput==0){
+				firstInput = fakturiasnjeArray.length;
+			}
+			for(var i=0;i<16;i++){
+				var maxRows	=	1;
+				if(fakturiasnjeArray[firstInput]){
+					doc.text(fakturiasnjeArray[firstInput].redniBroj.toString()+".",5,yOffset);
+					doc.text(fakturiasnjeArray[firstInput].sifraArtikla,17,yOffset);
+					var splitString	=	stringArray(fakturiasnjeArray[firstInput].nazivArtikla,50);
+					if(splitString){
+						doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+					}
+					if(splitString){
+						if(splitString.length>maxRows){
+							maxRows = splitString.length;
+						}
+					}
+					
+					if(fakturiasnjeArray[firstInput].jedinicaMere!="&nbsp;"){
+						var splitString	=	stringArray(fakturiasnjeArray[firstInput].jedinicaMere,8);
+						if(splitString){
+							doc.text(splitString,109,yOffset);
+						}
+					}
+
+					if(splitString){
+						if(splitString.length>maxRows){
+							maxRows = splitString.length;
+						}
+					}
+					
+					
+					if(fakturiasnjeArray[firstInput].planiranaKolicina!="&nbsp;"){
+						//doc.text(fakturiasnjeArray[firstInput].planiranaKolicina,125,yOffset);
+						doc.text(" ",125,yOffset);
+					}
+					
+					doc.text(fakturiasnjeArray[firstInput].izvedenaKolicina,145,yOffset);
+					doc.text(fakturiasnjeArray[firstInput].jedinicnaCena,163,yOffset);
+					doc.text(fakturiasnjeArray[firstInput].iznos,183,yOffset);
+					fakturiasnjeArray[firstInput].done = 1;
+					firstInput++;
+				}
+				var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+				if(yTest>100){
+					break;
+				}
+				doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 201.6, 0.2, 'F');
+				if(maxRows>1){
+					yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+				}else{
+					yOffset = yOffset + 4.1*maxRows;
+				}
+			}
+
+			var firstInput = 0;
+			for(var i=0;i<fakturiasnjeArray.length;i++){
+				if(!fakturiasnjeArray[i].done){
+					firstInput	=	eval(i);
+					break;
+				}
+			}
+			if(firstInput==0){
+				doc.setFontType("bold");
+				doc.setFontSize(12);
+		        doc.text(nalogJson.broj,123,23.5,'left');
+				doc.text(nalogJson.ukupanIznos,175,116);
+		       	doc.setFontType("normal");
+				doc.setFontSize(11);
+				doc.text(nalogJson.ukupanIznosSlovima,32,124);
+
+				doc.setFontSize(11);
+				if(nalogJson.radIzvrsen){
+					doc.text(nalogJson.radIzvrsen,55,225);	
+				}
+				
+				if(nalogJson.datumIspostavljanjaNarudzbenice){
+					doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);	
+				}
+			}else{
+				doc.addPage();
+		        doc.addImage(ipsLogoBlob, 'PNG', 0, 0, 210, 297,'','FAST');
+
+				doc.setFontSize(8);
+				var yOffset = 42;
+		        doc.setDrawColor(0);
+		        doc.setFillColor(255,255,255);
+				doc.rect(3.6, yOffset+0.5, 201.6, 68, 'F');
+		        doc.setFillColor(0,0,0);
+				doc.rect(16, yOffset, 0.2, 68, 'F');
+				doc.rect(40, yOffset, 0.2, 68, 'F');
+				doc.rect(107.2, yOffset, 0.2, 68, 'F');
+				doc.rect(122.8, yOffset, 0.2, 68, 'F');
+				doc.rect(141.5, yOffset, 0.2, 68, 'F');
+				doc.rect(160.25, yOffset, 0.2, 68, 'F');
+				doc.rect(180.2, yOffset, 0.2, 68, 'F');
+				for(var i=0;i<16;i++){
+					var maxRows	=	1;
+					if(fakturiasnjeArray[firstInput]){
+						doc.text(fakturiasnjeArray[firstInput].redniBroj.toString()+".",5,yOffset);
+						doc.text(fakturiasnjeArray[firstInput].sifraArtikla,17,yOffset);
+						var splitString	=	stringArray(fakturiasnjeArray[firstInput].nazivArtikla,50);
+						if(splitString){
+							doc.text(splitString,42,yOffset,{lineHeightFactor: 1.1});
+						}
+						
+						if(splitString){
+							if(splitString.length>maxRows){
+								maxRows = splitString.length;
+							}
+						}
+						
+						if(fakturiasnjeArray[firstInput].jedinicaMere!="&nbsp;"){
+							var splitString	=	stringArray(fakturiasnjeArray[firstInput].jedinicaMere,8);
+							if(splitString){
+								doc.text(splitString,109,yOffset);
+							}
+							
+						}
+						
+						if(splitString){
+							if(splitString.length>maxRows){
+								maxRows = splitString.length;
+							}
+						}
+						
+						if(fakturiasnjeArray[firstInput].planiranaKolicina!="&nbsp;"){
+							//doc.text(fakturiasnjeArray[firstInput].planiranaKolicina,125,yOffset);
+							doc.text(" ",125,yOffset);
+						}
+						
+						doc.text(fakturiasnjeArray[firstInput].izvedenaKolicina,145,yOffset);
+						doc.text(fakturiasnjeArray[firstInput].jedinicnaCena,163,yOffset);
+						doc.text(fakturiasnjeArray[firstInput].iznos,183,yOffset);
+						fakturiasnjeArray[firstInput].done = 1;
+						firstInput++;
+					}
+					var yTest	=	yOffset + 4.1*maxRows-0.5*maxRows;
+					if(yTest>100){
+						break;
+					}
+					doc.rect(3.6, yOffset+0.6+3.4*(maxRows-1), 201.6, 0.2, 'F');
+					if(maxRows>1){
+						yOffset = yOffset + 4.1*maxRows-0.5*maxRows;
+					}else{
+						yOffset = yOffset + 4.1*maxRows;
+					}
+				}
+
+
+				doc.setFontType("bold");
+				doc.setFontSize(12);
+		        doc.text(nalogJson.broj,123,23.5,'left');
+				doc.text(nalogJson.ukupanIznos,175,116);
+		       	doc.setFontType("normal");
+				doc.setFontSize(11);
+				doc.text(nalogJson.ukupanIznosSlovima,32,124);
+
+				doc.setFontSize(11);
+				if(nalogJson.radIzvrsen){
+					doc.text(nalogJson.radIzvrsen,55,225);	
+				}
+				
+				if(nalogJson.datumIspostavljanjaNarudzbenice){
+					doc.text(nalogJson.datumIspostavljanjaNarudzbenice,55,260);	
+				}
+
+			}
+
+
+				doc.addPage();
+
+				var brojFakture = nalogJson.brojFakture;
+				var dateNow		=	new Date();
+				var datumIzdavanja = reshuffleDate3(getDateAsStringForInputObject(dateNow));
+				dateNow.setDate(dateNow.getDate() - 1);
+				var datumPrometa = nalogJson.radPregledan;
+				dateNow.setDate(dateNow.getDate() + 30);
+				var valutaPlacanja = reshuffleDate3(getDateAsStringForInputObject(dateNow));
+
+				
+				pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+				pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+				var yPos = 8;
+				var xPos = 5;
+
+				doc.getFontList("Helvetica");
+				doc.setFontSize(20);
+				doc.text("PREMIJUS D00",xPos,yPos);//
+				yPos = yPos + 7;
+		        doc.setFontType("normal");
+				doc.setFontSize(16);
+				doc.text("11273 Batajnica, Stanka Tisme 31 dj",xPos,yPos);
+				yPos = yPos + 7;
+				doc.text("MBR:21309192 PIB:110164390",xPos,yPos);
+				yPos = yPos + 5;
+				doc.setFontSize(9);
+				doc.text("Racun: 170-30033914000-97 Unicredit banka a.d, 330-4022120-44 Credit Agicole a.d, 205-248554-65 NLB Komercijalna banka a.d",xPos,yPos);//
+				yPos = yPos + 4;
+				doc.text("       325-9500700197034-17 OTP banka a.d, 250-1160002315770-47 Eurobank  a.d, 285-2291000001454-71 AIK banka a.d",xPos,yPos);
+				yPos = yPos + 5;
+				doc.setFontSize(12);
+				doc.text("e-mail: premijusdoo@gmail.com",xPos,yPos);
+				doc.setFontType("bold");
+				doc.setFontSize(18);
+				yPos = yPos + 10;
+				doc.text("FAKTURA BR: "+brojFakture,pageWidth/2,yPos,'center');
+				doc.setFontType("normal");
+				doc.setFontSize(11);
+				yPos = yPos + 10;
+				var ySet = yPos;
+				doc.text("Datum izdavanja fakture: "+datumIzdavanja,xPos,yPos);
+				yPos = yPos + 5;
+				doc.text("Mesto izdavanja fakture: Batajnica",xPos,yPos);
+				yPos = yPos + 5;
+				doc.text("Datum prometa i dobara i usluga: "+datumPrometa,xPos,yPos);
+				yPos = yPos + 5;
+				doc.text("Mesto prometa dobara i usluga: Beograd",xPos,yPos);//
+				yPos = yPos + 5;
+				doc.text("Valuta placanja: "+valutaPlacanja,xPos,yPos);
+				yPos = yPos + 5;
+				doc.text("Po dokumentu: Okvirni sporazum br.OP-00042/22-",xPos,yPos);
+				yPos = yPos + 5;
+				doc.text("OS od 05.12.2022",xPos,yPos);
+				var ySet2 = yPos + 10;
+
+				xPos = pageWidth/2;
+				yPos = ySet;
+				doc.setFontType("bold");
+				doc.setFontSize(14);
+				doc.text("Javno preduzece ,, Gradsko stambeno,,",xPos,yPos);
+				yPos = yPos + 6;
+				doc.setFontSize(12);
+				doc.text("Danijelova 33",xPos,yPos);
+				yPos = yPos + 5;
+				doc.text("11000 Beograd",xPos,yPos);
+				yPos = yPos + 5;
+				doc.text("PIB:100373090",xPos,yPos);
+				yPos = yPos + 5;
+				doc.text("MBR:07486251",xPos,yPos);
+
+				xPos = 5;
+				yPos = ySet2;
+				doc.setFontType("bold");
+				doc.setFontSize(11);
+				doc.text(["R.","Br."],xPos,yPos);
+				xPos = xPos + 10;
+				doc.text("Opis dobara i usluga",xPos,yPos);
+				xPos = xPos + 57;
+				doc.text("J.M.",xPos,yPos);
+				xPos = xPos + 10;
+				doc.text("Kol.",xPos,yPos);
+				xPos = xPos + 10;
+				doc.text("Cena",xPos,yPos);
+				xPos = xPos + 20;
+				doc.text("Osnovica",xPos,yPos);
+				xPos = xPos + 20;
+				doc.text(["PDV","%"],xPos,yPos);
+				xPos = xPos + 10;
+				doc.text(["Iznos","PDV-a"],xPos,yPos);
+				xPos = xPos + 20;
+				doc.text("Ukupna naknada",xPos,yPos);
+
+				xPos = 5;
+				yPos = yPos + 10;
+				doc.setFontType("normal");
+				doc.setFontSize(10);
+				doc.text("1",xPos,yPos);
+				xPos = xPos + 10;
+				doc.setFontSize(8);
+				var writeArray	=	["HITNI I NEODLOŽNI RADOVI I TEKUĆE","POPRAVKE-VIK RADOVI-"];
+				var adresaArray	=	nalogJson.adresa.split(",");
+				for(var k=0;k<adresaArray.length;k++){
+					writeArray.push(adresaArray[k]);
+				}
+				writeArray.push("NARUDŽBENICA BR."+nalogJson.broj);
+				doc.text(writeArray,xPos,yPos);
+
+				doc.setFontSize(9);
+				xPos = xPos + 57;
+				doc.text("kom",xPos,yPos);
+				xPos = xPos + 10;
+				doc.text("1",xPos,yPos);
+				xPos = xPos + 10;
+				var ukupnaSuma 	=	parseFloat(nalogJson.ukupanIznos);
+				doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+				xPos = xPos + 20;
+				doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+				xPos = xPos + 20;
+				if(ukupnaSuma>500000){
+					doc.text("0",xPos,yPos);	
+				}else{
+					doc.text("20",xPos,yPos);
+				}
+				xPos = xPos + 10;
+				if(ukupnaSuma>500000){
+					doc.text("0.00",xPos,yPos);	
+				}else{
+					doc.text(brojSaRazmacima(eval(ukupnaSuma*0.2).toFixed(2)),xPos,yPos);
+				}
+				//
+				xPos = xPos + 20;
+				if(ukupnaSuma>500000){
+					doc.text(brojSaRazmacima(ukupnaSuma),xPos,yPos);
+				}else{
+					doc.text(brojSaRazmacima(eval(ukupnaSuma*1.2).toFixed(2)),xPos,yPos);
+				}
+
+				yPos = yPos + 40;
+				ySet = yPos;
+				xPos = 100;
+				doc.setFontType("normal");
+				doc.setFontSize(12);
+				doc.text("Vrednost dobara-usluga: ",xPos,yPos);
+				yPos = yPos + 7;
+				if(ukupnaSuma>500000){
+					doc.text("Osnovica za PDV 0%: ",xPos,yPos);
+				}else{
+					doc.text("Osnovica za PDV 20%: ",xPos,yPos);
+				}
+				
+				yPos = yPos + 7;
+				if(ukupnaSuma>500000){
+					doc.text("Obracunati PDV 0%:",xPos,yPos);
+				}else{
+					doc.text("Obracunati PDV 20%:",xPos,yPos);
+				}
+				
+				yPos = yPos + 7;
+				doc.setFontType("bold");
+				doc.text("Ukupna vrednost:",xPos,yPos);
+
+				xPos = 150;
+				yPos = ySet
+				doc.setFontType("normal");
+				doc.setFontSize(12);
+				doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+				yPos = yPos + 7;
+				if(ukupnaSuma>500000){
+					doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+				}else{
+					doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+				}
+				
+				yPos = yPos + 7;
+				if(ukupnaSuma>500000){
+					doc.text("0,00",xPos,yPos);
+				}else{
+					doc.text(brojSaRazmacima(eval(ukupnaSuma*0.2).toFixed(2)),xPos,yPos);
+				}
+				yPos = yPos + 7;
+				doc.setFontType("bold");
+				if(ukupnaSuma>500000){
+					doc.text(brojSaRazmacima(ukupnaSuma.toFixed(2).toString()),xPos,yPos);
+				}else{
+					doc.text(brojSaRazmacima(eval(ukupnaSuma*1.2).toFixed(2)),xPos,yPos);
+				}
+
+				doc.setDrawColor(0);
+		        doc.setFillColor(0,0,0);
+				doc.rect(3.6, 102.2, 200, 0.2, 'F');
+				doc.rect(3.6, 140, 200, 0.2, 'F');
+
+				yPos = yPos +20;
+				doc.setFontType("normal");
+				doc.setFontSize(12);
+				xPos = 5;
+				if(ukupnaSuma>500000){
+					doc.text("Napomena o poreskom oslobodjenju: Clan 10 zakona o PDV-u",xPos,yPos);
+				}else{
+					doc.text("Napomena o poreskom oslobodjenju: Nema",xPos,yPos);
+				}
+				yPos = yPos + 7;
+				
+				doc.text("Poziv na broj prilikom uplate: "+brojFakture,xPos,yPos);
+				yPos = yPos + 7;
+				doc.text("Za neblagovremeno placanje obracunava se zakonska zatezna kamata.",xPos,yPos);
+				yPos = yPos +20;
+				doc.text("Racun izdao",xPos,yPos);
+				doc.rect(3.6, 215, 60, 0.4, 'F');
+			
+
+
+
+			if(testCase==1){
+				doc.save("Radni Nalog-"+nalogJson.broj+"-Popunjen.pdf");
+			}else if(testCase==2){
+				//window.open(doc.output('bloburl'), '_blank');
+				window.open(URL.createObjectURL(doc.output("blob")),'_blank')
+			}
+		}
+		</script>
+	</div>
+<%- include ("partials/footer") -%>

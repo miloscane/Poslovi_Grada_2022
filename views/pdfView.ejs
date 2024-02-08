@@ -1,0 +1,2196 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+<%- include ("partials/dispecermenu") -%>
+<%- include ("partials/magacinmenu") -%>
+<%- include ("partials/pdfGenerate") -%>
+	<!--<script src="https://app.nts-international.net/com/nts/js/nts-jwt.js"></script>
+	<script src="https://app.nts-international.net/com/nts/js/nts-api.js"></script>-->
+	<!--<script src="/js/nts1.js"></script>
+	<script src="/js/nts2.js"></script>
+	<script>
+		var ntsLog = new NtsLogin();
+		ntsLog.login("https://app.nts-international.net/NTSSecurity/login", "n7292-poslovigrada.api","api2023", function(){
+		   var api = new NTSApi("https://app.nts-international.net");
+		   api.allvehicles(function(result){
+		      console.log(result);
+		   });
+		});
+	</script>-->
+	<script>
+		if(user.role=="20"){
+			document.getElementById("napredni-meni").style.display="none";
+			document.getElementById("magacin-meni").style.display="none";
+		}else if(user.role=="25"){
+			document.getElementById("napredni-meni").style.display="none";
+			document.getElementById("dispecer-meni").style.display="none";
+		}else{
+			document.getElementById("dispecer-meni").style.display="none";
+			document.getElementById("magacin-meni").style.display="none";
+		}
+	</script>
+	<div class="pageTitle">Popunjavanje Naloga</div>
+
+	<script>
+		loadGif();
+		var nalog = <%-JSON.stringify(nalog)%>;
+		var izvestaji = <%-JSON.stringify(izvestaji)%>;
+		var istorija = <%-JSON.stringify(istorija)%>;
+		function showNalog(fnalog){
+			loadGif();
+			document.getElementById("broj-narudzbenice2").value = "";
+			document.getElementById("datum-odlaganja").value = "";
+			document.getElementById("razlog-odlaganja").value = "";
+			document.getElementById("status-naloga").value = "";
+			document.getElementById("majstor-naloga").value = "Nijedan";
+			document.getElementById("status-od-majstora").value = "";
+			document.getElementById("opis-kvara").value = "";
+			var checkboxes	=	document.getElementsByClassName("opisKvaraCheckbox");
+			for(var i=0;i<checkboxes.length;i++){
+				checkboxes[i].checked	=	false;
+			}
+			document.getElementById("opis-radova").value = "";
+			document.getElementById("broj-narudzbenice").value = "";
+			document.getElementById("naziv-narucioca").value = "";
+			document.getElementById("adresa-narucioca").value = "";
+			document.getElementById("pib-narucioca").value = "";
+			document.getElementById("mb-narucioca").value = "";
+			document.getElementById("banka-narucioca").value = "";
+			document.getElementById("kontakt-narucioca").value = "";
+			document.getElementById("tel-narucioca").value = "";
+			document.getElementById("naziv-pruzaoca").value = "";
+			document.getElementById("adresa-pruzaoca").value = "";
+			document.getElementById("pib-pruzaoca").value = "";
+			document.getElementById("mb-pruzaoca").value = "";
+			document.getElementById("banka-pruzaoca").value = "";
+			document.getElementById("kontakt-pruzaoca").value = "";
+			document.getElementById("tel-pruzaoca").value = "";
+			document.getElementById("adresa").value = "";
+			document.getElementById("zahtevalac").value = "";			
+			document.getElementById("miv-kod").value = "";
+			document.getElementById("miv-opis").value = "";
+			document.getElementById("opis").value = "";
+			document.getElementById("radna-jedinica").value = "";
+			document.getElementById("broj-zahteva").value = "";
+			document.getElementById("datum-zahteva").value = "";
+			document.getElementById("vrsta-rada").value = "";
+			document.getElementById("garantni-rok").value = "";
+			document.getElementById("rad-u-garantnom-roku").value = "";
+			document.getElementById("nalog-izdao").value = "";
+			document.getElementById("kontrolni-organ").value = "";
+			document.getElementById("izvodjac").value = "";
+			document.getElementById("partija").value = "";
+			document.getElementById("okvirni-ugovor").value = "";
+			document.getElementById("okvirni-ugovor2").value = "";
+			document.getElementById("rok-pocetka-izvodjenja-radova").value = "";
+			document.getElementById("rok-izvodjenja-radova").value = "";
+			document.getElementById("broj-fakture").value = "";
+			document.getElementById("majstor-ucinak").value = "Nijedan";
+			var fakturaElems	=	document.getElementById("inputs-wrap").getElementsByClassName("inputRow");
+			for(var i=0;i<fakturaElems.length;i++){
+				fakturaElems[i].getElementsByClassName("sifraArtiklaInput")[0].value = "";
+				fakturaElems[i].getElementsByClassName("nazivArtiklaInput")[0].value = "";
+				fakturaElems[i].getElementsByClassName("jedinicaMereInput")[0].innerHTML = "&nbsp;";
+				fakturaElems[i].getElementsByClassName("planiranaKolicinaInput")[0].innerHTML = "&nbsp;";
+				fakturaElems[i].getElementsByClassName("izvedenaKolicinaInput")[0].value = "";
+				fakturaElems[i].getElementsByClassName("jedinicnaCenaInput")[0].value = "";
+				fakturaElems[i].getElementsByClassName("iznosInput")[0].value = "";
+			}
+			document.getElementById("total-price").innerHTML = "";
+			document.getElementById("iznos-pre-potpisa").value = "";
+			document.getElementById("penal").value = "";
+			document.getElementById("iznos-sa-penalom").innerHTML = "";
+			document.getElementById("ukupno-slovima").value = "";
+			document.getElementById("rad-izvrsen").value = "";
+			document.getElementById("rad-pregledan").value = "";	
+			document.getElementById("izvrseni-rad-overava").value = "";
+			document.getElementById("rad-pregledao").value = "";
+			document.getElementById("datum-ispostavljanja-narudzbenice").value = "";	
+			document.getElementById("broj-specifikacije").value = "";
+			document.getElementById("datum-obracuna-pdv").value = "";
+			document.getElementById("datum-zakazivanja").value = "";
+			document.getElementById("vreme-zakazivanja").value = "nijedno";
+
+			//End INIT
+			if(fnalog.brojNarudzbenice){
+				document.getElementById("broj-narudzbenice2").value = fnalog.brojNarudzbenice;
+			}
+			if(fnalog.datumOdlaganja){
+				document.getElementById("datum-odlaganja").value = fnalog.datumOdlaganja;
+			}
+			if(fnalog.razlogOdlaganja){
+				document.getElementById("razlog-odlaganja").value = fnalog.razlogOdlaganja;
+			}
+			if(fnalog.statusNaloga){
+				document.getElementById("status-naloga").value = fnalog.statusNaloga;
+			}
+			if(fnalog.majstorNaloga){
+				document.getElementById("majstor-naloga").value = fnalog.majstorNaloga;
+			}
+			if(fnalog.statusOdMajstora){
+				document.getElementById("status-od-majstora").value = fnalog.statusOdMajstora;
+			}
+			if(fnalog.opisKvara){
+				document.getElementById("opis-kvara").value = fnalog.opisKvara;
+				//console.log(fnalog.opisKvara)
+			}
+			if(fnalog.opisRadovaArr){
+				var checkboxes	=	document.getElementsByClassName("opisKvaraCheckbox");
+				for(var i=0;i<checkboxes.length;i++){
+					if(fnalog.opisRadovaArr.indexOf(checkboxes[i].value)>=0){
+						checkboxes[i].checked	=	true;
+					}
+					if((fnalog.opisRadovaArr.indexOf("Kopanje mašina")>=0 || fnalog.opisRadovaArr.indexOf("Kopanje ručno")>=0) &&  checkboxes[i].value=="Kopanje" ){
+						checkboxes[i].checked	=	true;
+					}
+				}
+			}
+			if(fnalog.opisRadovaUvod){
+				var checkboxes	=	document.getElementsByClassName("uvodCheckbox");
+				for(var i=0;i<checkboxes.length;i++){
+					if(fnalog.opisRadovaUvod.indexOf(checkboxes[i].value)>=0){
+						checkboxes[i].checked	=	true;
+					}
+				}
+			}
+			if(fnalog.opisRadovaRazrada){
+				var checkboxes	=	document.getElementsByClassName("razradaCheckbox");
+				for(var i=0;i<checkboxes.length;i++){
+					if(fnalog.opisRadovaRazrada.indexOf(checkboxes[i].value)>=0){
+						checkboxes[i].checked	=	true;
+					}
+				}
+			}
+			if(fnalog.opisRadovaZakljucak){
+				var checkboxes	=	document.getElementsByClassName("zakljucakCheckbox");
+				for(var i=0;i<checkboxes.length;i++){
+					if(fnalog.opisRadovaZakljucak.indexOf(checkboxes[i].value)>=0){
+						checkboxes[i].checked	=	true;
+					}
+				}
+			}
+			if(fnalog.opisRadova){
+				document.getElementById("opis-radova").value = fnalog.opisRadova;
+			}
+
+			//temporary
+			/*if(fnalog.opisKvara){
+				document.getElementById("opis-radova").value += "\r\n"+fnalog.opisKvara;
+			}*/
+			if(fnalog.datumZakazivanja){
+				document.getElementById("datum-zakazivanja").value = fnalog.datumZakazivanja;
+			}
+			if(fnalog.vremeZakazivanja){
+				document.getElementById("vreme-zakazivanja").value = fnalog.vremeZakazivanja;
+			}
+			document.getElementById("broj-narudzbenice").value = fnalog["broj"];
+			document.getElementById("naziv-narucioca").value = fnalog["narucilac"].naziv;
+			document.getElementById("adresa-narucioca").value = fnalog["narucilac"].adresa;
+			document.getElementById("pib-narucioca").value = fnalog["narucilac"].pib;
+			document.getElementById("mb-narucioca").value = fnalog["narucilac"].mb;
+			document.getElementById("banka-narucioca").value = fnalog["narucilac"].racun;
+			document.getElementById("kontakt-narucioca").value = fnalog["narucilac"].osobaZaKontakt;
+			document.getElementById("tel-narucioca").value = fnalog["narucilac"].telefon;
+			document.getElementById("naziv-pruzaoca").value = fnalog["pruzalac"].naziv;
+			document.getElementById("adresa-pruzaoca").value = fnalog["pruzalac"].adresa;
+			document.getElementById("pib-pruzaoca").value = fnalog["pruzalac"].pib;
+			document.getElementById("mb-pruzaoca").value = fnalog["pruzalac"].mb;
+			document.getElementById("banka-pruzaoca").value = fnalog["pruzalac"].racun;
+			document.getElementById("kontakt-pruzaoca").value = fnalog["pruzalac"].osobaZaKontakt;
+			document.getElementById("tel-pruzaoca").value = fnalog["pruzalac"].telefon;
+			document.getElementById("adresa").value = fnalog.adresa;
+			document.getElementById("zahtevalac").value = fnalog.zahtevalac;			
+			document.getElementById("miv-kod").value = fnalog.mivrada.code;
+			document.getElementById("miv-opis").value = fnalog.mivrada.desc;
+			document.getElementById("opis").value = fnalog.opis;
+			document.getElementById("radna-jedinica").value = fnalog.radnaJedinica;
+			document.getElementById("broj-zahteva").value = fnalog.brojZahteva;
+			document.getElementById("datum-zahteva").value = fnalog.datum;
+			document.getElementById("vrsta-rada").value = fnalog.vrstaRada;
+			document.getElementById("garantni-rok").value = fnalog.garantniRok;
+			document.getElementById("rad-u-garantnom-roku").value = fnalog.radUGarantnomRoku;
+			document.getElementById("nalog-izdao").value = fnalog.nalogIzdao;
+			document.getElementById("kontrolni-organ").value = fnalog.kontrolniOrgan;
+			document.getElementById("izvodjac").value = fnalog.izvodjac;
+			document.getElementById("partija").value = fnalog.partija;
+			document.getElementById("okvirni-ugovor").value = fnalog.okvirniUgovor;
+			document.getElementById("okvirni-ugovor2").value = fnalog.okvirniUgovor2;
+			document.getElementById("rok-pocetka-izvodjenja-radova").value = fnalog.rokPocetkaIzvodjenjaRadova;
+			document.getElementById("rok-izvodjenja-radova").value = fnalog.rokIzvodjenjaRadova;
+			if(fnalog.fakturisanje){
+				var fakturisanje	=	JSON.parse(JSON.stringify(fnalog.fakturisanje));
+				for(var i=0;i<fakturisanje.length;i++){
+					if(i!=0){
+						generateFaktRow();
+					}
+					var fakturaJson	=	JSON.parse(JSON.stringify(fakturisanje[i]));
+					var elemToFill	=	document.getElementById("inputs-wrap").getElementsByClassName("inputRow")[i];
+					elemToFill.getElementsByClassName("sifraArtiklaInput")[0].value = fakturaJson.sifraArtikla;
+					elemToFill.getElementsByClassName("nazivArtiklaInput")[0].value = fakturaJson.nazivArtikla;
+					elemToFill.getElementsByClassName("jedinicaMereInput")[0].innerHTML = fakturaJson.jedinicaMere;
+					elemToFill.getElementsByClassName("planiranaKolicinaInput")[0].innerHTML = fakturaJson.planiranaKolicina;
+					elemToFill.getElementsByClassName("izvedenaKolicinaInput")[0].value = fakturaJson.izvedenaKolicina;
+					elemToFill.getElementsByClassName("jedinicnaCenaInput")[0].value = fakturaJson.jedinicnaCena;
+					elemToFill.getElementsByClassName("iznosInput")[0].value = fakturaJson.iznos;
+					if(elemToFill){
+						var rowElements	=	elemToFill.getElementsByClassName("inlineItemMeasure");
+						var maxHeight	=	19;
+						for(var j=0;j<rowElements.length;j++){
+							var elemHeight	=	rowElements[j].getBoundingClientRect().height;
+							if(elemHeight>maxHeight){
+								maxHeight=elemHeight;
+							}
+						}
+						for(var j=0;j<rowElements.length;j++){
+							rowElements[j].style.height = maxHeight+"px";
+							if(rowElements[j].getElementsByTagName("TEXTAREA")[0]){
+								rowElements[j].getElementsByTagName("TEXTAREA")[0].style.height = maxHeight-2+"px";
+								rowElements[j].getElementsByTagName("TEXTAREA")[0].style.overflowY = "scroll";
+							}
+						}	
+					}
+				}
+
+			}
+			if(fnalog.ukupanIznos){
+				document.getElementById("total-price").innerHTML = parseFloat(fnalog.ukupanIznos).toFixed(2);
+			}else{
+				document.getElementById("total-price").innerHTML = "0.00"
+			}
+			if(fnalog.iznosPrePotpisa){
+				document.getElementById("iznos-pre-potpisa").value= fnalog.iznosPrePotpisa;
+			}
+			if(fnalog.penal){
+				document.getElementById("penal").value = fnalog.penal;
+				document.getElementById("iznos-sa-penalom").innerHTML=brojSaRazmacima(parseFloat(fnalog.ukupanIznos)*parseFloat(fnalog.penal)/100)
+			}else{
+				document.getElementById("penal").value = "0";
+			}
+			
+			if(fnalog.ukupanIznosSlovima){
+				document.getElementById("ukupno-slovima").value = fnalog.ukupanIznosSlovima;
+			}
+			if(fnalog.radIzvrsen){
+				document.getElementById("rad-izvrsen").value = fnalog.radIzvrsen;
+			}
+			if(fnalog.radPregledan){
+				document.getElementById("rad-pregledan").value = fnalog.radPregledan;	
+			}
+			if(fnalog.izvrseniRadOverava){
+				document.getElementById("izvrseni-rad-overava").value = fnalog.izvrseniRadOverava;
+			}
+			if(fnalog.radPregledao){
+				document.getElementById("rad-pregledao").value = fnalog.radPregledao;
+			}
+			if(fnalog.datumIspostavljanjaNarudzbenice){
+				document.getElementById("datum-ispostavljanja-narudzbenice").value = fnalog.datumIspostavljanjaNarudzbenice;	
+			}
+			if(fnalog.brojSpecifikacije){
+				document.getElementById("broj-specifikacije").value = fnalog.brojSpecifikacije;
+			}
+			if(fnalog.pdv){
+				document.getElementById("datum-obracuna-pdv").value = fnalog.pdv;
+			}
+			if(fnalog.majstorUcinak){
+				document.getElementById("majstor-ucinak").value = fnalog.majstorUcinak;
+				if(fnalog.majstorUcinak=="Nijedan"){
+					document.getElementById("majstor-ucinak").value = fnalog.majstorNaloga;	
+				}
+			}else{
+				document.getElementById("majstor-ucinak").value = fnalog.majstorNaloga;
+			}
+			if(fnalog.datumUcinka){
+				document.getElementById("datum-ucinka").value = getDateAsStringForInputObject(new Date(Number(fnalog.datumUcinka)));
+			}else{
+				document.getElementById("datum-ucinka").value = getDateAsStringForInputObject(new Date());
+			}
+			if(fnalog.brojFakture){
+				document.getElementById("broj-fakture").value = fnalog.brojFakture;
+			}else{
+				document.getElementById("broj-fakture").value = "";
+			}
+			loadGifStop();
+
+		}
+	</script>
+	<div class="nalogExtras">
+		<div class="inputWrap" style="display:none">
+			<div class="title">Broj narudzbenice</div>
+			<div class="inputWraper">
+				<input type="text" id="broj-narudzbenice2">
+			</div>
+		</div>
+		<div class="istorijat">
+			<div class="title">Istorija Naloga</div>
+			<div id="istorijat"></div>
+			<script>
+				if(istorija){
+					for(var i=0;i<istorija.length;i++){
+						var button 	=	document.createElement("DIV");
+						button.setAttribute("class","istorijaButton");
+						button.setAttribute("data-nalog",JSON.stringify(istorija[i].nalog));
+						button.setAttribute("onclick","showNalogFromButton(this)")
+						button.innerHTML = "<div class='datum'>"+vremePrijema(istorija[i].datum)+"</div><div class='korisnik'>"+istorija[i].korisnik.ime+"</div>";
+						document.getElementById("istorijat").appendChild(button);
+					}
+					var button 	=	document.createElement("DIV");
+					button.setAttribute("class","istorijaButton istorijaButtonActive");
+					button.setAttribute("data-nalog",JSON.stringify(nalog));
+					button.setAttribute("onclick","showNalogFromButton(this)")
+					if(istorija.length>0){
+						button.innerHTML = "Trenutni<br>"+istorija[istorija.length-1].korisnik.ime;
+					}else{
+						button.innerHTML = "Trenutni";
+					}
+					document.getElementById("istorijat").appendChild(button);
+				}
+
+				function showNalogFromButton(elem){
+					var nalogFromButton	=	JSON.parse(elem.dataset.nalog);
+					for(var i=0;i<document.getElementsByClassName("istorijaButton").length;i++){
+						document.getElementsByClassName("istorijaButton")[i].classList.remove("istorijaButtonActive");
+					}
+					elem.classList.add("istorijaButtonActive");
+					showNalog(nalogFromButton)
+				}
+			</script>
+		</div>
+		<div class="inputWrap">
+			<div class="title">Odloži za:</div>
+			<div class="inputWraper">
+				<input type="date" id="datum-odlaganja"><br>
+				<textarea id="razlog-odlaganja" style="width:220px;height:50px" placeholder="Razlog odlaganja"></textarea>
+				<div class="error" id="razlog-odlaganja-error" style="display:none">Popunite razlog i datum odlaganja</div>
+			</div>
+			<div class="button" onclick="checkZahtevZaOdlaganje()" id="zahtev-za-odlaganje-button">Zahtev za odlaganje</div>
+			<script>
+				if(user.role=="25"){
+					document.getElementById("zahtev-za-odlaganje-button").style.display = "none";
+				}
+				function checkZahtevZaOdlaganje(){
+					if(document.getElementById("datum-odlaganja").value && document.getElementById("razlog-odlaganja").value){
+						zahtevZaOdlaganje(getNalogFromForm())
+						//saveNalog()
+					}else{
+						document.getElementById("razlog-odlaganja-error").style.display="block";
+					}
+				}
+			</script>
+		</div>
+		<div class="inputWrap">
+			<div class="title">Status Naloga:</div>
+			<div class="inputWraper">
+				<select id="status-naloga">
+					<option value="Primljen" default="default">Primljen</option>
+					<option value="Dodeljen majstoru">Dodeljen majstoru</option>
+					<option value="Radovi u toku">Radovi u toku</option>
+					<option value="Potrebna WOMA">Potrebna WOMA</option>
+					<option value="Zamena">Zamena</option>
+					<option value="Završeno">Završeno</option>
+					<option value="Kopanje">Kopanje</option>
+					<option value="Finalizacija">Finalizacija</option>
+					<option value="Storniran">Storniran</option>
+					<option value="Betonaža">Betonaža</option>
+					<option value="Vraćen">Vraćen</option>
+					<option value="Spreman za obračun">Spreman za obračun</option>
+					<option value="Nalog u Stambenom" class="noShowStatus">Nalog u Stambenom</option>
+					<option value="Spreman za fakturisanje" class="noShowStatus">Spreman za fakturisanje</option>
+					<option value="Fakturisan" class="noShowStatus">Fakturisan</option>
+					<option value="Storniran na SEF-u" class="noShowStatus">Storniran na SEF-u</option>
+				</select>
+			</div>
+		</div>
+		<div class="inputWrap">
+			<div class="title">Dodeljeno Majstoru:</div>
+			<div class="inputWraper">
+				<select id="majstor-naloga">
+					<optgroup label="Poslovi Grada" id="majstori-pg">
+						<option value="Nijedan" default="default">Nijedan</option>
+					</optgroup>
+					<optgroup label="Podizvodjaci" id="majstori-podizvodjaci"></optgroup>
+				</select>
+
+				<script>
+					var majstori = <%-JSON.stringify(majstori)%>;
+					for(var i=0;i<majstori.length;i++){
+						if(!majstori[i].inactive){
+							var option = document.createElement("OPTION");
+							option.setAttribute("value",majstori[i].uniqueId);
+							option.innerHTML	=	majstori[i].ime;
+							if(podizvodjaci.indexOf(majstori[i].uniqueId)>=0){
+								document.getElementById("majstori-podizvodjaci").appendChild(option);
+							}else{
+								document.getElementById("majstori-pg").appendChild(option);
+							}
+						}
+						
+					}
+				</script>
+			</div>
+		</div>
+		<div class="inputWrap" id="zakazivanje-naloga">
+			<div class="title">Zakazani datum</div>
+			<div class="inputWraper">
+				<input type="date" id="datum-zakazivanja">
+			</div>
+			<div class="title">Zakazano vreme</div>
+			<div class="inputWraper">
+				<select id="vreme-zakazivanja">
+					<option value="nijedno"></option>
+					<option value="07:00">07:00</option>
+					<option value="07:30">07:30</option>
+					<option value="08:00">08:00</option>
+					<option value="08:30">08:30</option>
+					<option value="09:00">09:00</option>
+					<option value="09:30">09:30</option>
+					<option value="10:00">10:00</option>
+					<option value="10:30">10:30</option>
+					<option value="11:00">11:00</option>
+					<option value="11:30">11:30</option>
+					<option value="12:00">12:00</option>
+					<option value="12:30">12:30</option>
+					<option value="13:00">13:00</option>
+					<option value="13:30">13:30</option>
+					<option value="14:00">14:00</option>
+					<option value="14:30">14:30</option>
+					<option value="15:00">15:00</option>
+					<option value="15:30">15:30</option>
+					<option value="16:00">16:00</option>
+					<option value="16:30">16:30</option>
+					<option value="17:00">17:00</option>
+					<option value="17:30">17:30</option>
+					<option value="18:00">18:00</option>
+					<option value="18:30">18:30</option>
+					<option value="19:00">19:00</option>
+					<option value="19:30">19:30</option>
+					<option value="20:00">20:00</option>
+					<option value="20:30">20:30</option>
+				</select>
+			</div>
+		</div>
+		<script>
+			if(Number(user.role)==10){
+				document.getElementById("zakazivanje-naloga").style.display="none";
+			}
+		</script>
+		<div class="inputWrap" id="broj-fakture-wrap">
+			<div class="title">Broj fakture:</div>
+			<div class="inputWraper">
+				<input type="text" id="broj-fakture" disabled>
+			</div>
+		</div>
+		<script>
+			if(Number(user.role)>10){
+				document.getElementById("broj-fakture-wrap").style.display="none";
+			}
+		</script>
+		<div class="inputWrap" style="display:none">
+			<div class="title">Status Majstora:</div>
+			<div class="inputWraper">
+				<select id="status-od-majstora">
+					<option value="Primljen" default="default">Primljen</option>
+					<option value="U putu">U putu</option>
+					<option value="Na Lokaciji">Na Lokaciji</option>
+					<option value="Prikupljanje delova">Prikupljanje delova</option>
+					<option value="Radovi u toku">Radovi u toku</option>
+					<option value="Završeno">Završeno</option>
+					<option value="Stanari odbijaju nalog">Stanari odbijaju nalog</option>
+					<option value="Stanari nisu na adresi">Stanari nisu na adresi</option>
+				</select>
+			</div>
+		</div>
+		<div class="inputWrap opisKvara">
+			<div class="title" style="display:none">Opis kvara:</div>
+			<div class="inputWraper" style="display:none">
+				<textarea id="opis-kvara"></textarea>
+			</div>
+			<div style="margin-top:10px;margin-bottom:10px;border-bottom:2px solid rgb(50,50,50)"></div>
+			<div class="title">Izveštaji sa terena:</div>
+			<div id="izvestaji-sa-terena"></div>
+			<script>
+				for(var i=0;i<izvestaji.length;i++){
+					var row = document.createElement("DIV");
+					row.setAttribute("class","row");
+						var title = document.createElement("DIV");
+						title.setAttribute("class","title");
+						title.innerHTML = vremePrijema(izvestaji[i].datetime);
+						row.appendChild(title);
+
+						var text = document.createElement("DIV");
+						text.setAttribute("class","text");
+						text.innerHTML = izvestaji[i].izvestaj;
+						row.appendChild(text);
+
+						if(izvestaji[i].photopath){
+							var photoName	=	izvestaji[i].photopath.split("/")[izvestaji[i].photopath.split("/").length-1];
+							var compressedPath	=	izvestaji[i].photopath.split(photoName)[0]+"/Compressed-"+photoName;
+							var imageWrap	=	document.createElement("DIV");
+							imageWrap.setAttribute("class","imageWrap");
+								var image = document.createElement("IMG");
+								if(izvestaji[i].photopath.includes("heic")){
+									image.setAttribute("src","https://portal.poslovigrada.rs"+izvestaji[i].photopath.replace("heic","jpg"));
+								}else{
+									image.setAttribute("src","https://portal.poslovigrada.rs"+izvestaji[i].photopath);
+									//image.setAttribute("src","https://portal.poslovigrada.rs"+compressedPath);
+								}
+								
+								imageWrap.appendChild(image)
+							row.appendChild(imageWrap);
+
+							if(Number(izvestaji[i].deleted)==1){
+								var deleteOverlay	=	document.createElement("DIV");
+								deleteOverlay.setAttribute("class","deleteOverlay");
+								imageWrap.appendChild(deleteOverlay);
+							}
+
+							var deleteButton	=	document.createElement("DIV");
+							deleteButton.setAttribute("class","button");
+							if(Number(izvestaji[i].deleted)==1){
+								deleteButton.innerHTML	=	"Povrati";
+								deleteButton.setAttribute("data-delete",0);
+							}else{
+								deleteButton.innerHTML	=	"Obriši";
+								deleteButton.setAttribute("data-delete",1);
+							}
+							deleteButton.setAttribute("data-izvestajid",izvestaji[i].datetime);
+							deleteButton.setAttribute("data-nalogid",izvestaji[i].uniqueId);
+							deleteButton.setAttribute("onclick","deleteIzvestaj(this)")
+							row.appendChild(deleteButton);
+
+							var downloadButton	=	document.createElement("A");
+							downloadButton.setAttribute("class","button");
+							if(izvestaji[i].photopath.includes("heic")){
+								downloadButton.setAttribute("href","https://portal.poslovigrada.rs"+izvestaji[i].photopath.replace("heic","jpg"));
+							}else{
+								downloadButton.setAttribute("href","https://portal.poslovigrada.rs"+izvestaji[i].photopath);	
+							}
+							
+							downloadButton.setAttribute("target","_blank");
+							downloadButton.setAttribute("download",nalog.broj+"-Slika");
+							downloadButton.innerHTML	=	"Skini Vecu Sliku";
+							row.appendChild(downloadButton);
+
+
+							var downloadButton	=	document.createElement("A");
+							downloadButton.setAttribute("class","button");
+							if(izvestaji[i].photopath.includes("heic")){
+								downloadButton.setAttribute("href","https://portal.poslovigrada.rs"+compressedPath);
+							}else{
+								downloadButton.setAttribute("href","https://portal.poslovigrada.rs"+compressedPath);	
+							}
+							
+							downloadButton.setAttribute("target","_blank");
+							downloadButton.setAttribute("download",nalog.broj+"-Slika");
+							downloadButton.innerHTML	=	"Skini Manju Sliku";
+							row.appendChild(downloadButton);
+
+							var oznakaSlike = document.createElement("DIV");
+							oznakaSlike.innerHTML	=	"Oznaka slike:<br>"+izvestaji[i].photopath.split("/")[izvestaji[i].photopath.split("/").length-1].split("--")[0];
+							row.appendChild(oznakaSlike)
+						}
+
+					document.getElementById("izvestaji-sa-terena").appendChild(row);
+				}
+				function deleteIzvestaj(elem){
+					var json 		=	{};
+					json.id			=	Number(elem.dataset.izvestajid);
+					json.nalogId	=	elem.dataset.nalogid;
+					json.delete 	=	Number(elem.dataset.delete);
+					document.getElementById("delete-info").value = JSON.stringify(json);
+					loadGif();
+					document.getElementById("delete-izvestaj-form").submit()
+				}
+			</script>
+			<form style="display:none" id="delete-izvestaj-form" action="/obrisi-sliku" method="POST">
+				<input type="text" name="json" id="delete-info">
+			</form>
+			<div id="slika" style="margin-top:10px">
+				<div class="title">Dodaj Sliku</div>
+				<form method="POST" action="/okaci-sliku" id="slika-form" enctype="multipart/form-data" style="text-align: left;">
+					<div class="itemWrap">
+						<div class="inputWrapper">
+							<input id="slika-input" type="file" name="image" accept="image/*" multiple>
+							<script>
+								var imgInp = document.getElementById("slika-input")
+								imgInp.onchange = evt => {
+									/*const [file] = imgInp.files
+									if (file) {
+										document.getElementById('file-image').src = URL.createObjectURL(file);
+										document.getElementById('file-image').style.display="block"
+									}*/
+									for(var i=0;i<imgInp.files.length;i++){
+										var image 	=	document.createElement("IMG");
+										image.setAttribute("class","added-image");
+										image.setAttribute("src",URL.createObjectURL(imgInp.files[i]));
+										document.getElementById("added-image").appendChild(image);
+									}
+								}
+							</script>
+						</div>
+						<div id="added-image">
+							<!--<img src="#" id="file-image" style="display:none">-->
+						</div>
+						<input type="text" name="idnaloga" id="izvestaj-idnaloga" style="display:none">
+						<script>
+							document.getElementById("izvestaj-idnaloga").value = nalog.uniqueId;
+						</script>
+						<input type="text" name="idmajstora" id="izvestaj-idmajstora" style="display:none">
+						<script>
+							document.getElementById("izvestaj-idmajstora").value = user.ime;
+						</script>
+						<input type="submit" value="Sacuvaj sliku" onclick="loadGif()" style="margin-top:10px;color:rgb(99,82,223);border:1px solid rgb(50,50,50)" class="button" id="photo-submit-button">
+						<script>
+							if(user.role=="25"){
+								document.getElementById("photo-submit-button").style.display = "none";
+							}
+						</script>
+					</div>
+				</form>
+			</div>
+			<div id="ucinak-wrap">
+				<div style="margin-top:10px;margin-bottom:10px;border-bottom:2px solid rgb(50,50,50)"></div>
+				<div class="title">Učinak Majstora</div>
+				<div id="ucinci"></div>
+				<script>
+					var ucinci = <%-JSON.stringify(ucinci)%>;
+					for(var i=0;i<ucinci.length;i++){
+						var item = document.createElement("DIV");
+						item.setAttribute("class","item");
+						item.innerHTML = ucinci[i].majstorName + " - " + brojSaRazmacima(ucinci[i].ukupanIznos); 
+						document.getElementById("ucinci").appendChild(item);
+					}
+				</script>
+			</div>
+		</div>
+		<div class="inputWrap opisRadova">
+			<div class="title" style="margin-bottom:10px">Kategorizacija radova:</div>
+			<div class="inputWraperer">
+				<div class="rasporedCasova">
+					<table>
+						<tr>
+							<th>Uvod</th>
+							<th>Razrada</th>
+							<th>Zaključak</th>
+						</tr>
+						<tr>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="uvodCheckbox" value="Zamena">	
+									</div>
+									<div class="checkboxLabel">
+										Zamena
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="razradaCheckbox" value="Zamena Šut">	
+									</div>
+									<div class="checkboxLabel">
+										Šut
+									</div>
+								</div>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="uvodCheckbox" value="Odgušenje Sajlom">	
+									</div>
+									<div class="checkboxLabel">
+										Odgušenje Sajlom
+									</div>
+								</div>
+							</td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="uvodCheckbox" value="Crpljenje">	
+									</div>
+									<div class="checkboxLabel">
+										Crpljenje
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="razradaCheckbox" value="Dezinfekcija">	
+									</div>
+									<div class="checkboxLabel">
+										Dezinfekcija
+									</div>
+								</div>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="uvodCheckbox" value="Popis Radova">	
+									</div>
+									<div class="checkboxLabel">
+										Popis Radova
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="razradaCheckbox" value="Popis Radova Zamena">	
+									</div>
+									<div class="checkboxLabel">
+										Zamena
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="zakljucakCheckbox" value="Popis Radova Zamena Finalizacija">	
+									</div>
+									<div class="checkboxLabel">
+										Finalizacija
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="uvodCheckbox" value="Odgušenje Voma">	
+									</div>
+									<div class="checkboxLabel">
+										Odgušenje Voma
+									</div>
+								</div>
+							</td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="uvodCheckbox" value="Ručno Kopanje">	
+									</div>
+									<div class="checkboxLabel">
+										Ručno Kopanje
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="razradaCheckbox" value="Ručno Kopanje Betoniranje">	
+									</div>
+									<div class="checkboxLabel">
+										Betoniranje
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="zakljucakCheckbox" value="Ručno Kopanje Betoniranje Šut">	
+									</div>
+									<div class="checkboxLabel">
+										Šut
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="uvodCheckbox" value="Rov">	
+									</div>
+									<div class="checkboxLabel">
+										Rov
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="razradaCheckbox" value="Rov Betoniranje">	
+									</div>
+									<div class="checkboxLabel">
+										Betoniranje
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="zakljucakCheckbox" value="Rov Betoniranje Šut">	
+									</div>
+									<div class="checkboxLabel">
+										Šut
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="uvodCheckbox" value="Lokalni Kvar">	
+									</div>
+									<div class="checkboxLabel">
+										Lokalni Kvar
+									</div>
+								</div>
+							</td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<div class="wrapper">
+									<div class="checkboxWrap">
+										<input type="checkbox" class="uvodCheckbox" value="Konstatacija">	
+									</div>
+									<div class="checkboxLabel">
+										Konstatacija
+									</div>
+								</div>
+							</td>
+							<td></td>
+							<td></td>
+						</tr>
+					</table>
+				</div>
+				<div style="display:inline-block;vertical-align: top;width: 45%;display:none">
+					<div class="checkboxWrap">
+						<div class="inline checkboxDiv">
+							<input type="checkbox" class="opisKvaraCheckbox" value="Odgušenje Sajlom">
+						</div>
+						<div class="inline label">
+							Odgušenje Sajlom
+						</div>
+					</div>
+					<div class="checkboxWrap">
+						<div class="inline checkboxDiv">
+							<input type="checkbox" class="opisKvaraCheckbox" value="Odgušenje Voma">
+						</div>
+						<div class="inline label">
+							Odgušenje Voma
+						</div>
+					</div>
+					<div class="checkboxWrap">
+						<div class="inline checkboxDiv">
+							<input type="checkbox" class="opisKvaraCheckbox" value="Zamena">
+						</div>
+						<div class="inline label">
+							Zamena
+						</div>
+					</div>
+					<div class="checkboxWrap">
+						<div class="inline checkboxDiv">
+							<input type="checkbox" class="opisKvaraCheckbox" value="Rov">
+						</div>
+						<div class="inline label">
+							Rov
+						</div>
+					</div>
+					<div class="checkboxWrap">
+						<div class="inline checkboxDiv">
+							<input type="checkbox" class="opisKvaraCheckbox" value="Konstatacija">
+						</div>
+						<div class="inline label">
+							Konstatacija
+						</div>
+					</div>
+					<div class="checkboxWrap">
+						<div class="inline checkboxDiv">
+							<input type="checkbox" class="opisKvaraCheckbox" value="Crpljenje">
+						</div>
+						<div class="inline label">
+							Crpljenje
+						</div>
+					</div>
+				</div>
+
+				<div id="right" style="display:inline-block;vertical-align: top;width: 45%;">
+					
+				</div>
+				<textarea id="opis-radova" placeholder="Detaljan opis radova" style="margin-top:5px"></textarea>
+			</div>
+			<div id="reversi-wrap">
+				<div style="margin-top:10px;margin-bottom:10px;border-bottom:2px solid rgb(50,50,50)"></div>
+				<div class="title">Reversi:</div>
+				<div id="lista-reversa"></div>
+				<script>
+					var reversi = <%-JSON.stringify(reversi)%>;
+					for(var i=0;i<reversi.length;i++){
+						var item = document.createElement("DIV");
+						item.setAttribute("class","item");
+						item.setAttribute("data-revers",JSON.stringify(reversi[i]));
+							var number = document.createElement("DIV");
+							number.setAttribute("class","number");
+							number.innerHTML = eval(i+1)+".";
+							item.appendChild(number);
+
+							var majstor = document.createElement("DIV");
+							majstor.setAttribute("class","majstor");
+							majstor.innerHTML = getMajstorNameFromId(reversi[i].majstor);
+							item.appendChild(majstor);
+
+							var date = document.createElement("DIV");
+							date.setAttribute("class","date");
+							date.innerHTML = reshuffleDate3(reversi[i].date);
+							item.appendChild(date);
+
+							var div = document.createElement("DIV");
+							div.setAttribute("style","margin-top:7px;")
+							item.appendChild(div);
+
+							var button = document.createElement("DIV");
+							button.setAttribute("class","editButton");
+							button.setAttribute("onclick","editRevers(this)");
+							button.innerHTML = "Izmeni";
+							item.appendChild(button);
+
+							var button = document.createElement("DIV");
+							button.setAttribute("class","printButton");
+							button.setAttribute("onclick","printTreb(this)");
+							button.innerHTML = "Stampaj Trebovanje";
+							item.appendChild(button);
+
+							var button = document.createElement("DIV");
+							button.setAttribute("class","printButton");
+							button.setAttribute("onclick","printRevers(this)");
+							button.innerHTML = "Stampaj Revers";
+							item.appendChild(button);
+							
+							var button = document.createElement("DIV");
+							button.setAttribute("class","deleteButton");
+							button.setAttribute("onclick","deleteRevers('"+reversi[i].uniqueId+"','"+nalog.uniqueId+"')");
+							button.innerHTML = "Obriši";
+							item.appendChild(button);
+
+						document.getElementById("lista-reversa").appendChild(item);
+					}
+				</script>
+				<form method="POST" style="display:none" id="obrisi-revers-form" action="/obrisi-revers">
+					<input type="text" name="uniqueid" id="obrisi-revers-input">
+					<input type="text" name="naloguniqueid" id="obrisi-revers-input-nalog">
+				</form>
+				<script>
+					function deleteRevers(id,idnaloga){
+						document.getElementById("obrisi-revers-input").value = id;
+						document.getElementById("obrisi-revers-input-nalog").value = idnaloga;
+						loadGif();
+						document.getElementById("obrisi-revers-form").submit();
+					}
+
+					function printTreb(elem){
+						trebPDF(JSON.parse(elem.parentElement.dataset.revers))
+					}
+
+					function printRevers(elem){
+						reversPDF(JSON.parse(elem.parentElement.dataset.revers))
+					}
+				</script>
+				<div style="text-align: center;">
+					<div class="button" onclick="newRevers()">Napravi Novi Revers</div>
+					<script>
+						function newRevers(){
+							document.getElementById("revers-majstor").value = "Nijedan";
+							document.getElementById("revers-id").value = "new";
+							document.getElementById("revers-date").value = getDateAsStringForInputObject(new Date());
+							document.getElementById("proizvodi-lista").innerHTML = "";
+							document.getElementById("revers-lightbox").style.display="block";
+						}
+
+						function editRevers(elem){
+							var reversJson = JSON.parse(elem.parentElement.dataset.revers);
+							document.getElementById("revers-majstor").value = reversJson.majstor;
+							document.getElementById("revers-id").value = reversJson.uniqueId;
+							document.getElementById("revers-date").value = reversJson.date;
+							document.getElementById("proizvodi-lista").innerHTML = "";
+							for(var i=0;i<reversJson.zaduzenje.length;i++){
+								var productJson = {};
+								productJson.uniqueId = reversJson.zaduzenje[i].uniqueId;
+								productJson.code = reversJson.zaduzenje[i].code;
+								productJson.name = reversJson.zaduzenje[i].name;
+
+								var item = document.createElement("DIV");
+								item.setAttribute("class","item");
+								item.setAttribute("data-json",JSON.stringify(productJson));
+									var number = document.createElement("DIV");
+									number.setAttribute("class","number");
+									number.innerHTML = eval(i+1)+".";
+									item.appendChild(number);
+
+									var name = document.createElement("DIV");
+									name.setAttribute("class","name");
+									name.innerHTML = productJson.name+"<br><span>"+productJson.code+"</span>";
+									item.appendChild(name);
+
+									var quantity = document.createElement("DIV");
+									quantity.setAttribute("class","quantity");
+									quantity.innerHTML = "<input type='number' min=0 value="+reversJson.zaduzenje[i].quantity+">";
+									item.appendChild(quantity);
+
+									var quantity = document.createElement("DIV");
+									quantity.setAttribute("class","quantity");
+									quantity.innerHTML = "<input type='number' min=0 value="+reversJson.zaduzenje[i].quantity2+">";
+									item.appendChild(quantity);
+
+									var kill = document.createElement("DIV");
+									kill.setAttribute("class","remove");
+									kill.setAttribute("onclick","removeProduct(this)");
+									kill.innerHTML = "X";
+									item.appendChild(kill);
+								document.getElementById("preview-list").appendChild(item);
+							}
+							document.getElementById("revers-lightbox").style.display="block";
+						}
+					</script>
+				</div>
+				<script>
+					var proizvodi = <%-JSON.stringify(proizvodi)%>;
+					function compareStrings(a, b) {
+						return (a < b) ? -1 : (a > b) ? 1 : 0;
+					}
+					
+					proizvodi.sort(function(a, b) {
+					  return compareStrings(a.code, b.code);
+					})
+				</script>
+				<div id="revers-lightbox" style="display:none">
+					<div class="content">
+						<div class="close" onclick="document.getElementById('revers-lightbox').style.display='none';">X</div>
+						<div class="dateInput">Datum za magacin: <input type="date" id="revers-date"></div>
+						<div class="majstorInput">Majstor: <select id="revers-majstor">
+																<option value="Nijedan" default>Nijedan</option>
+															</select>
+							<script>
+								for(var i=0;i<majstori.length;i++){
+									if(!majstori[i].inactive){
+										var option = document.createElement("OPTION");
+										option.setAttribute("value",majstori[i].uniqueId);
+										option.innerHTML	=	majstori[i].ime;
+										if(podizvodjaci.indexOf(majstori[i].uniqueId)<0){
+											document.getElementById("revers-majstor").appendChild(option);
+										}
+									}
+									
+								}
+							</script>
+						</div>
+						<input type="text" id="revers-id" style="display:none">
+
+						<div class="box">
+							<div class="proizvodi">
+								<div id="kategorije"></div>
+								<div id="proizvodi" style="display:none">
+									<div class="backButton" onclick="goBackToCategories()"><- Nazad</div>
+									<div id="proizvodi-lista"></div>
+								</div>
+							</div>
+
+							<script>
+								
+								for(var i=0;i<definicijeProizvoda.length;i++){
+									var mainButton = document.createElement("DIV");
+									mainButton.setAttribute("class","productButton");
+									mainButton.setAttribute("onclick","categoryPick(this)");
+									mainButton.setAttribute("data-code",definicijeProizvoda[i].startCode);
+									mainButton.innerHTML = "<div class=\"value\">"+definicijeProizvoda[i].name+"<br><span>"+definicijeProizvoda[i].startCode+"</span></div>"
+									document.getElementById("kategorije").appendChild(mainButton);
+								}
+
+								function categoryPick(elem){
+									document.getElementById("kategorije").style.display="none";
+									document.getElementById("proizvodi-lista").innerHTML = "";
+									var code = elem.dataset.code;
+									for(var i=0;i<proizvodi.length;i++){
+										if(proizvodi[i].code.startsWith(code)){
+											var mainButton = document.createElement("DIV");
+											mainButton.setAttribute("class","productButton");
+											mainButton.setAttribute("onclick","productPick(this)");
+											mainButton.setAttribute("data-uniqueid",proizvodi[i].uniqueId);
+											mainButton.innerHTML = "<div class=\"value\">"+proizvodi[i].name+"<br><span>"+proizvodi[i].code+"</span></div>"
+											document.getElementById("proizvodi-lista").appendChild(mainButton);
+										}
+									}
+									document.getElementById("proizvodi").style.display="block";
+								}
+
+								function productPick(elem){
+									var productId = elem.dataset.uniqueid;
+									//see if its already on the list
+									var addedProducts = document.getElementById("preview-list").getElementsByClassName("item");
+									var productFound = false;
+									for(var i=0;i<addedProducts.length;i++){
+										var productJson = JSON.parse(addedProducts[i].dataset.json);
+										if(productJson.uniqueId==productId){
+											addedProducts[i].getElementsByClassName("quantity")[0].getElementsByTagName("INPUT")[0].value = Number(addedProducts[i].getElementsByClassName("quantity")[0].getElementsByTagName("INPUT")[0].value)+1;
+											productFound = true;
+											break;
+										}
+									}
+									if(!productFound){
+										//product not on list
+										var productJson = {};
+										for(var i=0;i<proizvodi.length;i++){
+											if(proizvodi[i].uniqueId==productId){
+												productJson.uniqueId = proizvodi[i].uniqueId;
+												productJson.code = proizvodi[i].code;
+												productJson.name = proizvodi[i].name;
+												productJson.unit = proizvodi[i].unit;
+											}
+										}
+										var item = document.createElement("DIV");
+										item.setAttribute("class","item");
+										item.setAttribute("data-json",JSON.stringify(productJson));
+											var number = document.createElement("DIV");
+											number.setAttribute("class","number");
+											number.innerHTML = eval(addedProducts.length+1)+".";
+											item.appendChild(number);
+
+											var name = document.createElement("DIV");
+											name.setAttribute("class","name");
+											name.innerHTML = productJson.name+"<br><span>"+productJson.code+"</span>";
+											item.appendChild(name);
+
+											var quantity = document.createElement("DIV");
+											quantity.setAttribute("class","quantity");
+											quantity.innerHTML = "<input type='number' min=0 value=1>";
+											item.appendChild(quantity);
+
+											var quantity = document.createElement("DIV");
+											quantity.setAttribute("class","quantity");
+											quantity.innerHTML = "<input type='number' min=0>";
+											item.appendChild(quantity);
+
+											var kill = document.createElement("DIV");
+											kill.setAttribute("class","remove");
+											kill.setAttribute("onclick","removeProduct(this)");
+											kill.innerHTML = "X";
+											item.appendChild(kill);
+										document.getElementById("preview-list").appendChild(item);
+
+									}
+								}
+
+								function removeProduct(elem){
+									elem.parentElement.remove();
+									var existingProducts = document.getElementById("preview-list").getElementsByClassName("item");
+									for(var i=0;i<existingProducts.length;i++){
+										existingProducts[i].getElementsByClassName("number")[0].innerHTML = eval(i+1)+"."
+									}
+								}
+
+								function goBackToCategories(){
+									document.getElementById("kategorije").style.display="block";
+									document.getElementById("proizvodi").style.display = "none";
+								}
+							</script>
+							<div class="reversPreview" id="preview">
+								<div class="title">Popis proizvoda</div>
+								<div style="margin-top:3px;margin-bottom:3px;border-bottom:3px solid rgb(50,50,50)"></div>
+								<div id="preview-list"></div>
+								<div style="margin-top:3px;margin-bottom:3px;border-bottom:3px solid rgb(50,50,50)"></div>
+								<div style="text-align: center;">
+									<div class="button" onclick="saveRevers()">Sacuvaj Revers</div>
+									<form id="revers-form" method="POST" action="/okaci-revers" style="display:none">
+										<input type="text" id="revers-form-json" name="json">
+									</form>
+									<script>
+										function saveRevers(){
+											var reversJson = {};
+											reversJson.uniqueId = document.getElementById("revers-id").value;
+											reversJson.majstor = document.getElementById("revers-majstor").value;
+											reversJson.nalog = nalog.broj;
+											reversJson.nalogUniqueId = nalog.uniqueId;
+											reversJson.date = document.getElementById("revers-date").value;
+											reversJson.zaduzenje = [];
+											var addedProducts = document.getElementById("preview-list").getElementsByClassName("item");
+											for(var i=0;i<addedProducts.length;i++){
+												var productJsonFromElem = JSON.parse(addedProducts[i].dataset.json);
+												var productJson = {};
+												productJson.uniqueId = productJsonFromElem.uniqueId;
+												productJson.code = productJsonFromElem.code;
+												productJson.name = productJsonFromElem.name;
+												productJson.quantity = addedProducts[i].getElementsByClassName("quantity")[0].getElementsByTagName("INPUT")[0].value;
+												productJson.quantity2 = addedProducts[i].getElementsByClassName("quantity")[1].getElementsByTagName("INPUT")[0].value;
+												reversJson.zaduzenje.push(productJson);
+											}
+											document.getElementById("revers-form-json").value = JSON.stringify(reversJson);
+											loadGif();
+											document.getElementById("revers-form").submit();
+										}
+									</script>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div style="text-align:center;margin-top:5px;">
+			<div id="sacuvaj-button2" class="button" onclick="saveNalog()">Sačuvaj</div>
+			<script>
+				if(user.role=="25"){
+					document.getElementById("sacuvaj-button2").style.display = "none";
+				}
+			</script>
+		</div>
+	</div>
+	<div id="nalog2">
+		<div class="topBox">
+			<div class="text" style="display:none">Na osnovu člana 152. Stav 6 Zakona o javnim nabavkama („Sl.glasnik RS", br. 91/2019) i u skladu sa Okvirnim sporazumom
+br. od , izdaje se:</div>
+			<div class="narudzbenicaWrap">
+				<div class="note">NARUDŽBENICA br.</div>
+				<div class="input"><input type="text" id="broj-narudzbenice"></div>
+			</div>
+		</div>
+		<div class="topTables" style="display:none">
+			<div class="inline">
+				<div class="tableWrap">
+					<div class="header">NARUČILAC</div>
+					<table>
+						<tr>
+							<td class="itemName">NAZIV:</td>
+							<td class="itemInput">
+								<textarea id="naziv-narucioca"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">ADRESA:</td>
+							<td class="itemInput">
+								<textarea id="adresa-narucioca"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">PIB:</td>
+							<td class="itemInput">
+								<input type="number" id="pib-narucioca">
+								<script></script>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">MATIČNI BROJ:</td>
+							<td class="itemInput">
+								<input type="number" id="mb-narucioca">
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">BROJ RAČUNA I NAZIV BANKE:</td>
+							<td class="itemInput">
+								<textarea id="banka-narucioca"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">OSOBA ZA KONTAKT:</td>
+							<td class="itemInput">
+								<input type="text" id="kontakt-narucioca">
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">TEL./FAKS:</td>
+							<td class="itemInput">
+								<input type="text" id="tel-narucioca">
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline">
+				<div class="tableWrap extended">
+					<div class="header">PRUŽALAC USLUGE</div>
+					<table>
+						<tr>
+							<td class="itemName">NAZIV:</td>
+							<td class="itemInput">
+								<textarea id="naziv-pruzaoca"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">ADRESA:</td>
+							<td class="itemInput">
+								<textarea id="adresa-pruzaoca"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">PIB:</td>
+							<td class="itemInput">
+								<input type="number" id="pib-pruzaoca">
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">MATIČNI BROJ:</td>
+							<td class="itemInput">
+								<input type="number" id="mb-pruzaoca">
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">BROJ RAČUNA I NAZIV BANKE:</td>
+							<td class="itemInput">
+								<textarea id="banka-pruzaoca"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">OSOBA ZA KONTAKT:</td>
+							<td class="itemInput">
+								<input type="text" id="kontakt-pruzaoca">
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">TEL./FAKS:</td>
+							<td class="itemInput">
+								<input type="text" id="tel-pruzaoca">
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="note1" style="display:none">
+			Molimo Vas da nam u skladu sa vašom prihvaćenom ponudom izvršite sledeće usluge:
+		</div>
+		<div class="middleTables">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Adresa:</td>
+							<td class="itemInput">
+								<textarea id="adresa"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Zahtevalac:</td>
+							<td class="itemInput">
+								<textarea id="zahtevalac"></textarea>
+							</td>
+						</tr>
+						<tr style="display:none">
+							<td class="itemName">MiV rada:</td>
+							<td class="itemInput">
+								<div style="font-size:0">
+									<div style="display:inline-block;vertical-align:middle;border-right:1px solid rgb(0,0,0);width:35%;font-size:16px;">
+										<textarea id="miv-kod"></textarea>
+									</div>	
+									<div style="display:inline-block;vertical-align:middle;width:65%;font-size:16px;">
+										<textarea id="miv-opis"></textarea>
+									</div>
+								</div>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Opis:</td>
+							<td class="itemInput">
+								<textarea id="opis"></textarea>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline shortened">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Radna Jedinica:</td>
+							<td class="itemInput">
+								<input type="text" id="radna-jedinica">
+							</td>
+						</tr>
+						<tr style="display:none">
+							<td class="itemName">Broj Zahteva:</td>
+							<td class="itemInput">
+								<input type="text" id="broj-zahteva">
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Datum:</td>
+							<td class="itemInput">
+								<input type="text" id="datum-zahteva">
+							</td>
+						</tr>
+						<tr>
+							<td class="itemName">Vrsta rada:</td>
+							<td class="itemInput">
+								<input type="text" id="vrsta-rada">
+							</td>
+						</tr>
+						<tr style="display:none">
+							<td class="itemName">Garantni rok (meseci):</td>
+							<td class="itemInput">
+								<input type="text" id="garantni-rok">
+							</td>
+						</tr>
+						<tr style="display:none">
+							<td class="itemName">Rad u garantnom roku:</td>
+							<td class="itemInput">
+								<input type="text" id="rad-u-garantnom-roku">
+							</td>
+						</tr>
+
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="singleTable" style="display:none">
+			<table>
+				<tr>
+					<td>Nalog izdao</td>
+					<td>Kontrolni organ</td>
+					<td>Izvođač</td>
+					<td>Partija</td>
+					<td>Okvirni ugovor</td>
+				</tr>
+				<tr>
+					<td>
+						<input type="text" id="nalog-izdao">
+					</td>
+					<td>
+						<input type="text" id="kontrolni-organ">
+					</td>
+					<td>
+						<input type="text" id="izvodjac">
+					</td>
+					<td>
+						<input type="text" id="partija">
+					</td>
+					<td>
+						<input type="text" id="okvirni-ugovor">
+					</td>
+				</tr>
+			</table>
+			<div class="singleInput" style="text-align:right">
+				<input type="text" id="okvirni-ugovor2">
+			</div>
+		</div>
+		<div class="dualTables" style="display:none">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rok početka izvođenja radova:</td>
+							<td>
+								<input type="text" id="rok-pocetka-izvodjenja-radova">
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline" style="padding-left:60px">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rok izvođenja radova (dana):</td>
+							<td>
+								<input type="text" id="rok-izvodjenja-radova">
+							</td>
+						</tr>
+					</table>	
+				</div>
+			</div>
+		</div>
+		<div class="fakturisanje">
+			<script>
+				var cenovnik	=	<%-JSON.stringify(cenovnik)%>;
+			</script>
+			<div class="calculatorWrap">
+				<div class="header">
+					<div class="inlineItem redniBroj">Red. Br.</div>
+					<div class="inlineItem sifraArtikla">Sifra Artikla</div>
+					<div class="inlineItem nazivArtikla">Naziv Artikla</div>
+					<div class="inlineItem jedinicaMere">Jed. mere</div>
+					<div class="inlineItem planiranaKolicina">Plan. kolic.</div>
+					<div class="inlineItem izvedenaKolicina">Izved. kolic.</div>
+					<div class="inlineItem jedinicnaCena">Jedinicna cena</div>
+					<div class="inlineItem iznos">Iznos</div>
+				</div>
+				<div class="inputsWrap" id="inputs-wrap"></div>
+				<div style="text-align:center">
+					<div class="button" onclick="generateFaktRow()">Dodaj red</div>
+				</div>
+				<script>
+					var inputsWrap	=	document.getElementById("inputs-wrap");
+
+					function generateFaktRow(){
+						var i = inputsWrap.getElementsByClassName("inputRow").length;
+						var inputRow	=	document.createElement("DIV");
+						inputRow.setAttribute("class","inputRow");
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure redniBroj");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("disabled","disabled");
+								input.setAttribute("value",eval(i+1));
+								input.setAttribute("class","redniBrojInput");
+								inline.appendChild(input)
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure sifraArtikla");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("class","sifraArtiklaInput");
+								input.setAttribute("oninput","codeInput(this)");
+								input.setAttribute("onfocus","codeInputFocused(this)");
+								//input.setAttribute("onfocusout","codeInputFocusedOut(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure nazivArtikla");
+								var input 	=	document.createElement("TEXTAREA");
+								//input.setAttribute("type","text");
+								input.setAttribute("style","overflow-y:hidden");
+								input.setAttribute("class","nazivArtiklaInput");
+								input.setAttribute("onfocus","codeInputFocused(this)");
+								input.setAttribute("oninput","nazivInput(this);");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure jedinicaMere");
+								var input 	=	document.createElement("DIV");
+								//input.setAttribute("type","text");
+								input.setAttribute("class","jedinicaMereInput");
+								input.innerHTML	=	"&nbsp";
+								//input.setAttribute("oninput","jedinicaMereInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure planiranaKolicina");
+								var input 	=	document.createElement("DIV");
+								//input.setAttribute("type","text");
+								input.setAttribute("class","planiranaKolicinaInput");
+								input.innerHTML	=	"&nbsp";
+								//input.setAttribute("oninput","planiranaKolicinaInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure izvedenaKolicina");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("class","izvedenaKolicinaInput");
+								input.setAttribute("oninput","izvedenaKolicinaInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure jedinicnaCena");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("class","jedinicnaCenaInput");
+								input.setAttribute("oninput","jedinicnaCenaInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var inline	=	document.createElement("DIV");
+							inline.setAttribute("class","inlineItem inlineItemMeasure iznos");
+								var input 	=	document.createElement("INPUT");
+								input.setAttribute("type","text");
+								input.setAttribute("class","iznosInput");
+								input.setAttribute("oninput","iznosInput(this)");
+								inline.appendChild(input)
+
+							inputRow.appendChild(inline);
+
+							var suggested	=	document.createElement("DIV");
+							suggested.setAttribute("class","suggested");
+								var relative	=	document.createElement("DIV");
+								relative.setAttribute("class","relative");
+									var close	=	document.createElement("DIV");
+									close.setAttribute("class","close");
+									close.setAttribute("onclick","this.parentElement.parentElement.style.display='none'")
+									close.innerHTML	=	"X";
+									relative.appendChild(close);
+
+								for(var j=0;j<cenovnik.length;j++){
+									var cenaJson	=	JSON.parse(JSON.stringify(cenovnik[j]));
+									var row 	=	document.createElement("DIV");
+									row.setAttribute("class","suggestedRow");
+									row.setAttribute("onclick","rowClick(this)");
+									row.setAttribute("data-cena",JSON.stringify(cenaJson));
+										var item 	=	document.createElement("DIV");
+										item.setAttribute("class","inlineItem sifraArtikla");
+										item.innerHTML	=	cenaJson.code;
+										row.appendChild(item);
+
+										var item 	=	document.createElement("DIV");
+										item.setAttribute("class","inlineItem nazivArtikla");
+										item.innerHTML	=	cenaJson.name.replace(/\$/g, "\"");
+										row.appendChild(item);
+
+										var item 	=	document.createElement("DIV");
+										item.setAttribute("class","inlineItem jedinicaMere");
+										item.innerHTML	=	cenaJson.unit;
+										row.appendChild(item);
+
+										var item 	=	document.createElement("DIV");
+										item.setAttribute("class","inlineItem planiranaKolicina");
+										item.innerHTML	=	cenaJson.quantity;
+										row.appendChild(item);
+
+										var item 	=	document.createElement("DIV");
+										item.setAttribute("class","inlineItem izvedenaKolicina");
+										item.innerHTML	=	cenaJson.quantity;
+										row.appendChild(item);
+
+										var item 	=	document.createElement("DIV");
+										item.setAttribute("class","inlineItem jedinicnaCena");
+										item.innerHTML	=	cenaJson.price;
+										row.appendChild(item);
+
+									relative.appendChild(row);
+								}
+								suggested.appendChild(relative);
+							inputRow.appendChild(suggested)
+
+						inputsWrap.appendChild(inputRow);
+					}
+
+					generateFaktRow();
+
+					function codeInputFocused(elem){
+						elem.parentElement.parentElement.getElementsByClassName("suggested")[0].style.display	=	"block";
+					}
+
+					function nazivInputFocused(elem){
+						elem.parentElement.parentElement.getElementsByClassName("suggested")[0].style.display	=	"block";
+					}
+
+					/*function codeInputFocusedOut(elem){
+						elem.parentElement.parentElement.getElementsByClassName("suggested")[0].style.display	=	"none";
+					}*/
+
+					function codeInput(elem){
+						var suggestedRows	=	elem.parentElement.parentElement.getElementsByClassName("suggestedRow");
+						var filterValue	=	elem.value;
+						for(var i=0;i<suggestedRows.length;i++){
+							suggestedRows[i].style.display="none";
+						}
+						for(var i=0;i<suggestedRows.length;i++){
+							var priceJson	=	JSON.parse(suggestedRows[i].dataset.cena);
+							if(priceJson.code.startsWith(filterValue)){
+								suggestedRows[i].style.display="block";
+							}
+						}
+					}
+
+					function nazivInput(elem){
+						var suggestedRows	=	elem.parentElement.parentElement.getElementsByClassName("suggestedRow");
+						var filterValue	=	elem.value.toLowerCase();
+						for(var i=0;i<suggestedRows.length;i++){
+							suggestedRows[i].style.display="none";
+						}
+						for(var i=0;i<suggestedRows.length;i++){
+							var priceJson	=	JSON.parse(suggestedRows[i].dataset.cena);
+							if(priceJson.name.toLowerCase().includes(filterValue)){
+								suggestedRows[i].style.display="block";
+							}
+						}
+					}
+
+					function rowClick(elem){
+						var priceJson = JSON.parse(elem.dataset.cena);
+						var inputRow 	=	elem.parentElement.parentElement.parentElement;
+						inputRow.getElementsByClassName("sifraArtiklaInput")[0].value = priceJson.code;
+						inputRow.getElementsByClassName("nazivArtiklaInput")[0].value = priceJson.name.replace(/\$/g, "\"");
+						inputRow.getElementsByClassName("jedinicaMereInput")[0].innerHTML = priceJson.unit;
+						inputRow.getElementsByClassName("planiranaKolicinaInput")[0].innerHTML = priceJson.quantity;
+						inputRow.getElementsByClassName("izvedenaKolicinaInput")[0].value = 1;
+						inputRow.getElementsByClassName("jedinicnaCenaInput")[0].value = parseFloat(priceJson.price).toFixed(2);
+						var totalPrice = parseFloat(priceJson.price)*1;
+						inputRow.getElementsByClassName("iznosInput")[0].value = totalPrice.toFixed(2);
+						//Equalize row height
+						var rowElements	=	inputRow.getElementsByClassName("inlineItemMeasure");
+						var maxHeight	=	19;
+						for(var i=0;i<rowElements.length;i++){
+							var elemHeight	=	rowElements[i].getBoundingClientRect().height;
+							//console.log(elemHeight)
+							if(elemHeight>maxHeight){
+								maxHeight=elemHeight;
+							}
+						}
+						for(var i=0;i<rowElements.length;i++){
+							rowElements[i].style.height = maxHeight+"px";
+							if(rowElements[i].getElementsByTagName("TEXTAREA")[0]){
+								rowElements[i].getElementsByTagName("TEXTAREA")[0].style.height = maxHeight-2+"px";
+							}
+						}
+
+						elem.parentElement.parentElement.style.display="none";
+						calculateTotalPrice();
+					}
+
+					function izvedenaKolicinaInput(elem){
+						var inputRow	=	elem.parentElement.parentElement;
+						var price 	=	parseFloat(inputRow.getElementsByClassName("izvedenaKolicinaInput")[0].value.replace(/,/,'.'))*parseFloat(inputRow.getElementsByClassName("jedinicnaCenaInput")[0].value);
+						inputRow.getElementsByClassName("iznosInput")[0].value= price.toFixed(2);
+						calculateTotalPrice();
+					}
+
+					function jedinicnaCenaInput(elem){
+						var inputRow	=	elem.parentElement.parentElement;
+						var price = parseFloat(inputRow.getElementsByClassName("izvedenaKolicinaInput")[0].value).toFixed(2)*parseFloat(inputRow.getElementsByClassName("jedinicnaCenaInput")[0].value);
+						inputRow.getElementsByClassName("iznosInput")[0].value=price.toFixed(2);
+						calculateTotalPrice();
+					}
+
+					function iznosInput(elem){
+						calculateTotalPrice();
+					}
+
+				</script>
+			</div>
+			<div style="text-align:right;display:none" class="noShowStatus">
+				Za kopiranje: <input type="text" oninput="kopiranIznos(this)" style="text-align:left;">
+				<script>
+					function kopiranIznos(elem){
+						var iznos = parseFloat(elem.value.replace(/,/,""));
+						if(!isNaN(iznos)){
+							if(!document.getElementById("iznos-pre-potpisa").value){
+								document.getElementById("iznos-pre-potpisa").value = iznos;
+							}
+							document.getElementById("total-price").innerHTML = iznos;
+						}
+						
+					}
+				</script>
+			</div>
+			<div class="totalWrap">
+				<div id="ukupno">Ukupna cena: <span id="total-price"></span></div>
+				<script>
+					function calculateTotalPrice(){
+						var priceInputs	=	document.getElementsByClassName("iznosInput");
+						var totalPrice = 0;
+						for(var i=0;i<priceInputs.length;i++){
+							if(priceInputs[i].value){
+								totalPrice = totalPrice + parseFloat(priceInputs[i].value);
+							}
+						}
+						if(totalPrice==0){
+							totalPrice 	=	parseFloat(document.getElementById("total-price").innerHTML)
+						}
+						document.getElementById("total-price").innerHTML	=	totalPrice.toFixed(2);
+						var penal 	=	document.getElementById("penal").value;
+						if(parseFloat(penal)>0){
+							document.getElementById("iznos-sa-penalom").innerHTML=brojSaRazmacima(parseFloat(totalPrice)*parseFloat(penal)/100);
+						}
+					}
+				</script>
+				<div class="noShowStatus" style="display:none">Iznos pre potpisa: <input type="number" id="iznos-pre-potpisa"></div>
+			</div>
+			<div style="text-align:right;display:none" class="noShowStatus">
+				Ucinak: <select id="majstor-ucinak">
+					<option value="Nijedan" default="default">Nijedan</option>
+				</select><br>
+				<script>
+					for(var i=0;i<majstori.length;i++){
+						if(!majstori[i].inactive){
+							var option = document.createElement("OPTION");
+							option.setAttribute("value",majstori[i].uniqueId);
+							option.innerHTML	=	majstori[i].ime;
+							if(podizvodjaci.indexOf(majstori[i].uniqueId)<0){
+								document.getElementById("majstor-ucinak").appendChild(option);
+							}
+						}
+						
+					}
+				</script>
+				Datum ucinka: <input type="date" id="datum-ucinka">
+			</div>
+			<div class="totalWrap">
+				<div style="display:inline-block;vertical-align: middle;"  class="noShowStatus">
+					Penal:
+				</div>
+				<div style="display:inline-block;vertical-align: middle;"  class="noShowStatus">
+					<input oninput="calculateTotalPrice()" id="penal" style="width:150px" type="number" min="0" max="100">
+				</div>
+				<div></div>
+				<div style="display:inline-block;vertical-align: middle;" class="noShowStatus">
+					Iznos sa penalom:
+				</div>
+				<div style="display:inline-block;vertical-align: middle;"  class="noShowStatus">
+					<div id="iznos-sa-penalom" style="width:150px"></div>
+				</div>
+			</div>
+			<div class="totalSlovima" style="display:none">
+				<table>
+					<td>Slovima:</td>
+					<td><textarea id="ukupno-slovima"></textarea></td>
+				</table>
+			</div>
+		</div>
+		<div class="dualTables" style="margin-top:20px">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rad izvršen:</td>
+							<td>
+								<input type="text" id="rad-izvrsen">
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline" style="padding-left:60px">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rad pregledan:</td>
+							<td>
+								<input type="text" id="rad-pregledan">
+							</td>
+						</tr>
+					</table>	
+				</div>
+			</div>
+		</div>
+		<div class="dualTables" style="margin-top:20px">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Izvrseni rad overava:</td>
+							<td>
+								<input type="text" id="izvrseni-rad-overava">
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline" style="padding-left:60px">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Rad pregledao:</td>
+							<td>
+								<input type="text" id="rad-pregledao">
+							</td>
+						</tr>
+					</table>	
+				</div>
+			</div>
+		</div>
+		<div class="dualTables" style="margin-top:20px">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Datum ispostavljanja narudžbenice:</td>
+							<td>
+								<input type="text" id="datum-ispostavljanja-narudzbenice">
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="inline" style="padding-left:60px">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Broj Specifikacije:</td>
+							<td>
+								<input type="text" id="broj-specifikacije">
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="dualTables" style="margin-top:20px">
+			<div class="inline">
+				<div class="tableWrap">
+					<table>
+						<tr>
+							<td class="itemName">Datum obracuna PDV-a</td>
+							<td>
+								<select id="datum-obracuna-pdv">
+									<option value="35" selected="selected">Datum prometa</option>
+									<option value="3">Datum slanja</option>
+								</select>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--<div class="nalogExtras" style="text-align:left;display: none;">
+		<div class="inputWrap checkboxes">
+			<div class="inputWraperer" style="text-align:left">
+				<input type="text" id="nalog-u-stambenom" value="0" style="display:none">
+				<input type="checkbox" id="nalog-u-stambenom-checkbox" name="nalogustambenom" oninput="checkboxClick(this)" style="width:auto;">
+  					<label for="nalogustambenom"> Nalog u stambenom</label>
+  				<script>
+  					function checkboxClick(elem){
+  						if(elem.checked == true){
+  							document.getElementById(elem.id.split("-checkbox")[0]).value=1;
+  						}else if(elem.checked == false){
+  							document.getElementById(elem.id.split("-checkbox")[0]).value=0;
+  						}
+  					}
+  				</script>
+				<script>
+					if(nalog.nalogUStambenom){
+						document.getElementById("nalog-u-stambenom").value = nalog.nalogUStambenom;
+						if(Number(nalog.nalogUStambenom)==0){
+							document.getElementById("nalog-u-stambenom-checkbox").checked	=	false;
+						}else if(Number(nalog.nalogUStambenom)==1){
+							document.getElementById("nalog-u-stambenom-checkbox").checked	=	true;
+						}
+						
+					}
+				</script>
+			</div>
+			<div class="inputWraperer">
+				<input type="text" id="nalog-fakturisan" value="0" style="display:none">
+				<input type="checkbox" id="nalog-fakturisan-checkbox" name="nalogufakturisan" oninput="checkboxClick(this)" style="width:auto;">
+  <label for="nalogufakturisan"> Nalog Fakturisan</label>
+				<script>
+					if(nalog.nalogFakturisan){
+						document.getElementById("nalog-fakturisan").value = nalog.nalogFakturisan;
+						if(Number(nalog.nalogFakturisan)==0){
+							document.getElementById("nalog-fakturisan-checkbox").checked	=	false;
+						}else if(Number(nalog.nalogFakturisan)==1){
+							document.getElementById("nalog-fakturisan-checkbox").checked	=	true;
+						}
+					}
+				</script>
+			</div>
+		</div>
+	</div>-->
+	
+
+	<div style="text-align:center;margin-top:25px;">
+		<div class="button" id="sacuvaj-button3" onclick="saveNalog()">Sačuvaj</div>
+		<script>
+			if(user.role=="25"){
+				document.getElementById("sacuvaj-button3").style.display = "none";
+			}
+		</script>
+		<div class="button" onclick="skiniNalog(1)">Skini Nalog</div>
+		<div class="button" onclick="skiniNalog(2)">Štampaj Nalog</div>
+	</div>
+	<script>
+		showNalog(nalog);
+		if(user.role!=10){
+			var elemsToHide	=	document.getElementsByClassName("noShowStatus");
+			for(var i=0;i<elemsToHide.length;i++){
+				elemsToHide[i].style.display="none";
+			}
+		}
+
+		function getNalogFromForm(){
+			var statusiZaMail	=	["Primljen","Otvoren","Dodeljen majstoru","Radovi u toku","Potrebna WOMA","Konstatacija","Zamena","Kopanje","Finalizacija","Lokalni kvar","Snimanje kamerom","Stanari odbijaju nalog","Stanari nisu na adresi"];
+			var sendMail	=	false;
+			if(statusiZaMail.indexOf(nalog.statusNaloga)>=0 && document.getElementById("status-naloga").value=="Završeno"){
+				sendMail	=	true;
+			}
+			var nalogJson	=	{
+				//rawText: nalog.rawText ? nalog.rawText.toString():"none", 
+				uniqueId: nalog.uniqueId.toString(),
+				broj: document.getElementById("broj-narudzbenice").value,
+				narucilac: {
+					naziv: document.getElementById("naziv-narucioca").value,
+					adresa: document.getElementById("adresa-narucioca").value,
+					pib: document.getElementById("pib-narucioca").value,
+					mb: document.getElementById("mb-narucioca").value,
+					racun: document.getElementById("banka-narucioca").value,
+					osobaZaKontakt: document.getElementById("kontakt-narucioca").value,
+					telefon: document.getElementById("tel-narucioca").value
+				},
+				pruzalac: {
+					naziv: document.getElementById("naziv-pruzaoca").value,
+					adresa: document.getElementById("adresa-pruzaoca").value,
+					pib: document.getElementById("pib-pruzaoca").value,
+					mb: document.getElementById("mb-pruzaoca").value,
+					racun: document.getElementById("banka-pruzaoca").value,
+					osobaZaKontakt: document.getElementById("kontakt-pruzaoca").value,
+					telefon: document.getElementById("tel-pruzaoca").value
+				},
+				adresa: document.getElementById("adresa").value,
+				zahtevalac: document.getElementById("zahtevalac").value,
+				mivrada: {
+					code:document.getElementById("miv-kod").value,
+					desc:document.getElementById("miv-opis").value
+				},
+				opis: document.getElementById("opis").value,
+				radnaJedinica: document.getElementById("radna-jedinica").value,
+				brojZahteva: document.getElementById("broj-zahteva").value,
+				datum: document.getElementById("datum-zahteva").value,
+				vrstaRada: document.getElementById("vrsta-rada").value,
+				garantniRok: document.getElementById("garantni-rok").value,
+				radUGarantnomRoku: document.getElementById("rad-u-garantnom-roku").value,
+				nalogIzdao: document.getElementById("nalog-izdao").value,
+				kontrolniOrgan: document.getElementById("kontrolni-organ").value,
+				izvodjac: document.getElementById("izvodjac").value,
+				partija: document.getElementById("partija").value,
+				okvirniUgovor: document.getElementById("okvirni-ugovor").value,
+				okvirniUgovor2: document.getElementById("okvirni-ugovor2").value,
+				rokIzvodjenjaRadova: document.getElementById("rok-izvodjenja-radova").value,
+				rokPocetkaIzvodjenjaRadova: document.getElementById("rok-pocetka-izvodjenja-radova").value,
+				fakturisanje:[],
+				ukupanIznos: document.getElementById("total-price").innerHTML,
+				ukupanIznosSlovima: document.getElementById("ukupno-slovima").value,
+				radIzvrsen: document.getElementById("rad-izvrsen").value,
+				radPregledan: document.getElementById("rad-pregledan").value,
+				izvrseniRadOverava: document.getElementById("izvrseni-rad-overava").value,
+				radPregledao: document.getElementById("rad-pregledao").value,
+				datumIspostavljanjaNarudzbenice: document.getElementById("datum-ispostavljanja-narudzbenice").value,
+				brojNarudzbenice: document.getElementById("broj-narudzbenice2").value,
+				datumOdlaganja: document.getElementById("datum-odlaganja").value,
+				razlogOdlaganja: document.getElementById("razlog-odlaganja").value,
+				opisKvara: document.getElementById("opis-kvara").value,
+				opisRadova: document.getElementById("opis-radova").value,
+				opisRadovaArr: [],
+				opisRadovaUvod: [],
+				opisRadovaRazrada: [],
+				opisRadovaZakljucak: [],
+				statusNaloga: document.getElementById("status-naloga").value ? document.getElementById("status-naloga").value  : "Primljen",
+				majstorNaloga: document.getElementById("majstor-naloga").value ? document.getElementById("majstor-naloga").value : "Nijedan",
+				//nalogUStambenom: document.getElementById("nalog-u-stambenom").value,
+				//nalogFakturisan: document.getElementById("nalog-fakturisan").value,
+				statusOdMajstora: document.getElementById("status-od-majstora").value,
+				brojSpecifikacije: document.getElementById("broj-specifikacije").value,
+				iznosPrePotpisa: document.getElementById("iznos-pre-potpisa").value,
+				datumZakazivanja: document.getElementById("datum-zakazivanja").value,
+				vremeZakazivanja: document.getElementById("vreme-zakazivanja").value,
+				sendMail: sendMail, 
+				brojFakture: nalog.brojFakture ? nalog.brojFakture : "",
+				datumDodeljivanjaMajstora: nalog.datumDodeljivanjaMajstora ? nalog.datumDodeljivanjaMajstora : "",
+				pdv: document.getElementById("datum-obracuna-pdv").value,
+				penal: document.getElementById("penal").value,
+				datumUcinka: new Date(document.getElementById("datum-ucinka").value).getTime(),
+				majstorUcinak: parseFloat(document.getElementById("total-price").innerHTML)>0 ? document.getElementById("majstor-ucinak").value:"Nijedan",
+				datumiDodeljivanja: nalog.datumiDodeljivanja ? nalog.datumiDodeljivanja : [],
+				fakturisan: nalog.statusNaloga=="Fakturisan" ? 1:0 
+			}
+			var fakturaElems	=	document.getElementById("inputs-wrap").getElementsByClassName("inputRow");
+			for(var i=0;i<fakturaElems.length;i++){
+				if(fakturaElems[i].getElementsByClassName("sifraArtiklaInput")[0].value){
+					var fakturaJson	=	{};
+					fakturaJson.redniBroj			=	eval(i+1);
+					fakturaJson.sifraArtikla		=	fakturaElems[i].getElementsByClassName("sifraArtiklaInput")[0].value;
+					fakturaJson.nazivArtikla		=	fakturaElems[i].getElementsByClassName("nazivArtiklaInput")[0].value;
+					fakturaJson.jedinicaMere		=	fakturaElems[i].getElementsByClassName("jedinicaMereInput")[0].innerHTML;
+					fakturaJson.planiranaKolicina	=	fakturaElems[i].getElementsByClassName("planiranaKolicinaInput")[0].innerHTML;
+					fakturaJson.izvedenaKolicina	=	fakturaElems[i].getElementsByClassName("izvedenaKolicinaInput")[0].value;
+					fakturaJson.jedinicnaCena		=	fakturaElems[i].getElementsByClassName("jedinicnaCenaInput")[0].value;
+					fakturaJson.iznos				=	fakturaElems[i].getElementsByClassName("iznosInput")[0].value;
+					nalogJson.fakturisanje.push(fakturaJson)
+				}
+			}
+
+			//Opis Radova array
+			var checkboxes	=	document.getElementsByClassName("opisKvaraCheckbox");
+			for(var i=0;i<checkboxes.length;i++){
+				if(checkboxes[i].checked){
+					nalogJson.opisRadovaArr.push(checkboxes[i].value)
+				}
+			}
+
+			//Opis Radova uvod
+			var checkboxes	=	document.getElementsByClassName("uvodCheckbox");
+			for(var i=0;i<checkboxes.length;i++){
+				if(checkboxes[i].checked){
+					nalogJson.opisRadovaUvod.push(checkboxes[i].value)
+				}
+			}
+
+			//Opis Radova razrada
+			var checkboxes	=	document.getElementsByClassName("razradaCheckbox");
+			for(var i=0;i<checkboxes.length;i++){
+				if(checkboxes[i].checked){
+					nalogJson.opisRadovaRazrada.push(checkboxes[i].value)
+				}
+			}
+
+			//Opis Radova razrada
+			var checkboxes	=	document.getElementsByClassName("zakljucakCheckbox");
+			for(var i=0;i<checkboxes.length;i++){
+				if(checkboxes[i].checked){
+					nalogJson.opisRadovaZakljucak.push(checkboxes[i].value)
+				}
+			}
+
+			if(nalog.majstorNaloga!=nalogJson.majstorNaloga){
+				var dodeljivanjeObj	=	{};
+				dodeljivanjeObj.datetime = new Date().getTime();
+				dodeljivanjeObj.majstor		=	nalogJson.majstorNaloga;
+				dodeljivanjeObj.dodelio		=	user.ime;
+				nalogJson.datumiDodeljivanja.push(dodeljivanjeObj);
+			}
+			var istorijaJson	=	{};
+			istorijaJson.datum  = new Date().getTime();
+			istorijaJson.korisnik = JSON.parse(JSON.stringify(user));
+			istorijaJson.nalog  = JSON.parse(JSON.stringify(nalog));
+			istorijaJson.uniqueId	=	nalog.uniqueId;
+			istorijaJson.broj	=	nalog.broj;
+
+			/*if(nalog.istorija){
+				nalogJson.istorija = JSON.parse(JSON.stringify(nalog.istorija));
+			}else{
+				nalogJson.istorija = [];
+			}*/
+			nalogJson.istorija = istorijaJson;
+
+			return nalogJson;
+		}
+		function saveNalog(){
+			var nalogJson	= getNalogFromForm();
+			var notAllowed	=	["Nalog u Stambenom","Spreman za fakturisanje","Fakturisan","Storniran na SEF-u"];
+			if(notAllowed.indexOf(nalog.statusNaloga)>=0 && user.role!=10){
+
+			
+				alert("Nije vam dozvoljeno da menjate status ovog naloga.")
+			}else{
+				if(notAllowed.indexOf(nalogJson.statusNaloga)>=0 && user.role!=10){
+					alert("Nije vam dozvoljene da postavite status naloga kao \""+nalogJson.statusNaloga+"\".")	
+				}else{
+					document.getElementById("edit-nalog-json").value = JSON.stringify(nalogJson);
+					loadGif();
+					document.getElementById("edit-nalog-form").submit();
+					
+					
+				}
+				
+			}
+			
+		}
+
+		function skiniNalog(testCase){
+			savePDF(getNalogFromForm(),testCase);
+		}
+
+		function skiniFakturu(testCase){
+			saveFaktura(getNalogFromForm(),testCase);
+		}
+	</script>
+	<form id="edit-nalog-form" style="display:none" method="POST" action="/editNalog">
+		<input type="text" name="nalogjson" id="edit-nalog-json">
+	</form>
+<%- include ("partials/footer") -%>

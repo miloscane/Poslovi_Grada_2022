@@ -1,0 +1,16 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+<%- include ("partials/dispecermenu") -%>
+<script>
+		if(user.role=="20"){
+			document.getElementById("napredni-meni").style.display="none";
+		}else{
+			document.getElementById("dispecer-meni").style.display="none";
+		}
+	</script>
+	<div class="pageTitle">Dodaj Nalog</div>
+	<form method="post" action="/pdfUpload" id="form" enctype="multipart/form-data">
+		<input type="file" name="pdf"><br>
+		<div class="button" onclick="loadGif();document.getElementById('form').submit()">Dodaj</div>
+	</form>
+<%- include ("partials/footer") -%>

@@ -1,0 +1,199 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/podizvodjacmenu") -%>
+	<style>
+		#site-content{
+			max-width:1200px;
+		}
+	</style>
+	<div class="pageTitle">Nalozi</div>
+	<div class="pageSubTitle">U ovom prikazu se vide samo nalozi koji NISU u stambenom i koji su samo na vašim opštinama.</div>
+	<div class="button" style="margin:20px auto;" onclick="loadGif();location.reload()">Osveži</div>
+	<script>
+		var nalozi = <%-JSON.stringify(nalozi)%>;
+		for(var i=0;i<nalozi.length;i++){
+			nalozi[i].vremePrijemaNaloga	=	Number(nalozi[i].uniqueId.split("--")[1]);
+		}
+		nalozi.sort(function(a, b) {
+		    return parseFloat(b.vremePrijemaNaloga) - parseFloat(a.vremePrijemaNaloga);
+		});
+	</script>
+	<div class="sviNalozi mojiNalozi">
+		<div class="filters">
+			<div class="numberFilter broj">
+				<input type="text" id="number-filter" placeholder="Filter Broja" oninput="filter()">
+			</div>
+			<div class="numberFilter adresa" style="margin-left:0px">
+				<input type="text" id="adresa-filter" placeholder="Filter Adrese" oninput="filter()">
+			</div>
+			<div class="statusFilter status" style="margin-left:0px">
+				<select id="status-filter" oninput="filter()">
+					<option value="SVI" default="default">SVI</option>
+					<option value="Primljen">Primljen</option>
+					<option value="Radovi u toku">Radovi u toku</option>
+					<option value="Potrebna WOMA">Potrebna WOMA</option>
+					<option value="Konstatacija">Konstatacija</option>
+					<option value="Zamena">Zamena</option>
+					<option value="Završeno">Završeno</option>
+					<option value="Finalizacija">Finalizacija</option>
+					<option value="Betonaža">Betonaža</option>
+					<option value="Vraćen">Vraćen</option>
+					<option value="Spreman za obračun">Spreman za obračun</option>
+					<option value="Storniran">Storniran</option>
+					<option value="U obradi">U obradi</option>
+					<option value="obradjen">Obradjen</option>
+				</select>
+			</div>
+		</div>
+		<div class="header">
+			<div class="inline vremePrijema">Vreme prijema:</div>
+			<div class="inline datumNaloga">Datum<br>Naloga:</div>
+			<div class="inline broj">Broj:</div>
+			<div class="inline opstina">Opština:</div>
+			<div class="inline adresa">Adresa:</div>
+			<div class="inline status">Status:</div>
+		</div>
+		<div id="svi-nalozi"></div>
+		<script>
+
+
+			var ids 			=	[];
+			for(var i=0;i<nalozi.length;i++){
+				
+				var nalogJson	=	JSON.parse(JSON.stringify(nalozi[i]));
+				ids.push(nalogJson.broj);
+				var row = document.createElement("DIV");
+				row.setAttribute("class","row");
+				if(i%2==0){
+					row.classList.add("rowHighlight");
+				}
+
+				var nalogJsonForRow	=	JSON.parse(JSON.stringify(nalogJson));
+				if(nalogJson.statusNaloga=="Fakturisan"){
+					nalogJsonForRow.statusNaloga	=	"obradjen";
+				}
+
+				if(nalogJson.statusNaloga=="Nalog u Stambenom" || nalogJson.statusNaloga == "Spreman za fakturisanje"){
+					nalogJsonForRow.statusNaloga	=	"U obradi";
+				}
+
+				if(nalogJson.statusNaloga=="Storniran" || nalogJson.statusNaloga == "Storniran na SEF-u"){
+					nalogJsonForRow.statusNaloga	=	"Storniran";
+				}
+
+				var timeNow 	=	new Date().getTime();
+				var vremePrijemaNaloga	=	nalogJson.datumOdlaganja	?	new Date(nalogJson.datumOdlaganja).getTime() : nalogJson.vremePrijemaNaloga;
+				if((timeNow-vremePrijemaNaloga)>8.64e+7 && nalogJson.statusNaloga!="Završeno" && nalogJson.statusNaloga!="Storniran" && nalogJson.statusNaloga!="Nalog u Stambenom" && nalogJson.statusNaloga != "Spreman za fakturisanje"){
+					row.classList.add("nalogKasni")
+				}
+
+				if(nalogJson.statusNaloga=="Spreman za obračun"){
+					row.classList.add("nalogZut");
+				}
+
+
+				row.setAttribute("data-nalogjson",JSON.stringify(nalogJsonForRow));
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","inline vremePrijema");
+					elem.innerHTML	=	vremePrijema(nalogJson.vremePrijemaNaloga);
+					row.appendChild(elem);
+
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","inline datumNaloga");
+					elem.innerHTML	=	nalogJson.datum.split("00:00")[0];
+					row.appendChild(elem);
+
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","inline broj");
+					elem.innerHTML	=	nalogJson.broj;
+					row.appendChild(elem);
+
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","inline opstina");
+					elem.innerHTML	=	nalogJson.radnaJedinica;
+					row.appendChild(elem);
+
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","inline adresa");
+					elem.innerHTML	=	nalogJson.adresa.split(",")[0];
+					row.appendChild(elem);
+
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","inline status");
+					elem.innerHTML	=	nalogJson.statusNaloga;
+					if(nalogJson.statusNaloga=="Fakturisan"){
+						elem.innerHTML	=	"obradjen";
+						row.classList.add("zavrseno")
+					}
+
+					if(nalogJson.statusNaloga=="Nalog u Stambenom" || nalogJson.statusNaloga == "Spreman za fakturisanje"){
+						elem.innerHTML	=	"U obradi";
+						row.classList.add("zavrseno");
+					}
+
+					if(nalogJson.statusNaloga=="Storniran" || nalogJson.statusNaloga == "Storniran na SEF-u"){
+						elem.innerHTML	=	"Storniran";
+					}
+
+					if(nalogJson.statusNaloga=="Završeno"){
+						row.classList.add("zavrseno");
+					}
+					row.appendChild(elem);
+
+					var elem 	=	document.createElement("DIV");
+					elem.setAttribute("class","button pogledajNalog");
+						var a = document.createElement("A");
+						a.setAttribute("href","/pdfView/podizvodjac/"+nalogJson.uniqueId);
+						//a.setAttribute("target","_blank");
+						a.innerHTML = "Pogledaj Nalog"
+						elem.appendChild(a);
+					row.appendChild(elem);
+
+				document.getElementById("svi-nalozi").appendChild(row);
+			}
+
+			var rowElements	=	document.getElementById("svi-nalozi").getElementsByClassName("row");
+
+		</script>
+		<script>
+			function filter(){
+				var broj = document.getElementById("number-filter").value;
+				var adresa = document.getElementById("adresa-filter").value;
+				var status = document.getElementById("status-filter").value;
+				for(var i=0;i<rowElements.length;i++){
+					rowElements[i].classList.remove("rowHighlight");
+					rowElements[i].style.display="block";
+					var nalogJson	=	JSON.parse(rowElements[i].dataset.nalogjson);
+
+					if(broj!=""){
+						if(!nalogJson.broj.toString().includes(broj.toString())){
+							rowElements[i].style.display="none";
+						}
+					}
+
+					if(adresa!=""){
+						if(!nalogJson.adresa.split(",")[0].toString().toLowerCase().includes(adresa.toString().toLowerCase())){
+							rowElements[i].style.display="none";
+						}
+					}
+
+					if(status!="SVI"){
+						if(nalogJson.statusNaloga!=status){
+							rowElements[i].style.display="none";
+						}
+					}
+
+				}
+
+				var highlight = true;
+				for(var i=0;i<rowElements.length;i++){
+					if(rowElements[i].style.display=="block" && highlight){
+						rowElements[i].classList.add("rowHighlight");
+						highlight = false;
+					}else if(rowElements[i].style.display=="block" && !highlight){
+						highlight = true;
+					}
+				}
+			}
+		</script>
+	</div>
+<%- include ("partials/footer") -%>

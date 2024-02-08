@@ -1,0 +1,175 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+<%- include ("partials/dispecermenu") -%>
+	<script>
+		if(user.role=="20"){
+			document.getElementById("napredni-meni").style.display="none";
+		}else{
+			document.getElementById("dispecer-meni").style.display="none";
+		}
+	</script>
+	<div class="pageTitle">Ucinak majstora</div>
+	<div style="text-align:center;font-size:14">
+		<div>Vrednost za pite u dinarima</div>
+		<input type="number" id="pita-vrednost" oninput="nacrtajPite()" value="2000000">
+	</div>
+	<div style="text-align:center;font-size:14;margin-top:15px">
+		<div>Vremenski period</div>
+		Od <input type="date" id="od-datuma" oninput="nacrtajPite()"><br>
+		Do <input type="date" id="do-datuma" oninput="nacrtajPite()">
+	</div>
+	<script>
+		var today = new Date();
+		var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+		var lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+		document.getElementById("od-datuma").value = getDateAsStringForInputObject(firstDayOfMonth);
+		document.getElementById("do-datuma").value = getDateAsStringForInputObject(lastDayOfMonth);
+	</script>
+	<div id="ucinak-pite-wrap"></div>
+	<script>
+		var majstori = <%-JSON.stringify(majstori)%>;
+		for(var i=0;i<majstori.length;i++){
+			if(podizvodjaci.indexOf(majstori[i].uniqueId)>=0){
+				majstori.splice(i,1);
+				i--;
+			}
+		}
+		var ucinci = <%-JSON.stringify(ucinci)%>;
+		var ucinakArray = [];
+		for(var i=0;i<majstori.length;i++){
+			var ucinakJson = {};
+			ucinakJson.majstor = majstori[i].uniqueId;
+			ucinakJson.majstorName = majstori[i].ime;
+			ucinakJson.ucinci = [];
+			for(var j=0;j<ucinci.length;j++){
+				if(ucinci[j].majstor==ucinakJson.majstor){
+					ucinakJson.ucinci.push(ucinci[j]);
+				}
+			}
+			ucinakArray.push(ucinakJson)
+		}
+
+		function nacrtajPite(){
+			var pite = document.getElementById("ucinak-pite-wrap").getElementsByClassName("pita");
+			var novaVrednost = document.getElementById("pita-vrednost").value;
+
+			for(var i=0;i<pite.length;i++){
+				var noviProcenat = parseFloat(pite[i].dataset.iznos)/parseFloat(novaVrednost)*100;
+				pite[i].dataset.procenat = noviProcenat;
+				pite[i].setAttribute("style","background-image:conic-gradient(rgb(31,52,100) 0deg, rgb(31,52,100) "+Math.min(360*noviProcenat/100)+"deg, rgb(255,255,255) "+Math.min(360*noviProcenat/100)+"deg, rgb(255,255,255) 360deg)");
+				pite[i].getElementsByClassName("procenatPite")[0].innerHTML = noviProcenat.toFixed(2)+"%"
+			}
+		}
+
+		function nacrtajPite(){
+			document.getElementById("ucinak-pite-wrap").innerHTML = "";
+			var startDate = new Date(document.getElementById("od-datuma").value);
+			var endDate = new Date(document.getElementById("do-datuma").value);
+			var vrednost = document.getElementById("pita-vrednost").value;
+
+			for(var i=0;i<ucinakArray.length;i++){
+				var ukupanUcinak = 0;
+				var ucinciZaMajstora = [];
+				for(var j=0;j<ucinakArray[i].ucinci.length;j++){
+					var ucinakDate = new Date(ucinakArray[i].ucinci[j].datum);
+					if(ucinakDate instanceof Date){
+						if(ucinakDate.getTime()>=startDate.getTime() && ucinakDate.getTime()<=endDate.getTime()){
+							ukupanUcinak = ukupanUcinak + parseFloat(ucinakArray[i].ucinci[j].ukupanIznos);
+							ucinciZaMajstora.push(ucinakArray[i].ucinci[j]);
+							
+						}
+					}
+				}
+				
+				var ucinakElem = document.createElement("DIV");
+				ucinakElem.setAttribute("class","item");
+				ucinakElem.setAttribute("data-ucinci",JSON.stringify(ucinciZaMajstora));
+				ucinakElem.setAttribute("onclick","showUcinak(this)");
+					var pita = document.createElement("DIV");
+					pita.setAttribute("class","pita");
+					var procenat = ukupanUcinak/vrednost*100;
+					pita.setAttribute("style","background-image:conic-gradient(rgb(31,52,100) 0deg, rgb(31,52,100) "+Math.min(360*procenat/100)+"deg, rgb(255,255,255) "+Math.min(360*procenat/100)+"deg, rgb(255,255,255) 360deg)");
+					pita.setAttribute("data-procenat",procenat);
+					pita.setAttribute("data-iznos",ukupanUcinak);
+						var procenatElem = document.createElement("DIV");
+						procenatElem.setAttribute("class","procenatPite");
+						procenatElem.innerHTML = procenat.toFixed(2)+"%";
+						pita.appendChild(procenatElem);
+					ucinakElem.appendChild(pita);
+
+					var ime = document.createElement("DIV");
+					ime.setAttribute("class","name");
+					ime.innerHTML	=	ucinakArray[i].majstorName;
+					ucinakElem.appendChild(ime);
+
+					var iznos = document.createElement("DIV");
+					iznos.setAttribute("class","ammount");
+					iznos.innerHTML	=	brojSaRazmacima(ukupanUcinak);
+					ucinakElem.appendChild(iznos);
+				document.getElementById("ucinak-pite-wrap").appendChild(ucinakElem);
+			}
+		}
+
+		nacrtajPite();
+
+		function showUcinak(elem){
+			document.getElementById("table-lightbox-content").innerHTML="";
+			var ucinci = JSON.parse(elem.dataset.ucinci);
+			var ukupanIznos = 0;
+			for(var i=0;i<ucinci.length;i++){
+				ukupanIznos = ukupanIznos + parseFloat(ucinci[i].ukupanIznos);
+			}
+			document.getElementById("table-lightbox-title").innerHTML="<div>Ukupan ucinak za majstora "+ucinci[0].majstorName+" za period od "+getDateAsString(new Date(document.getElementById("od-datuma").value)) + " do " + getDateAsString(new Date(document.getElementById("do-datuma").value))+"</div><div class='subTitle'><b>Broj naloga:</b> "+ucinci.length+" | <b>Iznos:</b> "+brojSaRazmacima(ukupanIznos)+"</div>";
+			var table = document.createElement("TABLE");
+			var tr = document.createElement("TR");
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">R. Br.</div>";
+				tr.appendChild(td);
+				
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">Broj naloga</div>";
+				tr.appendChild(td);
+				
+				var td = document.createElement("TD");
+				td.innerHTML = "<div class=\"value\">Iznos</div>";
+				tr.appendChild(td);
+
+			table.appendChild(tr);
+			for(var i=0;i<ucinci.length;i++){
+				var tr = document.createElement("TR");
+					var td = document.createElement("TD");
+					td.innerHTML = "<div class=\"value\">"+eval(i+1)+"</div>";
+					tr.appendChild(td);
+					
+					var td = document.createElement("TD");
+					td.innerHTML = "<div class=\"value\">"+ucinci[i].brojNaloga+"</div>";
+					tr.appendChild(td);
+					
+					var td = document.createElement("TD");
+					td.innerHTML = "<div class=\"value\">"+brojSaRazmacima(ucinci[i].ukupanIznos)+"</div>";
+					tr.appendChild(td);
+				table.appendChild(tr);
+
+				var tr = document.createElement("TR");
+					var td = document.createElement("TD");
+					td.setAttribute("colspan","3");
+					var ucinakString = "";
+					for(var j=0;j<ucinci[i].obracun.length;j++){
+						ucinakString += "<div class='item'>"+eval(j+1)+". "+ucinci[i].obracun[j].nazivArtikla+" | kolicina: "+ucinci[i].obracun[j].izvedenaKolicina+" | cena: "+brojSaRazmacima(ucinci[i].obracun[j].iznos)+"</div>";
+					}
+					td.innerHTML = "<div class=\"value\">"+ucinakString+"</div>";
+					tr.appendChild(td)
+				table.appendChild(tr);
+			}
+			document.getElementById("table-lightbox-content").appendChild(table);
+			document.getElementById("table-lightbox").style.display="block";
+		}
+	</script>
+	<div id="table-lightbox" onclick="this.style.display='none'">
+		<div class="content" onclick="event.stopPropagation()">
+			<div class="close" onclick="document.getElementById('table-lightbox').style.display='none';">X</div>
+			<div id="table-lightbox-title"></div>
+			<div id="table-lightbox-content"></div>
+		</div>
+	</div>
+<%- include ("partials/footer") -%>

@@ -1,0 +1,194 @@
+<%- include ("partials/header") -%>
+	<script>
+		var nalogJson = <%-JSON.stringify(nalog)%>;
+		var izvestaji = <%-JSON.stringify(izvestaji)%>;
+		nalogJson.vremePrijemaNaloga	=	Number(nalogJson.uniqueId.split("--")[1]);
+		var deviceId = "<%-deviceId%>";
+	</script>
+	<div class="pageTitle">РАДНИ НАЛОГ</div>
+	<div class="mobileSeparator"></div>
+	<div class="appNalozi">
+		<div class="doubleInline">
+			<div class="itemWrap">
+				<div class="title">Adresa naloga:</div>
+				<div class="value" id="adresa-naloga"></div>
+				<script>
+					document.getElementById("adresa-naloga").innerHTML = nalogJson.adresa.split(",")[0];
+				</script>
+			</div>
+			
+			<div class="itemWrap">
+				<div class="title">Opština Naloga:</div>
+				<div class="value" id="opstina-naloga"></div>
+				<script>
+					document.getElementById("opstina-naloga").innerHTML = nalogJson.radnaJedinica;
+				</script>
+			</div>
+		</div>
+
+		<div class="doubleInline" style="text-align: center;">
+			<div class="itemWrap">
+				<div class="blueButton" onclick="window.location.href='https://www.google.com/maps/search/?api=1&query='+nalogJson.adresa.split(',')[0].replace(/,/g, '%2C').replace(/ /g, '+')">
+					<div class="buttonTitle">NAVIGACIJA</div>
+					<div class="icon" style="width:70px"><img src="/images/navi2.png"></div>
+				</div>
+				
+			</div>
+		</div>
+		<div class="mobileSeparator"></div>
+		<div class="doubleInline">
+			<div class="itemWrap">
+				<div class="title">Datum Naloga:</div>
+				<div class="value" id="datum-naloga"></div>
+				<script>
+					document.getElementById("datum-naloga").innerHTML = nalogJson.datum.split("god.")[0];
+				</script>
+				<div class="title">Broj Naloga:</div>
+				<div class="value" id="broj-naloga"></div>
+				<script>
+					document.getElementById("broj-naloga").innerHTML = nalogJson.broj;
+				</script>
+			</div>
+			<div class="itemWrap">
+				<div class="title">Status Naloga:</div>
+				<div class="value" id="status-naloga"></div>
+				<script>
+					document.getElementById("status-naloga").innerHTML = nalogJson.statusNaloga;
+				</script>
+			</div>
+		</div>
+		<div class="mobileSeparator"></div>
+		<div class="doubleInline">
+			<div class="itemWrap">
+				<div class="title">Opis:</div>
+				<div class="value" id="opis-naloga"></div>
+				<script>
+					document.getElementById("opis-naloga").innerHTML = nalogJson.opis;
+				</script>
+			</div>
+			<div class="itemWrap">
+				<div class="title">Zahtevalac:</div>
+				<div class="value" id="zahtevalac-naloga"></div>
+				<script>
+					document.getElementById("zahtevalac-naloga").innerHTML = nalogJson.zahtevalac;
+				</script>
+			</div>
+		</div>
+
+	<div class="mobileSeparator"></div>
+		<form method="POST" action="/izvestaj-sa-terena" id="izvestaj-form" enctype="multipart/form-data" style="text-align: left;">
+			<div class="singleValue">
+				<div class="doubleInline">
+					<div class="itemWrap">
+						<div class="blueButton">
+							<div class="buttonTitle">STATUS:</div>
+							<select name="status" id="status-od-majstora">
+								<option value="Stavljena Beleška" selected="selected">Stavljena beleška</option>
+								<option value="U putu">U putu</option>
+								<option value="Na lokaciji">Na lokaciji</option>
+								<option value="Prikupljanje delova">Prikupljanje delova</option>
+								<option value="Sanirano">Sanirano</option>
+								<option value="Zamena">Zamena</option>
+								<option value="Finalizacija">Finalizacija</option>
+								<option value="Završeno">Završeno</option>
+								<option value="Stanari nisu na adresi">Stanari nisu na adresi</option>
+								<option value="Stanari odbijaju nalog">Stanari odbijaju nalog</option>
+								<option value="Stanari se ne javljaju na telefon">Stanari se ne javljaju na telefon</option>
+							</select>
+						</div>
+					</div>
+					<div class="itemWrap">
+						<div class="blueButton" onclick="document.getElementById('slika').click()">
+							<div class="buttonTitle">DODAJ SLIKU:</div>
+							<div class="icon"><img src="/images/cam.png"></div>
+						</div>
+						<div class="inputWrapper" style="overflow:hidden">
+							<input id="slika" type="file" name="image"  accept="image/*" style="display:none" multiple>
+							<script>
+								var imgInp = document.getElementById("slika")
+								imgInp.onchange = evt => {
+									/*const [file] = imgInp.files;
+									console.log(imgInp.files)
+									if (file) {
+										document.getElementById('file-image').src = URL.createObjectURL(file);
+										document.getElementById('file-image').style.display="block"
+									}*/
+									for(var i=0;i<imgInp.files.length;i++){
+										var image 	=	document.createElement("IMG");
+										image.setAttribute("class","added-image");
+										image.setAttribute("src",URL.createObjectURL(imgInp.files[i]));
+										document.getElementById("added-image").appendChild(image);
+									}
+								}
+							</script>
+						</div>
+						<div id="added-image">
+							<!--<img src="#" id="file-image" style="display:none">-->
+						</div>
+					</div>
+				</div>
+				<div class="title">Izveštaj sa terena:</div>
+				<textarea id="izvestaj" style="height:100px"></textarea>
+				<div style="margin:10px auto">
+					<div class="serbiaButton" onclick="submitIzvestaj()">
+						САЧУВАЈ
+					</div>
+				</div>
+				<div class="title">Stari izveštaji:</div>
+				<div id="prethodni-izvestaji"></div>
+				<script>
+					for(var i=0;i<izvestaji.length;i++){
+						var row = document.createElement("DIV");
+						row.setAttribute("class","row");
+							var title = document.createElement("DIV");
+							title.setAttribute("class","title");
+							title.innerHTML = vremePrijema(izvestaji[i].datetime);
+							row.appendChild(title);
+
+							var text = document.createElement("DIV");
+							text.setAttribute("class","text");
+							text.innerHTML = izvestaji[i].izvestaj;
+							row.appendChild(text);
+
+							if(izvestaji[i].photopath){
+								var imageWrap	=	document.createElement("DIV");
+								imageWrap.setAttribute("class","imageWrap");
+									var image = document.createElement("IMG");
+									image.setAttribute("src","https://poslovigrada.azurewebsites.net/"+izvestaji[i].photopath);
+									imageWrap.appendChild(image)
+								row.appendChild(imageWrap);
+							}
+						document.getElementById("prethodni-izvestaji").appendChild(row);
+					}
+				</script>
+				
+				<input type="text" name="izvestaj" id="izvestaj-input" style="display:none">
+				<input type="text" name="deviceid" id="device-id-input" style="display:none">
+				<script>
+					document.getElementById("device-id-input").value = deviceId;
+				</script>
+				<input type="text" name="idnaloga" id="izvestaj-idnaloga" style="display:none">
+				<script>
+					document.getElementById("izvestaj-idnaloga").value = nalogJson.uniqueId;
+				</script>
+				<input type="text" name="idmajstora" id="izvestaj-idmajstora" style="display:none">
+				<script>
+					document.getElementById("izvestaj-idmajstora").value = nalogJson.majstorNaloga;
+				</script>
+				<div style="margin:10px auto">
+					<div class="serbiaButton" onclick="submitIzvestaj()">
+						САЧУВАЈ
+					</div>
+				</div>
+				<script>
+					function submitIzvestaj(){
+						document.getElementById("izvestaj-input").value = document.getElementById("izvestaj").value;
+						loadGif();
+						document.getElementById("izvestaj-form").submit();
+					}
+				</script>
+			</div>
+		</form>
+	</div>
+<%- include ("partials/appFooter") -%>
+<%- include ("partials/footer") -%>

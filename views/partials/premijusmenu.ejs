@@ -1,0 +1,14 @@
+<div class="menuWrap">
+	<div class="button">
+		<a href="/premijus/spremni" onclick="loadGif()">Spremni za fakturisanje</a>
+	</div>
+	<div class='button'>
+		<a href="/premijus/fakturisani" onclick="loadGif()">Fakturisani</a>
+	</div>
+</div>
+<div class="logOut">Ulogovan kao <span id="user-name"></span>. <a href="/logout">Izloguj se</a></div>
+<script>
+	if(user){
+		document.getElementById("user-name").innerHTML	=	user.ime;
+	}
+</script>

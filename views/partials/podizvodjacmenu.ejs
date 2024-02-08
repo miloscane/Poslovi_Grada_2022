@@ -1,0 +1,14 @@
+<div class="menuWrap">
+	<div class="button">
+		<a href="/podizvodjac" onclick="loadGif()">Nalozi</a>
+	</div>
+	<div class="button">
+		<a href="/podizvodjac/arhiva" onclick="loadGif()">Arhiva</a>
+	</div>
+</div>
+<div class="logOut">Ulogovan kao <span id="user-name"></span>. <a href="/logout">Izloguj se</a></div>
+<script>
+	if(user){
+		document.getElementById("user-name").innerHTML	=	user.ime;
+	}
+</script>

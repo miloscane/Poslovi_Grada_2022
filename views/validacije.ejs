@@ -1,0 +1,24 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+	<div class="pageTitle">Validacije</div>
+	<div class="ucinakForm">
+		<div class="title">Odaberi datum</div>
+		<input type="date" id="datum">
+		<script>
+			document.getElementById("datum").value = getDateAsStringForInputObject(new Date())
+		</script>
+	</div>
+	<div style="text-align: center;margin-top:40px">
+		<div class="button" onclick="submitForm()">Pogledaj</div>
+	</div>
+	<script>
+		function submitForm(){
+			var tempArray = document.getElementById("datum").value.split("-");
+			document.getElementById("datum-form").value = tempArray[2]+"-"+tempArray[1]+"-"+tempArray[0];
+			document.getElementById("form").submit();
+		}
+	</script>
+	<form method="POST" action="/validacije" style="display:none" id="form">
+		<input type="text" id="datum-form" name="datum">
+	</form>
+<%- include ("partials/footer") -%>

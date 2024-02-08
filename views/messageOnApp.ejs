@@ -1,0 +1,10 @@
+<%- include ("partials/header") -%>
+	<div class="pageTitle">Poruka od sistema</div>
+	<div class="message"><%-message%></div>
+<%- include ("partials/appFooter") -%>
+<script>
+	if(document.getElementsByClassName("message")[0].innerHTML.includes("Uređaj je već registrovan i čeka odobrenje.")){
+		document.getElementsByClassName("appMenu")[0].getElementsByClassName("menuItem")[1].style.display="none";
+	}
+</script>
+<%- include ("partials/footer") -%>

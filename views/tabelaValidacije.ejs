@@ -1,0 +1,183 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+	<script>
+		var nalozi 	=	<%-JSON.stringify(nalozi)%>;
+		var date 	=	"<%-datum%>";
+	</script>
+	<script src="/js/pdf.js"></script>
+	<script src="/js/font.js"></script>
+	<script src="/js/font2.js"></script>
+	<script>var mm = 3.7795275591;</script>
+	<div class="naloziNaDan">
+		<h1 id="naslov">Nalozi validirani na dan:<br><h2 id="datum"></h2></h1>
+		<script>
+			document.getElementById("datum").innerHTML = date;
+		</script>
+		<!--<select id="opstina-filter-na-dan" oninput="filterNaDan()">
+			<option value="SVE">SVE</option>
+			<option value="RAKOVICA">RAKOVICA</option>
+			<option value="ČUKARICA">ČUKARICA</option>
+			<option value="STARI GRAD">STARI GRAD</option>
+			<option value="ZEMUN">ZEMUN</option>
+			<option value="NOVI BEOGRAD">NOVI BEOGRAD</option>
+			<option value="PALILULA">PALILULA</option>
+			<option value="VRAČAR">VRAČAR</option>
+			<option value="VOŽDOVAC">VOŽDOVAC</option>
+			<option value="ZVEZDARA">ZVEZDARA</option>
+			<option value="SAVSKI VENAC">SAVSKI VENAC</option>
+		</select>-->
+		<script>
+			function filterNaDan(){
+				var redovi	=	document.getElementById("nalozi-na-dan-table").getElementsByTagName("TR");
+				for(var i=1;i<redovi.length;i++){
+					redovi[i].style.display	=	"table-row";
+				}
+				for(var i=1;i<redovi.length;i++){
+					var json 	=	JSON.parse(redovi[i].dataset.nalog);
+					if(json.radnaJedinica!=document.getElementById("opstina-filter-na-dan").value){
+						redovi[i].style.display="none";
+					}
+				}
+				var counter 	=	1;
+				for(var i=1;i<redovi.length;i++){
+					if(redovi[i].style.display=="table-row"){
+						redovi[i].getElementsByTagName("TD")[0].innerHTML	=	counter+".";
+						counter++;
+					}
+				}
+				if(document.getElementById("opstina-filter-na-dan").value=="SVE"){
+					for(var i=1;i<redovi.length;i++){
+						redovi[i].style.display	=	"table-row";
+					}
+				}
+			}
+		</script>
+		<div class="button" onclick="stampajTabelu()">Stampaj tabelu</div>
+		<table id="nalozi-na-dan-table">
+			<tr style="font-weight:600">
+				<td>Redni Broj</td>
+				<td>Broj Naloga</td>
+				<td>Radna Jedinica</td>
+				<td>Adresa</td>
+				<td>Datum</td>
+				<td>Iznos</td>
+			</tr>
+		</table>
+		<script>
+			for(var i=0;i<nalozi.length;i++){
+				var tr 	=	document.createElement("TR");
+				tr.setAttribute("data-nalog",JSON.stringify(nalozi[i]));
+				tr.setAttribute("onclick","window.open('/pdfView/"+nalozi[i].uniqueId+"','_blank');")
+					var td 	=	document.createElement("TD");
+					td.innerHTML	=	eval(i+1);
+					tr.appendChild(td);
+
+					var td 	=	document.createElement("TD");
+					td.innerHTML	=	nalozi[i].broj;
+					tr.appendChild(td);
+
+					var td 	=	document.createElement("TD");
+					td.innerHTML	=	nalozi[i].radnaJedinica;
+					tr.appendChild(td);
+
+					var td 	=	document.createElement("TD");
+					td.innerHTML	=	nalozi[i].adresa.split(",")[0];
+					tr.appendChild(td);
+
+					var td 	=	document.createElement("TD");
+					td.innerHTML	=	nalozi[i].datum.split("00:00")[0];
+					tr.appendChild(td);
+
+					var td 	=	document.createElement("TD");
+					td.innerHTML	=	brojSaRazmacima(nalozi[i].ukupanIznos);
+					tr.appendChild(td);
+
+				document.getElementById("nalozi-na-dan-table").appendChild(tr);
+			}
+		</script>
+		<script>
+			function stampajTabelu(){
+				doc = new jsPDF({
+					orientation: 'p',
+					unit: 'mm',
+					format: 'a4',
+					compress: true
+					//putOnlyUsedFonts:true
+				});
+
+				
+				pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+				pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+
+				
+
+				var yPos = 12;
+				//doc.getFontList("Helvetica");
+			    doc.addFileToVFS("PTSans.ttf", PTSans);
+			    doc.addFileToVFS("PTSansBold.ttf", PTSansBold);
+			    doc.addFont('PTSans.ttf', 'PTSans', 'normal');
+			    doc.addFont('PTSansBold.ttf', 'PTSans', 'bold');
+
+			    doc.setFont('PTSans'); // set font
+			    doc.getFontList("PTSans");
+			    doc.setFontSize(10);
+			    doc.setFontType("normal");
+			    doc.text("Nalozi validirani na dan: "+date,10,5)
+			    doc.setFontType("bold");
+			    var xOffset = 10;
+			    doc.text("Br.",xOffset,yPos);
+			    xOffset = xOffset + 7;
+			    doc.text("Broj Naloga",xOffset,yPos);
+			    xOffset = xOffset + 25;
+			    doc.text("Datum Naloga",xOffset,yPos);
+			    xOffset = xOffset + 25;
+			    doc.text("Opstina",xOffset,yPos);
+			    xOffset = xOffset + 30;
+			    doc.text("Adresa",xOffset,yPos);
+			    xOffset = xOffset + 50;
+			    doc.text("Iznos",xOffset,yPos);
+			    yPos= yPos+7;
+			    doc.setFontType("normal");
+			    for(var i=0;i<nalozi.length;i++){
+			    	xOffset = 10;
+				    doc.text(eval(i+1).toString()+".",xOffset,yPos);
+				    xOffset = xOffset + 7;
+				    doc.text(nalozi[i].broj,xOffset,yPos);
+				    xOffset = xOffset + 25;
+				    doc.text(nalozi[i].datum.split("00:")[0],xOffset,yPos);
+				    xOffset = xOffset + 25;
+				    doc.text(nalozi[i].radnaJedinica,xOffset,yPos);
+				    xOffset = xOffset + 30;
+				    doc.text(nalozi[i].adresa.split(",")[0],xOffset,yPos);
+				    xOffset = xOffset + 50;
+				    doc.text(brojSaRazmacima(nalozi[i].ukupanIznos),xOffset,yPos);
+				    console.log(eval(i+1))
+				    console.log(yPos)
+				    yPos= yPos+7;
+				    if(yPos>=285){
+				    	doc.addPage();
+				    	yPos = 12;
+				    	xOffset = 10;
+
+			    		doc.setFontType("bold");
+					    doc.text("Br.",xOffset,yPos);
+					    xOffset = xOffset + 7;
+					    doc.text("Broj Naloga",xOffset,yPos);
+					    xOffset = xOffset + 25;
+					    doc.text("Datum Naloga",xOffset,yPos);
+					    xOffset = xOffset + 25;
+					    doc.text("Opstina",xOffset,yPos);
+					    xOffset = xOffset + 30;
+					    doc.text("Adresa",xOffset,yPos);
+					    xOffset = xOffset + 50;
+					    doc.text("Status",xOffset,yPos);
+					    yPos = yPos + 7;
+			    		doc.setFontType("normal");
+				    }
+			    }
+
+		        window.open(doc.output('bloburl'), '_blank');
+			}
+		</script>
+	</div>
+<%- include ("partials/footer") -%>

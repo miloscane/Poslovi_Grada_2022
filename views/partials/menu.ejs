@@ -1,0 +1,268 @@
+<div class="menuWrap" id="napredni-meni">
+	<div class="button" id="svi-zavrseni-nalozi">
+		<a href="/svi-zavrseni-nalozi" onclick="loadGif()">Svi završeni nalozi</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("svi-zavrseni-nalozi").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="nalozi-u-stambenom">
+		<a href="/nalozi-u-stambenom" onclick="loadGif()">Nalozi u stambenom</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("nalozi-u-stambenom").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="fakturisani-nalozi">
+		<a href="/fakturisaniNalozi" onclick="loadGif()">Spremni za fakturisanje</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("fakturisani-nalozi").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="stornirani-nalozi">
+		<a href="/stornirani" onclick="loadGif()">Stornirani</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("stornirani-nalozi").style.display="none";
+			}
+		}
+	</script>
+
+
+	<div class="button" id="moji-nalozi-meni">
+		<a href="/mojiNalozi" onclick="loadGif()">Moji nalozi</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="10" || user.role=="25"){
+				document.getElementById("moji-nalozi-meni").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="nadji-nalog-2">
+		<a href="/nadji-nalog-interno" onclick="loadGif()">Nađi Nalog</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="25"){
+				document.getElementById("nadji-nalog-2").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="dodaj-nalog-meni">
+		<a href="/pdfUpload" onclick="loadGif()">Dodaj nalog</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("dodaj-nalog-meni").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="pregled-naloga-2">
+		<a href="/pregledNaloga" onclick="loadGif()">Pregled Naloga</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="25"){
+				document.getElementById("pregled-naloga-2").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="majstori-meni">
+		<a href="/majstori" onclick="loadGif()">Majstori</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("majstori-meni").style.display="none";
+			}
+		}
+	</script>
+
+	<div class="button" id="magacin-stanje">
+		<a href="/magacin-stanje" onclick="loadGif()">Magacin Stanje</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20"){
+				document.getElementById("magacin-stanje").style.display="none";
+			}
+		}
+	</script>
+	
+	<div class="button" id="Specifikacije">
+		<a href="/specifikacije" onclick="loadGif()">Specifikacije</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("Specifikacije").style.display="none";
+			}
+		}
+	</script>
+	<!--<div class="button" id="naloziPoMajstoru">
+		<a href="/naloziPoMajstoru" onclick="loadGif()">Nalozi Po Majstoru</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20"){
+				document.getElementById("naloziPoMajstoru").style.display="none";
+			}
+		}
+	</script>-->
+	<!--<div class="button" id="ucinakPoMajstoru">
+		<a href="/ucinakPoMajstoruForm" onclick="loadGif()">Ucinak Po Majstoru</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("ucinakPoMajstoru").style.display="none";
+			}
+		}
+	</script>-->
+	<div class="button" id="ucinakPoPodizvodjacu">
+		<a href="/ucinakPoPodizvodjacuForm" onclick="loadGif()">Ucinak Po Podizvodjacu</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("ucinakPoPodizvodjacu").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="isfakturisani">
+		<a href="/isfakturisaniNalozi" onclick="loadGif()">Isfakturisani Nalozi</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("isfakturisani").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="nalozi-na-dan" onclick="naloziNaDan();loadGif()">
+		Nalozi na dan
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("nalozi-na-dan").style.display="none";
+			}
+		}
+
+		function naloziNaDan(){
+			document.getElementById("nalozi-na-dan-form").submit();
+		}
+	</script>
+	<form method="POST" action="naloziNaDan" id="nalozi-na-dan-form" style="display:none">
+		<input type="date" name="date" id="nalozi-na-dan-input">
+		<script>
+			var yesterday = new Date();
+			yesterday.setDate(yesterday.getDate() - 1);
+			document.getElementById("nalozi-na-dan-input").value = getDateAsStringForInputObject(yesterday)
+		</script>
+	</form>
+	<div class="button" id="nalozi-na-dan-po-majstoru" onclick="loadGif()">
+		<a href="/naloziPoMajstoruNaDan">Nalozi po majstoru na dan</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("nalozi-na-dan-po-majstoru").style.display="none";
+			}
+		}
+	</script>
+	<!--<div class="button" id="skidanje-iznosa-naloga" onclick="loadGif()">
+		<a href="/skidanjeIznosaNalogaForm">Skidanje Iznosa Naloga</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("skidanje-iznosa-naloga").style.display="none";
+			}
+		}
+	</script>-->
+	<div class="button" id="validacije" onclick="loadGif()">
+		<a href="/validacije">Validacije</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("validacije").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="kategorije-radova" onclick="loadGif()">
+		<a href="/kategorijeRadova">Kategorije radova</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("kategorije-radova").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="obracunavanje" onclick="loadGif()">
+		<a href="/obracunavanje">Učinak</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("obracunavanje").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="pretraga-obracuna" onclick="loadGif()">
+		<a href="/pretraga-obracuna">Pretraga Učinka</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("pretraga-obracuna").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="ucinakPoMajstoru">
+		<a href="/ucinak" onclick="loadGif()">Učinak Po Majstoru</a>
+	</div>
+	<script>
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("ucinakPoMajstoru").style.display="none";
+			}
+		}
+	</script>
+	<div class="button" id="radni-dani" onclick="loadGif()">
+		<a href="/" id="radni-dani-link">Radni Dani</a>
+	</div>
+	<script>
+		var todayTemp = new Date();
+		var monthTemp = todayTemp.getMonth()+1;
+		document.getElementById("radni-dani-link").setAttribute("href","/radniDani/"+todayTemp.getFullYear()+"/"+monthTemp);
+		if(user){
+			if(user.role=="20" || user.role=="25"){
+				document.getElementById("radni-dani").style.display="none";
+			}
+		}
+	</script>
+
+</div>
+<div class="logOut">Ulogovan kao <span id="user-name"></span>. <a href="/logout">Izloguj se</a></div>
+<script>
+	if(user){
+		document.getElementById("user-name").innerHTML	=	user.ime;
+	}
+</script>

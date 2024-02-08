@@ -1,0 +1,42 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+	<div class="pageTitle">Ucinak Po Majstoru</div>
+	<div class="ucinakForm">
+		<div class="title">Odaberi Period</div>
+		<div class="dates">
+			<div class="inline">
+				<div class="title">Od:</div>
+				<input type="date" id="od">
+			</div>
+			<div class="inline">
+				<div class="title">Do:</div>
+				<input type="date" id="do">
+				<script>
+					document.getElementById("do").value = getDateAsStringForInputObject(new Date())
+				</script>
+			</div>
+		</div>
+	</div>
+	<div style="text-align: center;margin-top:40px">
+		<div class="button" onclick="submitForm()">Pogledaj</div>
+	</div>
+	<script>
+		function submitForm(){
+			var datumOd = document.getElementById("od").value;
+			var datumDo = document.getElementById("do").value;
+			if(datumOd && datumDo){
+				var json = {};
+				json.od = new Date(datumOd).getTime();
+				json.do = new Date(datumDo).getTime();
+				document.getElementById("json").value = JSON.stringify(json);
+				loadGif();
+				document.getElementById("form").submit();
+			}else{
+				alert("Morate uneti oba datuma")
+			}
+		}
+	</script>
+	<form method="POST" action="/ucinakPoMajstoru" style="display:none" id="form">
+		<input type="text" id="json" name="json">
+	</form>
+<%- include ("partials/footer") -%>

@@ -1,0 +1,122 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+	<script>
+		var nalozi = <%-JSON.stringify(nalozi)%>;
+	</script>
+	<div class="pageTitle">Skidanje Iznosa Naloga</div>
+	<div class="pageSubTitle" id="period"></div>
+	<script>
+		var period = <%-JSON.stringify(period)%>;
+		document.getElementById("period").innerHTML = "Za period od: "+getDateAsString(new Date(Number(period.od))) + " do: " + getDateAsString(new Date(Number(period.do)));
+	</script>
+	<div class="skidanjeIznosaNaloga" id="tabela">
+			
+	</div>
+	<script>
+
+		function generateTable(){
+			document.getElementById("tabela").innerHTML="";
+			for(var i=0;i<radneJedinice.length;i++){
+				var header	=	document.createElement("DIV");
+				header.setAttribute("class","header");
+				header.innerHTML	=	radneJedinice[i];
+				document.getElementById("tabela").appendChild(header);
+
+				var info	=	document.createElement("DIV");
+				info.setAttribute("class","info");
+				document.getElementById("tabela").appendChild(info);
+
+				var naloziToShow	=	[];
+				for(var j=0;j<nalozi.length;j++){
+					if(nalozi[j].radnaJedinica==radneJedinice[i]){
+						naloziToShow.push(nalozi[j])
+					}
+				}
+				var table = document.createElement("TABLE");
+					var tr = document.createElement("TR");
+						var td = document.createElement("TD");
+						td.innerHTML = "<div class='value'>R.Br.</div>"
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML = "<div class='value'>Broj Naloga</div>"
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML = "<div class='value'>Kontrolni Organ</div>"
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML = "<div class='value'>Radna Jedinica</div>"
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML = "<div class='value'>Adresa</div>"
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML = "<div class='value'>Iznos</div>"
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML = "<div class='value'>Iznos pre potpisa</div>"
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML = "<div class='value'>Razlika</div>"
+						tr.appendChild(td);
+
+					table.appendChild(tr);
+					var brojNalogaSaRazlikom	=	0;
+					var ukupanIznosRazlike		=	0;
+					for(var j=0;j<naloziToShow.length;j++){
+						var tr = document.createElement("TR");
+						tr.setAttribute("onclick","window.open('/pdfView/"+naloziToShow[j].uniqueId+"','_blank');")
+							var td = document.createElement("TD");
+							td.innerHTML = "<div class='value'>"+eval(j+1)+"</div>"
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML = "<div class='value'>"+naloziToShow[j].broj+"</div>"
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML = "<div class='value'>"+naloziToShow[j].kontrolniOrgan+"</div>"
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML = "<div class='value'>"+naloziToShow[j].radnaJedinica+"</div>"
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML = "<div class='value'>"+naloziToShow[j].adresa.split(',')[0]+"</div>"
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML = "<div class='value'>"+brojSaRazmacima(naloziToShow[j].ukupanIznos)+"</div>"
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							td.innerHTML = "<div class='value'>"+brojSaRazmacima(naloziToShow[j].iznosPrePotpisa)+"</div>"
+							tr.appendChild(td);
+
+							var td = document.createElement("TD");
+							var razlika 	=	parseFloat(naloziToShow[j].ukupanIznos-naloziToShow[j].iznosPrePotpisa);
+							if(razlika<0){
+								brojNalogaSaRazlikom++;
+								ukupanIznosRazlike = ukupanIznosRazlike + (-1*razlika);
+							}
+							td.innerHTML = "<div class='value'>"+brojSaRazmacima(razlika)+"</div>"
+							tr.appendChild(td);
+
+						table.appendChild(tr);
+					}
+				document.getElementById("tabela").appendChild(table);
+				table.parentElement.getElementsByClassName("info")[i].innerHTML	=	"Ukupno skinutih naloga: "+ brojNalogaSaRazlikom + " od "+naloziToShow.length+"<br>"+"Ukupno skinut iznos:" + brojSaRazmacima(ukupanIznosRazlike);
+			}	
+		}
+
+		generateTable();
+		
+	</script>
+<%- include ("partials/footer") -%>

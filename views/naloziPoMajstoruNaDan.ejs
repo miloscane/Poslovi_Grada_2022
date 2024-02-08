@@ -1,0 +1,117 @@
+<%- include ("partials/header") -%>
+<%- include ("partials/menu") -%>
+<style>
+	#site-content{
+		max-width: 1200px;
+	}
+</style>
+	<script>
+		var nalozi		=	<%- JSON.stringify(nalozi)%>;
+		var majstori	=	<%- JSON.stringify(majstori)%>;
+		var datumToCompare	=	"<%- datumToCompare%>";
+		console.log(majstori)
+		console.log(nalozi)
+		console.log(datumToCompare)
+	</script>
+	<div class="pageTitle">Nalozi Po Majstoru na dan</div>
+	<input type="date" id="date">
+	<div class="button" onclick="loadGif();submitForm()">Pretrazi</div>
+	<form method="post" action="/naloziPoMajstoruNaDan" id="form" style="display:none">
+		<input type="text" id="date-form" name="data">
+	</form>
+	<script>
+		document.getElementById("date").value = getDateAsStringForInputObject(new Date())
+		function submitForm(){
+			document.getElementById("date-form").value 	=	document.getElementById("date").value;
+			document.getElementById("form").submit();
+		}
+	</script>
+	<div class="naloziPoMajstoruNaDan" id="nalozi-po-majstoru">
+		
+	</div>
+	<script>
+		for(var i=0;i<majstori.length;i++){
+			if(podizvodjaci.indexOf(majstori[i].uniqueId)<0){
+				var title 	=	document.createElement("DIV");
+				title.setAttribute("class","title");
+				title.innerHTML	=	majstori[i].ime;
+				document.getElementById("nalozi-po-majstoru").appendChild(title);
+
+				var table 	=	document.createElement("TABLE");
+					var tr = document.createElement("TR");
+						var td = document.createElement("TD");
+						td.innerHTML	=	"Broj naloga";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"Adresa";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"Datum naloga";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"Status Naloga";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"Datum dodeljivanja";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"Dodelio";
+						tr.appendChild(td);
+
+						var td = document.createElement("TD");
+						td.innerHTML	=	"Iznos";
+						tr.appendChild(td);
+					table.appendChild(tr);
+					for(var j=0;j<nalozi.length;j++){
+						if(nalozi[j].datumiDodeljivanja){
+
+							for(var k=0;k<nalozi[j].datumiDodeljivanja.length;k++){
+								var datumToCompare2	=	new Date(Number(nalozi[j].datumiDodeljivanja[k].datetime))
+								var monthString		=	eval(datumToCompare2.getMonth()+1).toString().length==1	? "0"+eval(datumToCompare2.getMonth()+1) : eval(datumToCompare2.getMonth()+1).toString();
+								
+								if(nalozi[j].datumiDodeljivanja[k].majstor==majstori[i].uniqueId && datumToCompare==datumToCompare2.getFullYear()+"-"+monthString+"-"+datumToCompare2.getDate()){
+									
+									var tr = document.createElement("TR");
+										var td = document.createElement("TD");
+										td.innerHTML	=	nalozi[j].broj;
+										tr.appendChild(td);
+
+										var td = document.createElement("TD");
+										td.innerHTML	=	nalozi[j].adresa.split(",")[0];
+										tr.appendChild(td);
+
+										var td = document.createElement("TD");
+										td.innerHTML	=	nalozi[j].datum;
+										tr.appendChild(td);
+
+										var td = document.createElement("TD");
+										td.innerHTML	=	nalozi[j].statusNaloga;
+										tr.appendChild(td);
+
+										var td = document.createElement("TD");
+										td.innerHTML	=	getDateAsString(datumToCompare2);
+										tr.appendChild(td);
+
+										var td = document.createElement("TD");
+										td.innerHTML	=	nalozi[j].datumiDodeljivanja[k].dodelio;
+										tr.appendChild(td);
+
+										var td = document.createElement("TD");
+										td.innerHTML	=	brojSaRazmacima(nalozi[j].ukupanIznos);
+										tr.appendChild(td);
+									table.appendChild(tr);
+								}
+							}
+						}
+					}
+				document.getElementById("nalozi-po-majstoru").appendChild(table);
+			}
+			
+		}
+	</script>
+<%- include ("partials/footer") -%>
